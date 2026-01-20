@@ -1,0 +1,440 @@
+[2026-01-12 11:08:44] Starting consultation submission request
+[2026-01-12 11:08:44] Running NLP analysis on symptoms: I have a bad headache
+[2026-01-12 11:08:44] NLP Result: Specialty=General Physician, Urgency=45
+[2026-01-12 11:08:44] Running Doctor Matching for specialty: General Physician
+[2026-01-12 11:08:44] Auto-assigned to Doctor ID: 15
+[2026-01-12 11:08:44] Sending notification to doctor...
+[2026-01-12 11:08:46] Notification sent.
+[2026-01-12 11:08:46] Success! Returning response for consultation ID: 9
+[2026-01-12 11:24:18] Starting consultation submission request
+[2026-01-12 11:24:18] Running NLP analysis on symptoms: fever
+[2026-01-12 11:24:18] NLP Result: Specialty=General Physician, Urgency=70
+[2026-01-12 11:24:18] Running Doctor Matching for specialty: General Physician
+[2026-01-12 11:24:18] Auto-assigned to Doctor ID: 15
+[2026-01-12 11:24:18] Sending notification to doctor...
+[2026-01-12 11:24:20] Notification sent.
+[2026-01-12 11:24:20] Success! Returning response for consultation ID: 11
+[2026-01-12 11:26:23] Starting consultation submission request
+[2026-01-12 11:26:23] Running NLP analysis on symptoms: "I have a red itchy skin rash".
+[2026-01-12 11:26:23] NLP Result: Specialty=Dermatologist, Urgency=55
+[2026-01-12 11:26:23] Running Doctor Matching for specialty: Dermatologist
+[2026-01-12 11:26:24] Auto-assigned to Doctor ID: 19
+[2026-01-12 11:26:24] Sending notification to doctor...
+[2026-01-12 11:26:26] Notification sent.
+[2026-01-12 11:26:26] Success! Returning response for consultation ID: 12
+[2026-01-12 11:27:31] Starting consultation submission request
+[2026-01-12 11:27:31] Running NLP analysis on symptoms: "I have a red itchy skin rash".
+[2026-01-12 11:27:31] NLP Result: Specialty=Dermatologist, Urgency=55
+[2026-01-12 11:27:31] Running Doctor Matching for specialty: Dermatologist
+[2026-01-12 11:27:31] Auto-assigned to Doctor ID: 19
+[2026-01-12 11:27:31] Sending notification to doctor...
+[2026-01-12 11:27:33] Notification sent.
+[2026-01-12 11:27:33] Success! Returning response for consultation ID: 13
+[2026-01-12 15:09:50] Starting consultation submission request
+[2026-01-12 15:09:50] Running NLP analysis on symptoms: I have many acne and scars
+[2026-01-12 15:09:50] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-12 15:09:50] Running Doctor Matching for specialty: General Physician
+[2026-01-12 15:09:50] Auto-assigned to Doctor ID: 15
+[2026-01-12 15:09:50] Sending notification to doctor...
+[2026-01-12 15:09:52] Notification sent.
+[2026-01-12 15:09:52] Success! Returning response for consultation ID: 14
+[2026-01-12 15:11:22] Starting consultation submission request
+[2026-01-12 15:11:22] Running NLP analysis on symptoms: I have severe heart pain
+[2026-01-12 15:11:22] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-12 15:11:22] Running Doctor Matching for specialty: General Physician
+[2026-01-12 15:11:22] Auto-assigned to Doctor ID: 15
+[2026-01-12 15:11:22] Sending notification to doctor...
+[2026-01-12 15:11:24] Notification sent.
+[2026-01-12 15:11:24] Success! Returning response for consultation ID: 15
+[2026-01-12 15:13:05] Starting consultation submission request
+[2026-01-12 15:13:05] Running NLP analysis on symptoms: near heart pain
+[2026-01-12 15:13:05] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-12 15:13:05] Running Doctor Matching for specialty: General Physician
+[2026-01-12 15:13:05] Auto-assigned to Doctor ID: 15
+[2026-01-12 15:13:05] Sending notification to doctor...
+[2026-01-12 15:13:08] Notification sent.
+[2026-01-12 15:13:08] Success! Returning response for consultation ID: 16
+[2026-01-12 15:34:09] Starting consultation submission request
+[2026-01-12 15:34:09] Running NLP analysis on symptoms: heart pain
+[2026-01-12 15:34:09] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-12 15:34:09] Running Doctor Matching for specialty: General Physician
+[2026-01-12 15:34:09] Auto-assigned to Doctor ID: 15
+[2026-01-12 15:34:09] Sending notification to doctor...
+[2026-01-12 15:34:11] Notification sent.
+[2026-01-12 15:34:11] Success! Returning response for consultation ID: 17
+[2026-01-13 05:35:50] Starting consultation submission request
+[2026-01-13 05:35:50] Running NLP analysis on symptoms: acne vulgaris
+[2026-01-13 05:35:50] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 05:35:50] Running Doctor Matching for specialty: General Physician
+[2026-01-13 05:35:50] Auto-assigned to Doctor ID: 15
+[2026-01-13 05:35:50] Sending notification to doctor...
+[2026-01-13 05:35:52] Notification sent.
+[2026-01-13 05:35:52] Success! Returning response for consultation ID: 18
+[2026-01-13 05:39:21] Starting consultation submission request
+[2026-01-13 05:39:21] Running NLP analysis on symptoms: heart pain
+[2026-01-13 05:39:22] NLP Result: Specialty=Cardiologist, Urgency=95
+[2026-01-13 05:39:22] Running Doctor Matching for specialty: Cardiologist
+[2026-01-13 05:39:22] Auto-assigned to Doctor ID: 16
+[2026-01-13 05:39:22] Sending notification to doctor...
+[2026-01-13 05:39:24] Notification sent.
+[2026-01-13 05:39:24] Success! Returning response for consultation ID: 19
+[2026-01-13 05:50:04] Starting consultation submission request
+[2026-01-13 05:50:04] Running NLP analysis on symptoms: Heart Attack and long disorders
+[2026-01-13 05:50:04] NLP Result: Specialty=Cardiologist, Urgency=100
+[2026-01-13 05:50:04] Running Doctor Matching for specialty: Cardiologist
+[2026-01-13 05:50:04] Auto-assigned to Doctor ID: 16
+[2026-01-13 05:50:04] Sending notification to doctor...
+[2026-01-13 05:50:07] Notification sent.
+[2026-01-13 05:50:07] Success! Returning response for consultation ID: 20
+[2026-01-13 06:17:17] Starting consultation submission request
+[2026-01-13 06:17:17] Running NLP analysis on symptoms: acne vulgaris
+[2026-01-13 06:17:17] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 06:17:17] Running Doctor Matching for specialty: General Physician
+[2026-01-13 06:17:17] Auto-assigned to Doctor ID: 15
+[2026-01-13 06:17:17] Sending notification to doctor...
+[2026-01-13 06:17:19] Notification sent.
+[2026-01-13 06:17:19] Success! Returning response for consultation ID: 21
+[2026-01-13 07:39:47] Starting consultation submission request
+[2026-01-13 07:39:47] Running NLP analysis on symptoms: missing menustration
+[2026-01-13 07:39:47] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 07:39:47] Running Doctor Matching for specialty: General Physician
+[2026-01-13 07:39:47] Auto-assigned to Doctor ID: 15
+[2026-01-13 07:39:47] Sending notification to doctor...
+[2026-01-13 07:39:49] Notification sent.
+[2026-01-13 07:39:49] Success! Returning response for consultation ID: 22
+[2026-01-13 08:02:08] Starting consultation submission request
+[2026-01-13 08:02:08] Running NLP analysis on symptoms: acne vulgaris
+[2026-01-13 08:02:08] NLP Result: Specialty=Dermatologist, Urgency=45
+[2026-01-13 08:02:08] Running Doctor Matching for specialty: Dermatologist
+[2026-01-13 08:02:08] Auto-assigned to Doctor ID: 19
+[2026-01-13 08:02:08] Sending notification to doctor...
+[2026-01-13 08:02:11] Notification sent.
+[2026-01-13 08:02:11] Success! Returning response for consultation ID: 23
+[2026-01-13 15:52:37] Starting consultation submission request
+[2026-01-13 15:52:37] Running NLP analysis on symptoms: I have severe heart pain
+[2026-01-13 15:52:37] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 15:52:37] Running Doctor Matching for specialty: General Physician
+[2026-01-13 15:52:37] Auto-assigned to Doctor ID: 15
+[2026-01-13 15:52:37] Sending notification to doctor...
+[2026-01-13 15:52:39] Notification sent.
+[2026-01-13 15:52:39] Success! Returning response for consultation ID: 24
+[2026-01-13 15:54:09] Starting consultation submission request
+[2026-01-13 15:54:09] Running NLP analysis on symptoms: my baby has fever
+[2026-01-13 15:54:09] NLP Result: Specialty=Pediatrician, Urgency=75
+[2026-01-13 15:54:09] Running Doctor Matching for specialty: Pediatrician
+[2026-01-13 15:54:09] Auto-assigned to Doctor ID: 17
+[2026-01-13 15:54:09] Sending notification to doctor...
+[2026-01-13 15:54:11] Notification sent.
+[2026-01-13 15:54:11] Success! Returning response for consultation ID: 25
+[2026-01-13 17:32:45] Starting consultation submission request
+[2026-01-13 17:32:45] Running NLP analysis on symptoms: pcod and ovarian issues
+[2026-01-13 17:32:45] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 17:32:45] Running Doctor Matching for specialty: General Physician
+[2026-01-13 17:32:45] No auto-assignment made: No available doctors found for this specialty
+[2026-01-13 17:32:45] Success! Returning response for consultation ID: 26
+[2026-01-13 17:33:52] Starting consultation submission request
+[2026-01-13 17:33:52] Running NLP analysis on symptoms: menustatratio issues
+[2026-01-13 17:33:52] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 17:33:52] Running Doctor Matching for specialty: General Physician
+[2026-01-13 17:33:53] No auto-assignment made: No available doctors found for this specialty
+[2026-01-13 17:33:53] Success! Returning response for consultation ID: 27
+[2026-01-13 17:34:42] Starting consultation submission request
+[2026-01-13 17:34:42] Running NLP analysis on symptoms: baby fever
+[2026-01-13 17:34:43] NLP Result: Specialty=Pediatrician, Urgency=75
+[2026-01-13 17:34:43] Running Doctor Matching for specialty: Pediatrician
+[2026-01-13 17:34:43] No auto-assignment made: No available doctors found for this specialty
+[2026-01-13 17:34:43] Success! Returning response for consultation ID: 28
+[2026-01-13 17:37:09] Starting consultation submission request
+[2026-01-13 17:37:09] Running NLP analysis on symptoms: acne vulgaris
+[2026-01-13 17:37:09] NLP Result: Specialty=Dermatologist, Urgency=45
+[2026-01-13 17:37:09] Running Doctor Matching for specialty: Dermatologist
+[2026-01-13 17:37:09] No auto-assignment made: No available doctors found for this specialty
+[2026-01-13 17:37:09] Success! Returning response for consultation ID: 29
+[2026-01-13 17:40:43] Starting consultation submission request
+[2026-01-13 17:40:43] Running NLP analysis on symptoms: heart pain
+[2026-01-13 17:40:43] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 17:40:43] Running Doctor Matching for specialty: General Physician
+[2026-01-13 17:40:43] Auto-assigned to Doctor ID: 15
+[2026-01-13 17:40:43] Sending notification to doctor...
+[2026-01-13 17:40:45] Notification sent.
+[2026-01-13 17:40:45] Success! Returning response for consultation ID: 30
+[2026-01-13 17:48:19] Starting consultation submission request
+[2026-01-13 17:48:19] Running NLP analysis on symptoms: ovary issues
+[2026-01-13 17:48:19] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 17:48:19] Running Doctor Matching for specialty: General Physician
+[2026-01-13 17:48:19] Auto-assigned to Doctor ID: 15
+[2026-01-13 17:48:19] Sending notification to doctor...
+[2026-01-13 17:48:21] Notification sent.
+[2026-01-13 17:48:21] Success! Returning response for consultation ID: 31
+[2026-01-13 17:48:46] Starting consultation submission request
+[2026-01-13 17:48:46] Running NLP analysis on symptoms: acne
+[2026-01-13 17:48:46] NLP Result: Specialty=Dermatologist, Urgency=45
+[2026-01-13 17:48:46] Running Doctor Matching for specialty: Dermatologist
+[2026-01-13 17:48:46] Auto-assigned to Doctor ID: 19
+[2026-01-13 17:48:46] Sending notification to doctor...
+[2026-01-13 17:48:48] Notification sent.
+[2026-01-13 17:48:48] Success! Returning response for consultation ID: 32
+[2026-01-13 17:49:15] Starting consultation submission request
+[2026-01-13 17:49:15] Running NLP analysis on symptoms: nerval issues
+[2026-01-13 17:49:15] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 17:49:15] Running Doctor Matching for specialty: General Physician
+[2026-01-13 17:49:15] Auto-assigned to Doctor ID: 15
+[2026-01-13 17:49:15] Sending notification to doctor...
+[2026-01-13 17:49:17] Notification sent.
+[2026-01-13 17:49:17] Success! Returning response for consultation ID: 33
+[2026-01-13 17:49:57] Starting consultation submission request
+[2026-01-13 17:49:57] Running NLP analysis on symptoms: digestion issues
+[2026-01-13 17:49:57] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 17:49:57] Running Doctor Matching for specialty: General Physician
+[2026-01-13 17:49:57] Auto-assigned to Doctor ID: 15
+[2026-01-13 17:49:57] Sending notification to doctor...
+[2026-01-13 17:49:59] Notification sent.
+[2026-01-13 17:49:59] Success! Returning response for consultation ID: 34
+[2026-01-13 17:50:37] Starting consultation submission request
+[2026-01-13 17:50:37] Running NLP analysis on symptoms: mental problems
+[2026-01-13 17:50:37] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 17:50:37] Running Doctor Matching for specialty: General Physician
+[2026-01-13 17:50:37] Auto-assigned to Doctor ID: 15
+[2026-01-13 17:50:37] Sending notification to doctor...
+[2026-01-13 17:50:39] Notification sent.
+[2026-01-13 17:50:39] Success! Returning response for consultation ID: 35
+[2026-01-13 17:53:37] Starting consultation submission request
+[2026-01-13 17:53:37] Running NLP analysis on symptoms: heart pain
+[2026-01-13 17:53:37] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-13 17:53:37] Running Doctor Matching for specialty: General Physician
+[2026-01-13 17:53:37] Auto-assigned to Doctor ID: 15
+[2026-01-13 17:53:37] Sending notification to doctor...
+[2026-01-13 17:53:39] Notification sent.
+[2026-01-13 17:53:39] Success! Returning response for consultation ID: 36
+[2026-01-13 17:54:10] Starting consultation submission request
+[2026-01-13 17:54:10] Running NLP analysis on symptoms: heart attack
+[2026-01-13 17:54:10] NLP Result: Specialty=Cardiologist, Urgency=100
+[2026-01-13 17:54:10] Running Doctor Matching for specialty: Cardiologist
+[2026-01-13 17:54:10] Auto-assigned to Doctor ID: 16
+[2026-01-13 17:54:10] Sending notification to doctor...
+[2026-01-13 17:54:12] Notification sent.
+[2026-01-13 17:54:12] Success! Returning response for consultation ID: 37
+[2026-01-14 05:01:09] Starting consultation submission request
+[2026-01-14 05:01:09] Running NLP analysis on symptoms: acne vulgaris
+[2026-01-14 05:01:09] NLP Result: Specialty=Dermatologist, Urgency=45
+[2026-01-14 05:01:09] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 05:01:09] Auto-assigned to Doctor ID: 19
+[2026-01-14 05:01:09] Sending notification to doctor...
+[2026-01-14 05:01:11] Notification sent.
+[2026-01-14 05:01:11] Success! Returning response for consultation ID: 38
+[2026-01-14 05:23:53] Starting consultation submission request
+[2026-01-14 05:23:53] Running NLP analysis on symptoms: heart pain
+[2026-01-14 05:23:53] NLP Result: Specialty=General Physician, Urgency=50
+[2026-01-14 05:23:53] Running Doctor Matching for specialty: General Physician
+[2026-01-14 05:23:54] Auto-assigned to Doctor ID: 15
+[2026-01-14 05:23:54] Sending notification to doctor...
+[2026-01-14 05:23:56] Notification sent.
+[2026-01-14 05:23:56] Success! Returning response for consultation ID: 39
+[2026-01-14 05:25:03] Starting consultation submission request
+[2026-01-14 05:25:03] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 05:25:03] NLP Result: Specialty=Dermatologist, Urgency=55
+[2026-01-14 05:25:03] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 05:25:03] Auto-assigned to Doctor ID: 19
+[2026-01-14 05:25:03] Sending notification to doctor...
+[2026-01-14 05:25:05] Notification sent.
+[2026-01-14 05:25:05] Success! Returning response for consultation ID: 40
+[2026-01-14 05:59:38] Starting consultation submission request
+[2026-01-14 05:59:38] Running NLP analysis on symptoms: acne vulgaris
+[2026-01-14 05:59:38] NLP Result: Specialty=Dermatologist, Urgency=45
+[2026-01-14 05:59:38] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 05:59:38] Auto-assigned to Doctor ID: 19
+[2026-01-14 05:59:38] Sending notification to doctor...
+[2026-01-14 05:59:40] Notification sent.
+[2026-01-14 05:59:40] Success! Returning response for consultation ID: 41
+[2026-01-14 06:05:04] Starting consultation submission request
+[2026-01-14 06:05:04] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 06:05:04] NLP Result: Specialty=Dermatologist, Urgency=55
+[2026-01-14 06:05:04] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 06:05:04] Auto-assigned to Doctor ID: 19
+[2026-01-14 06:05:04] Sending notification to doctor...
+[2026-01-14 06:05:06] Notification sent.
+[2026-01-14 06:05:06] Success! Returning response for consultation ID: 42
+[2026-01-14 06:33:43] Starting consultation submission request
+[2026-01-14 06:33:43] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 06:33:43] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 06:33:43] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 06:33:43] Auto-assigned to Doctor ID: 19
+[2026-01-14 06:33:43] Sending notification to doctor...
+[2026-01-14 06:33:45] Notification sent.
+[2026-01-14 06:33:45] Success! Returning response for consultation ID: 43
+[2026-01-14 06:40:17] Starting consultation submission request
+[2026-01-14 06:40:17] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 06:40:17] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 06:40:17] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 06:40:17] Auto-assigned to Doctor ID: 19
+[2026-01-14 06:40:17] Sending notification to doctor...
+[2026-01-14 06:40:19] Notification sent.
+[2026-01-14 06:40:19] Success! Returning response for consultation ID: 44
+[2026-01-14 06:43:28] Starting consultation submission request
+[2026-01-14 06:43:28] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 06:43:28] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 06:43:28] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 06:43:29] Auto-assigned to Doctor ID: 19
+[2026-01-14 06:43:29] Sending notification to doctor...
+[2026-01-14 06:43:31] Notification sent.
+[2026-01-14 06:43:31] Success! Returning response for consultation ID: 45
+[2026-01-14 06:51:46] Starting consultation submission request
+[2026-01-14 06:51:46] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 06:51:46] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 06:51:46] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 06:51:46] Auto-assigned to Doctor ID: 19
+[2026-01-14 06:51:46] Sending notification to doctor...
+[2026-01-14 06:51:49] Notification sent.
+[2026-01-14 06:51:49] Success! Returning response for consultation ID: 47
+[2026-01-14 06:56:05] Starting consultation submission request
+[2026-01-14 06:56:05] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 06:56:05] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 06:56:05] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 06:56:05] Auto-assigned to Doctor ID: 19
+[2026-01-14 06:56:05] Sending notification to doctor...
+[2026-01-14 06:56:08] Notification sent.
+[2026-01-14 06:56:08] Success! Returning response for consultation ID: 48
+[2026-01-14 07:02:47] Starting consultation submission request
+[2026-01-14 07:02:47] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 07:02:47] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 07:02:47] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 07:02:48] Auto-assigned to Doctor ID: 19
+[2026-01-14 07:02:48] Sending notification to doctor...
+[2026-01-14 07:02:50] Notification sent.
+[2026-01-14 07:02:50] Success! Returning response for consultation ID: 52
+[2026-01-14 07:04:59] Starting consultation submission request
+[2026-01-14 07:04:59] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 07:04:59] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 07:04:59] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 07:04:59] Auto-assigned to Doctor ID: 19
+[2026-01-14 07:04:59] Sending notification to doctor...
+[2026-01-14 07:05:01] Notification sent.
+[2026-01-14 07:05:01] Success! Returning response for consultation ID: 53
+[2026-01-14 07:11:56] Starting consultation submission request
+[2026-01-14 07:11:56] Running NLP analysis on symptoms: chest pain
+[2026-01-14 07:11:56] NLP Result: Specialty=Cardiologist, Urgency=emergency (95)
+[2026-01-14 07:11:56] Running Doctor Matching for specialty: Cardiologist
+[2026-01-14 07:11:56] Auto-assigned to Doctor ID: 16
+[2026-01-14 07:11:56] Sending notification to doctor...
+[2026-01-14 07:11:58] Notification sent.
+[2026-01-14 07:11:58] Success! Returning response for consultation ID: 54
+[2026-01-14 07:13:51] Starting consultation submission request
+[2026-01-14 07:13:51] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 07:13:51] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 07:13:51] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 07:13:51] Auto-assigned to Doctor ID: 19
+[2026-01-14 07:13:51] Sending notification to doctor...
+[2026-01-14 07:13:53] Notification sent.
+[2026-01-14 07:13:53] Success! Returning response for consultation ID: 55
+[2026-01-14 07:22:18] Starting consultation submission request
+[2026-01-14 07:22:18] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 07:22:18] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 07:22:18] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 07:22:18] Auto-assigned to Doctor ID: 19
+[2026-01-14 07:22:18] Sending notification to doctor...
+[2026-01-14 07:22:20] Notification sent.
+[2026-01-14 07:22:20] Success! Returning response for consultation ID: 56
+[2026-01-14 07:26:05] Starting consultation submission request
+[2026-01-14 07:26:05] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 07:26:05] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 07:26:06] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 07:26:06] Auto-assigned to Doctor ID: 19
+[2026-01-14 07:26:06] Sending notification to doctor...
+[2026-01-14 07:26:08] Notification sent.
+[2026-01-14 07:26:08] Success! Returning response for consultation ID: 57
+[2026-01-14 07:42:18] Starting consultation submission request
+[2026-01-14 07:42:18] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 07:42:18] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 07:42:18] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 07:42:18] Auto-assigned to Doctor ID: 19
+[2026-01-14 07:42:18] Sending notification to doctor...
+[2026-01-14 07:42:20] Notification sent.
+[2026-01-14 07:42:20] Success! Returning response for consultation ID: 58
+[2026-01-14 07:51:15] Starting consultation submission request
+[2026-01-14 07:51:15] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 07:51:15] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 07:51:15] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 07:51:15] Auto-assigned to Doctor ID: 19
+[2026-01-14 07:51:15] Sending notification to doctor...
+[2026-01-14 07:51:17] Notification sent.
+[2026-01-14 07:51:17] Success! Returning response for consultation ID: 60
+[2026-01-14 08:05:56] Starting consultation submission request
+[2026-01-14 08:05:56] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 08:05:56] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 08:05:56] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 08:05:56] Auto-assigned to Doctor ID: 19
+[2026-01-14 08:05:56] Sending notification to doctor...
+[2026-01-14 08:05:58] Notification sent.
+[2026-01-14 08:05:58] Success! Returning response for consultation ID: 61
+[2026-01-14 09:23:17] Starting consultation submission request
+[2026-01-14 09:23:17] Running NLP analysis on symptoms: acne vulgaris
+[2026-01-14 09:23:17] NLP Result: Specialty=Dermatologist, Urgency=routine (45)
+[2026-01-14 09:23:17] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 09:23:17] Auto-assigned to Doctor ID: 19
+[2026-01-14 09:23:17] Sending notification to doctor...
+[2026-01-14 09:23:20] Notification sent.
+[2026-01-14 09:23:20] Success! Returning response for consultation ID: 62
+[2026-01-14 10:17:41] Starting consultation submission request
+[2026-01-14 10:17:41] Running NLP analysis on symptoms: skin rashes in hands
+[2026-01-14 10:17:41] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 10:17:41] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 10:17:41] Auto-assigned to Doctor ID: 19
+[2026-01-14 10:17:41] Sending notification to doctor...
+[2026-01-14 10:17:43] Notification sent.
+[2026-01-14 10:17:43] Success! Returning response for consultation ID: 63
+[2026-01-14 10:39:08] Starting consultation submission request
+[2026-01-14 10:39:08] Running NLP analysis on symptoms: skin iritation
+[2026-01-14 10:39:08] NLP Result: Specialty=General Physician, Urgency=routine (50)
+[2026-01-14 10:39:08] Running Doctor Matching for specialty: General Physician
+[2026-01-14 10:39:08] Auto-assigned to Doctor ID: 15
+[2026-01-14 10:39:08] Sending notification to doctor...
+[2026-01-14 10:39:10] Notification sent.
+[2026-01-14 10:39:10] Success! Returning response for consultation ID: 64
+[2026-01-14 10:40:28] Starting consultation submission request
+[2026-01-14 10:40:28] Running NLP analysis on symptoms: skin rashes
+[2026-01-14 10:40:28] NLP Result: Specialty=Dermatologist, Urgency=routine (55)
+[2026-01-14 10:40:28] Running Doctor Matching for specialty: Dermatologist
+[2026-01-14 10:40:28] Auto-assigned to Doctor ID: 19
+[2026-01-14 10:40:28] Sending notification to doctor...
+[2026-01-14 10:40:30] Notification sent.
+[2026-01-14 10:40:30] Success! Returning response for consultation ID: 65
+[2026-01-14 10:50:14] Starting consultation submission request
+[2026-01-14 10:50:14] Running NLP analysis on symptoms: baby having cold and cough
+[2026-01-14 10:50:14] NLP Result: Specialty=Pediatrician, Urgency=urgent (75)
+[2026-01-14 10:50:14] Running Doctor Matching for specialty: Pediatrician
+[2026-01-14 10:50:14] Auto-assigned to Doctor ID: 17
+[2026-01-14 10:50:14] Sending notification to doctor...
+[2026-01-14 10:50:16] Notification sent.
+[2026-01-14 10:50:16] Success! Returning response for consultation ID: 66
+[2026-01-14 10:52:35] Starting consultation submission request
+[2026-01-14 10:52:35] Running NLP analysis on symptoms: baby has high fever with cold and cough
+[2026-01-14 10:52:35] NLP Result: Specialty=General Physician, Urgency=urgent (75)
+[2026-01-14 10:52:35] Running Doctor Matching for specialty: General Physician
+[2026-01-14 10:52:35] Auto-assigned to Doctor ID: 15
+[2026-01-14 10:52:35] Sending notification to doctor...
+[2026-01-14 10:52:37] Notification sent.
+[2026-01-14 10:52:37] Success! Returning response for consultation ID: 67
+[2026-01-14 10:54:02] Starting consultation submission request
+[2026-01-14 10:54:02] Running NLP analysis on symptoms: baby having vomiting
+[2026-01-14 10:54:02] NLP Result: Specialty=Pediatrician, Urgency=urgent (75)
+[2026-01-14 10:54:02] Running Doctor Matching for specialty: Pediatrician
+[2026-01-14 10:54:02] Auto-assigned to Doctor ID: 17
+[2026-01-14 10:54:02] Sending notification to doctor...
+[2026-01-14 10:54:04] Notification sent.
+[2026-01-14 10:54:04] Success! Returning response for consultation ID: 68
+[2026-01-17 05:37:30] Starting consultation submission request
+[2026-01-17 05:37:30] Running NLP analysis on symptoms: headache
+[2026-01-17 05:37:30] NLP Result: Specialty=General Physician, Urgency=routine (45)
+[2026-01-17 05:37:30] Running Doctor Matching for specialty: General Physician
+[2026-01-17 05:37:30] Auto-assigned to Doctor ID: 15
+[2026-01-17 05:37:30] Sending notification to doctor...
+[2026-01-17 05:37:32] Notification sent.
+[2026-01-17 05:37:32] Success! Returning response for consultation ID: 69
+[2026-01-17 06:17:03] Starting consultation submission request
+[2026-01-17 06:17:03] Running NLP analysis on symptoms: fever and headache
+[2026-01-17 06:17:03] NLP Result: Specialty=General Physician, Urgency=urgent (70)
+[2026-01-17 06:17:03] Running Doctor Matching for specialty: General Physician
+[2026-01-17 06:17:03] Auto-assigned to Doctor ID: 15
+[2026-01-17 06:17:03] Sending notification to doctor...
+[2026-01-17 06:17:05] Notification sent.
+[2026-01-17 06:17:05] Success! Returning response for consultation ID: 71

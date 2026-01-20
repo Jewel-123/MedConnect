@@ -1,0 +1,8 @@
+id | int(11)
+doctor_id | int(11)
+day_of_week | enum('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday')
+start_time | time
+end_time | time
+is_available | tinyint(1)
+auto_booking_enabled | tinyint(1)
+max_consultations_per_slot | int(11)

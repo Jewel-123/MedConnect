@@ -1,0 +1,16 @@
+=== CONSOLIDATED DATABASE SETUP ===
+
+Executing consolidated database setup...
+This will add all missing tables and columns without losing data.
+
+PHP Fatal error:  Uncaught mysqli_sql_exception: Tablespace for table '`medconnect`.`symptom_attachments`' exists. Please DISCARD the tablespace before IMPORT in C:\xampp\htdocs\medconnect\run_consolidated_setup.php:49
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\run_consolidated_setup.php(49): mysqli->next_result()
+#1 {main}
+  thrown in C:\xampp\htdocs\medconnect\run_consolidated_setup.php on line 49
+
+Fatal error: Uncaught mysqli_sql_exception: Tablespace for table '`medconnect`.`symptom_attachments`' exists. Please DISCARD the tablespace before IMPORT in C:\xampp\htdocs\medconnect\run_consolidated_setup.php:49
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\run_consolidated_setup.php(49): mysqli->next_result()
+#1 {main}
+  thrown in C:\xampp\htdocs\medconnect\run_consolidated_setup.php on line 49

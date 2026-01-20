@@ -1,0 +1,79 @@
+2025-12-20 06:22:31 - Reset link for jewelbiju2028@mca.ajce.in: http://localhost/Mediconnet/reset_password.php?token=9b603a2dad4a5c8ebb46884bbf430083c03883b770bd39593f8bc47a84d7f3cb (Mail Sent: No)
+2025-12-20 06:22:33 - Reset link for jewelbiju2028@mca.ajce.in: http://localhost/Mediconnet/reset_password.php?token=3a5173897e068ff8f0c5f982fdc095e13a4b3adf16bad3b67e720765796e339b (Mail Sent: No)
+2025-12-21 08:22:14 - OTP for jewelbiju2028@mca.ajce.in: 506941 (Expires: 2025-12-21 08:27:12, Mail Sent: No)
+2025-12-21 08:22:16 - OTP for jewelbiju2028@mca.ajce.in: 562695 (Expires: 2025-12-21 08:27:13, Mail Sent: No)
+2025-12-21 08:22:16 - OTP for jewelbiju2028@mca.ajce.in: 643964 (Expires: 2025-12-21 08:27:14, Mail Sent: No)
+2025-12-21 08:25:04 - OTP for jewelbiju2028@mca.ajce.in: 440390 (Expires: 2025-12-21 08:30:02, Mail Sent: No)
+2025-12-21 08:25:06 - OTP for jewelbiju2028@mca.ajce.in: 788195 (Expires: 2025-12-21 08:30:04, Mail Sent: No)
+2025-12-21 08:30:26 - OTP for jewelbiju2028@mca.ajce.in: 883460 (Expires: 2025-12-21 08:35:24, Mail Sent: No)
+2025-12-21 08:30:28 - OTP for jewelbiju2028@mca.ajce.in: 223427 (Expires: 2025-12-21 08:35:26, Mail Sent: No)
+2025-12-21 08:38:47 - Email Error for jewelbiju2028@mca.ajce.in: Email not configured. Please update email_config.php with your SMTP credentials.
+2025-12-21 08:38:47 - OTP for jewelbiju2028@mca.ajce.in: 615581 (Expires: 2025-12-21 08:43:47, Mail Sent: No, Error: Email not configured. Please update email_config.php with your SMTP credentials.)
+2025-12-21 08:39:27 - Email Error for jewelbiju2028@mca.ajce.in: Email not configured. Please update email_config.php with your SMTP credentials.
+2025-12-21 08:39:27 - OTP for jewelbiju2028@mca.ajce.in: 023973 (Expires: 2025-12-21 08:44:27, Mail Sent: No, Error: Email not configured. Please update email_config.php with your SMTP credentials.)
+2025-12-21 09:11:04 - Email Error for jewelbiju2028@mca.ajce.in: SMTP Error: Could not connect to SMTP host. Connection failed. stream_socket_enable_crypto(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000086:SSL routines::certificate verify failed
+2025-12-21 09:11:04 - OTP for jewelbiju2028@mca.ajce.in: 082423 (Expires: 2025-12-21 09:16:03, Mail Sent: No, Error: SMTP Error: Could not connect to SMTP host. Connection failed. stream_socket_enable_crypto(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000086:SSL routines::certificate verify failed)
+2025-12-21 09:11:06 - Email Error for jewelbiju2028@mca.ajce.in: SMTP Error: Could not connect to SMTP host. Connection failed. stream_socket_enable_crypto(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000086:SSL routines::certificate verify failed
+2025-12-21 09:11:06 - OTP for jewelbiju2028@mca.ajce.in: 670732 (Expires: 2025-12-21 09:16:04, Mail Sent: No, Error: SMTP Error: Could not connect to SMTP host. Connection failed. stream_socket_enable_crypto(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000086:SSL routines::certificate verify failed)
+2025-12-21 09:12:20 - Email Error for jewelbiju123@gmail.com: SMTP Error: Could not connect to SMTP host. Connection failed. stream_socket_enable_crypto(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000086:SSL routines::certificate verify failed
+2025-12-21 09:12:20 - OTP for jewelbiju123@gmail.com: 675803 (Expires: 2025-12-21 09:17:18, Mail Sent: No, Error: SMTP Error: Could not connect to SMTP host. Connection failed. stream_socket_enable_crypto(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000086:SSL routines::certificate verify failed)
+2025-12-21 09:13:34 - Email Error for jewelbiju123@gmail.com: SMTP Error: Could not connect to SMTP host. Connection failed. stream_socket_enable_crypto(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000086:SSL routines::certificate verify failed
+2025-12-21 09:13:34 - OTP for jewelbiju123@gmail.com: 115391 (Expires: 2025-12-21 09:18:32, Mail Sent: No, Error: SMTP Error: Could not connect to SMTP host. Connection failed. stream_socket_enable_crypto(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000086:SSL routines::certificate verify failed)
+2025-12-21 09:13:35 - Email Error for jewelbiju123@gmail.com: SMTP Error: Could not connect to SMTP host. Connection failed. stream_socket_enable_crypto(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000086:SSL routines::certificate verify failed
+2025-12-21 09:13:35 - OTP for jewelbiju123@gmail.com: 051790 (Expires: 2025-12-21 09:18:34, Mail Sent: No, Error: SMTP Error: Could not connect to SMTP host. Connection failed. stream_socket_enable_crypto(): SSL operation failed with code 1. OpenSSL Error messages:
+error:0A000086:SSL routines::certificate verify failed)
+2025-12-21 09:15:50 - OTP for jewelbiju123@gmail.com: 165777 (Expires: 2025-12-21 09:20:46, Mail Sent: Yes)
+2025-12-21 09:15:53 - OTP for jewelbiju123@gmail.com: 263407 (Expires: 2025-12-21 09:20:50, Mail Sent: Yes)
+2025-12-21 13:49:17 - OTP for jewelbiju123@gmail.com: 853632 (Expires: 2025-12-21 13:54:12, Mail Sent: Yes)
+2025-12-21 13:49:20 - OTP for jewelbiju123@gmail.com: 928237 (Expires: 2025-12-21 13:54:17, Mail Sent: Yes)
+2025-12-21 13:50:26 - OTP for jewelbiju123@gmail.com: 826176 (Expires: 2025-12-21 13:55:22, Mail Sent: Yes)
+2025-12-21 13:50:30 - OTP for jewelbiju123@gmail.com: 049384 (Expires: 2025-12-21 13:55:26, Mail Sent: Yes)
+2025-12-21 13:50:33 - OTP for jewelbiju123@gmail.com: 716299 (Expires: 2025-12-21 13:55:30, Mail Sent: Yes)
+2025-12-21 13:50:37 - OTP for jewelbiju123@gmail.com: 659215 (Expires: 2025-12-21 13:55:33, Mail Sent: Yes)
+2025-12-21 14:44:09 - OTP for jewelbiju123@gmail.com: 662568 (Expires: 2025-12-21 14:49:05, Mail Sent: Yes)
+2025-12-21 14:44:37 - Attempting OTP Verify: Email=jewelbiju123@gmail.com, OTP=662568
+2025-12-21 14:44:37 - OTP Verified Successfully for jewelbiju123@gmail.com
+2025-12-21 14:52:32 - OTP for jewelbiju123@gmail.com: 804624 (Expires: 2025-12-21 14:57:28, Mail Sent: Yes)
+2025-12-21 14:52:57 - Attempting OTP Verify: Email=jewelbiju123@gmail.com, OTP=804624
+2025-12-21 14:52:57 - OTP Verified Successfully for jewelbiju123@gmail.com
+2025-12-21 14:53:58 - OTP for jewelbiju123@gmail.com: 280650 (Expires: 2025-12-21 14:58:54, Mail Sent: Yes)
+2025-12-21 14:54:35 - Reusing recent OTP for jewelbiju123@gmail.com: 280650
+2025-12-21 14:54:39 - OTP for jewelbiju123@gmail.com: 280650 (Expires: 2025-12-21 14:58:54, Mail Sent: Yes)
+2026-01-01 10:06:07 - OTP for jewelbiju123@gmail.com: 082594 (Expires: 2026-01-01 10:11:02, Mail Sent: Yes)
+2026-01-01 10:06:26 - Attempting OTP Verify: Email=jewelbiju123@gmail.com, OTP=082594
+2026-01-01 10:06:26 - OTP Verified Successfully for jewelbiju123@gmail.com
+2026-01-04 15:08:07 - Signup OTP for neenujewel@gmail.com: 321236
+2026-01-04 15:11:23 - Resend OTP for jewelbiju123@gmail.com: 837747
+2026-01-04 15:13:40 - Signup OTP for jewelbiju2028@mca.ajce.in: 064029
+2026-01-04 19:47:15 - OTP for jewelbiju123@gmail.com: 602831 (Expires: 2026-01-04 19:52:09, Mail Sent: Yes)
+2026-01-04 19:47:32 - Attempting OTP Verify: Email=jewelbiju123@gmail.com, OTP=602831
+2026-01-04 19:47:32 - OTP Verified Successfully for jewelbiju123@gmail.com
+2026-01-04 15:28:38 - Signup OTP for 47.nandanapramod@gmail.com: 417782
+2026-01-04 15:31:26 - Signup OTP for nandanapramod2028@mca.ajce.in: 567618
+2026-01-04 20:25:15 - OTP for jewelbiju123@gmail.com: 251145 (Expires: 2026-01-04 20:30:11, Mail Sent: Yes)
+2026-01-04 20:25:32 - Attempting OTP Verify: Email=jewelbiju123@gmail.com, OTP=251145
+2026-01-04 20:25:32 - OTP Verified Successfully for jewelbiju123@gmail.com
+2026-01-05 15:17:57 - OTP for jewelbiju123@gmail.com: 809408 (Expires: 2026-01-05 15:22:52, Mail Sent: Yes)
+2026-01-05 15:18:56 - Reusing recent OTP for jewelbiju123@gmail.com: 809408
+2026-01-05 15:19:00 - OTP for jewelbiju123@gmail.com: 809408 (Expires: 2026-01-05 15:22:52, Mail Sent: Yes)
+2026-01-05 15:19:17 - Attempting OTP Verify: Email=jewelbiju123@gmail.com, OTP=809408
+2026-01-05 15:19:17 - OTP Verified Successfully for jewelbiju123@gmail.com
+2026-01-08 13:17:32 - OTP for jewelbiju123@gmail.com: 562035 (Expires: 2026-01-08 13:22:25, Mail Sent: Yes)
+2026-01-08 13:17:58 - Attempting OTP Verify: Email=jewelbiju123@gmail.com, OTP=562035
+2026-01-08 13:17:58 - OTP Verified Successfully for jewelbiju123@gmail.com
+2026-01-08 15:20:38 - OTP for jewelbiju2028@mca.ajce.in: 494312 (Expires: 2026-01-08 15:25:31, Mail Sent: Yes)
+2026-01-08 15:22:52 - OTP for jewelbiju2028@mca.ajce.in: 637242 (Expires: 2026-01-08 15:27:44, Mail Sent: Yes)
+2026-01-08 15:23:19 - Attempting OTP Verify: Email=jewelbiju2028@mca.ajce.in, OTP=637242
+2026-01-08 15:23:19 - OTP Verified Successfully for jewelbiju2028@mca.ajce.in
+2026-01-11 18:57:58 - OTP for jewelbiju2028@mca.ajce.in: 947205 (Expires: 2026-01-11 19:02:53, Mail Sent: Yes)
+2026-01-11 18:58:17 - Attempting OTP Verify: Email=jewelbiju2028@mca.ajce.in, OTP=947205
+2026-01-11 18:58:17 - OTP Verified Successfully for jewelbiju2028@mca.ajce.in

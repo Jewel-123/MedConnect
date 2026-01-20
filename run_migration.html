@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core System Schema Migration - MedConnect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .intro {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .intro h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .intro ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .intro li {
+            padding: 5px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .intro li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .log {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .log.active {
+            display: block;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-entry.success {
+            color: #4ade80;
+        }
+
+        .log-entry.error {
+            color: #f87171;
+        }
+
+        .log-entry.info {
+            color: #60a5fa;
+        }
+
+        .log-entry.warning {
+            color: #fbbf24;
+        }
+
+        .summary {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .summary.success-summary {
+            background: #d1fae5;
+            border: 2px solid #4ade80;
+            color: #065f46;
+        }
+
+        .summary.error-summary {
+            background: #fee2e2;
+            border: 2px solid #f87171;
+            color: #991b1b;
+        }
+
+        .summary h3 {
+            margin-bottom: 10px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 MedConnect Core System Migration</h1>
+            <p>Database Schema Update for 8 Core Workflow Modules</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <h3>📋 What This Migration Does:</h3>
+                <ul>
+                    <li>Creates 18 new database tables for core system workflows</li>
+                    <li>Enhances existing tables with new columns</li>
+                    <li>Sets up payment, pharmacy, appointment, and notification systems</li>
+                    <li>Preserves ALL existing data (safe migration)</li>
+                    <li>Adds security and compliance features</li>
+                </ul>
+            </div>
+
+            <button id="migrateBtn" onclick="runMigration()">
+                <span id="btnText">🚀 Execute Migration</span>
+                <span id="spinner" class="spinner" style="display: none;"></span>
+            </button>
+
+            <div id="log" class="log"></div>
+
+            <div id="summary" class="summary"></div>
+        </div>
+    </div>
+
+    <script>
+        async function runMigration() {
+            const btn = document.getElementById('migrateBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('spinner');
+            const log = document.getElementById('log');
+            const summary = document.getElementById('summary');
+
+            // Disable button and show spinner
+            btn.disabled = true;
+            btnText.textContent = '⏳ Migrating... ';
+            spinner.style.display = 'inline-block';
+
+            // Show and clear log
+            log.classList.add('active');
+            log.innerHTML = '';
+            summary.style.display = 'none';
+
+            function addLog(message, type = 'info') {
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = message;
+                log.appendChild(entry);
+                log.scrollTop = log.scrollHeight;
+            }
+
+            try {
+                addLog('🔄 Starting migration process...', 'info');
+                addLog('📂 Loading schema file...', 'info');
+
+                const response = await fetch('migrate_core_schema.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Migration request failed');
+                }
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    // Display each log entry
+                    result.logs.forEach(logEntry => {
+                        addLog(logEntry.message, logEntry.type);
+                    });
+
+                    // Show summary
+                    summary.className = 'summary success-summary';
+                    summary.style.display = 'block';
+                    summary.innerHTML = `
+                        <h3>✅ Migration Successful!</h3>
+                        <p><strong>Tables Created:</strong> ${result.summary.tables_created}</p>
+                        <p><strong>Statements Executed:</strong> ${result.summary.statements_executed}</p>
+                        <p><strong>Data Preserved:</strong> All existing records intact</p>
+                    `;
+
+                    btnText.textContent = '✅ Migration Complete';
+                    spinner.style.display = 'none';
+
+                } else {
+                    throw new Error(result.error || 'Migration failed');
+                }
+
+            } catch (error) {
+                addLog('❌ ERROR: ' + error.message, 'error');
+
+                summary.className = 'summary error-summary';
+                summary.style.display = 'block';
+                summary.innerHTML = `
+                    <h3>❌ Migration Failed</h3>
+                    <p>${error.message}</p>
+                    <p>Please check the error log above and contact support if needed.</p>
+                `;
+
+                btn.disabled = false;
+                btnText.textContent = '🔄 Retry Migration';
+                spinner.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+[16-Jan-2026 07:05:56 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"24","patient_id":"6","icd_code":"j00","diagnosis":"fsgjl","medicines":[{"name":"bssls","dosage":"100","frequency":"8","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-01-29","notes_for_patient":"follow","notes_for_pharmacy":"follow"}
+[16-Jan-2026 07:05:56 Europe/Berlin] Prescription created with ID: 6
+[16-Jan-2026 07:05:56 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #7 cannot be passed by reference in C:\xampp\htdocs\MedConnect\doctor_api.php:412
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\MedConnect\doctor_api.php on line 412
+[16-Jan-2026 07:11:43 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"24","patient_id":"6","icd_code":"j00","diagnosis":"bkghl","medicines":[{"name":"fgjhkg","dosage":"100","frequency":"7","duration":"6","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-01-17","notes_for_patient":"follow","notes_for_pharmacy":"folow"}
+[16-Jan-2026 07:11:43 Europe/Berlin] Prescription created with ID: 7
+[16-Jan-2026 07:11:43 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #7 cannot be passed by reference in C:\xampp\htdocs\MedConnect\doctor_api.php:419
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\MedConnect\doctor_api.php on line 419
+[16-Jan-2026 07:11:43 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"24","patient_id":"6","icd_code":"j00","diagnosis":"bkghl","medicines":[{"name":"fgjhkg","dosage":"100","frequency":"7","duration":"6","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-01-17","notes_for_patient":"follow","notes_for_pharmacy":"folow"}
+[16-Jan-2026 07:11:43 Europe/Berlin] Prescription created with ID: 8
+[16-Jan-2026 07:11:43 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #7 cannot be passed by reference in C:\xampp\htdocs\MedConnect\doctor_api.php:419
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\MedConnect\doctor_api.php on line 419
+[16-Jan-2026 07:14:45 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"24","patient_id":"6","icd_code":"j00","diagnosis":"fkjjfld","medicines":[{"name":"cdjfld","dosage":"100","frequency":"7","duration":"3","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-02-06","notes_for_patient":"fejkf","notes_for_pharmacy":"fhkdjl"}
+[16-Jan-2026 07:14:45 Europe/Berlin] Prescription created with ID: 9
+[16-Jan-2026 07:14:45 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #7 cannot be passed by reference in C:\xampp\htdocs\MedConnect\doctor_api.php:419
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\MedConnect\doctor_api.php on line 419
+[16-Jan-2026 07:16:19 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"24","patient_id":"6","icd_code":"j00","diagnosis":"fkjjfld","medicines":[{"name":"cdjfld","dosage":"100","frequency":"7","duration":"3","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-02-06","notes_for_patient":"fejkf","notes_for_pharmacy":"fhkdjl"}
+[16-Jan-2026 07:16:19 Europe/Berlin] Prescription created with ID: 10
+[16-Jan-2026 07:16:19 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #7 cannot be passed by reference in C:\xampp\htdocs\MedConnect\doctor_api.php:419
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\MedConnect\doctor_api.php on line 419
+[16-Jan-2026 07:16:59 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"24","patient_id":"6","icd_code":"j00","diagnosis":"hgrkjg","medicines":[{"name":"rjhgr","dosage":"100","frequency":"8","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-01-31","notes_for_patient":"gr,gj.r","notes_for_pharmacy":"blkggo"}
+[16-Jan-2026 07:16:59 Europe/Berlin] Prescription created with ID: 11
+[16-Jan-2026 07:16:59 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #7 cannot be passed by reference in C:\xampp\htdocs\MedConnect\doctor_api.php:419
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\MedConnect\doctor_api.php on line 419
+[16-Jan-2026 07:20:23 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"24","patient_id":"6","icd_code":"j00","diagnosis":"jjkk","medicines":[{"name":"cjhdfle","dosage":"100","frequency":"4","duration":"9","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-01-17","notes_for_patient":"jkooy","notes_for_pharmacy":"ghiii"}
+[16-Jan-2026 07:20:23 Europe/Berlin] Prescription created with ID: 12
+[16-Jan-2026 07:20:23 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #7 cannot be passed by reference in C:\xampp\htdocs\MedConnect\doctor_api.php:419
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\MedConnect\doctor_api.php on line 419
+[16-Jan-2026 07:24:44 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"24","patient_id":"6","icd_code":"j00","diagnosis":"thhjhfh","medicines":[{"name":"ghjhu","dosage":"100","frequency":"3","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-01-17","notes_for_patient":"ghjj","notes_for_pharmacy":"jfhjihj"}
+[16-Jan-2026 07:24:44 Europe/Berlin] Prescription created with ID: 13
+[16-Jan-2026 07:24:44 Europe/Berlin] Prescription saved successfully: ID 13
+[17-Jan-2026 05:47:31 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"69","patient_id":"6","icd_code":"167889","diagnosis":"sgpt","medicines":[{"name":"gkh","dosage":"100","frequency":"3","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-01-16","notes_for_patient":"folow","notes_for_pharmacy":"folow"}
+[17-Jan-2026 05:47:31 Europe/Berlin] Prescription created with ID: 14
+[17-Jan-2026 05:47:31 Europe/Berlin] Prescription saved successfully: ID 14

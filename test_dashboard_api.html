@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Diagnostic Test</title>
+</head>
+<body>
+    <h1>Doctor Dashboard API Test</h1>
+    <button onclick="testAPI()">Test API Call</button>
+    <pre id="result"></pre>
+
+    <script>
+    async function testAPI() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.textContent = 'Loading...';
+        
+        try {
+            // Test 1: Check if we can make the API call
+            const response = await fetch('doctor_api.php?action=get_consultation_requests');
+            resultDiv.textContent += '\n✓ API call successful';
+            resultDiv.textContent += '\nStatus: ' + response.status;
+            
+            // Test 2: Parse the JSON
+            const data = await response.json();
+            resultDiv.textContent += '\n✓ JSON parsed successfully';
+            resultDiv.textContent += '\n\nResponse:';
+            resultDiv.textContent += '\n' + JSON.stringify(data, null, 2);
+            
+            // Test 3: Check if we got data
+            if (data.status === 'success') {
+                resultDiv.textContent += '\n\n✓ Status: success';
+                resultDiv.textContent += '\nFound ' + data.data.length + ' consultation(s)';
+            } else {
+                resultDiv.textContent += '\n\n✗ Status: ' + data.status;
+                resultDiv.textContent += '\nMessage: ' + (data.message || 'No message');
+            }
+        } catch (error) {
+            resultDiv.textContent += '\n\n✗ ERROR: ' + error.message;
+            console.error('Full error:', error);
+        }
+    }
+    
+    // Auto-run on load
+    window.addEventListener('load', testAPI);
+    </script>
+</body>
+</html>
