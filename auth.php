@@ -16,54 +16,52 @@ require 'PHPMailer/src/SMTP.php';
 /**
  * Helper function to send OTP email
  */
-if (!function_exists('sendOTPEmail')) {
-    function sendOTPEmail($email, $otp, $name = 'User') {
-        try {
-            $mailConfig = getEmailConfig();
-            $mail = new PHPMailer(true);
+function sendOTPEmail($email, $otp, $name = 'User') {
+    try {
+        $mailConfig = getEmailConfig();
+        $mail = new PHPMailer(true);
 
-            // Server settings
-            $mail->isSMTP();
-            $mail->Host       = $mailConfig['host'];
-            $mail->SMTPAuth   = true;
-            $mail->Username   = $mailConfig['username'];
-            $mail->Password   = $mailConfig['password'];
-            $mail->SMTPSecure = $mailConfig['encryption'];
-            $mail->Port       = $mailConfig['port'];
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host       = $mailConfig['host'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $mailConfig['username'];
+        $mail->Password   = $mailConfig['password'];
+        $mail->SMTPSecure = $mailConfig['encryption'];
+        $mail->Port       = $mailConfig['port'];
 
-            $mail->SMTPOptions = array(
-                'ssl' => array(
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                    'allow_self_signed' => true
-                )
-            );
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
 
-            // Recipients
-            $mail->setFrom($mailConfig['from_email'], $mailConfig['from_name']);
-            $mail->addAddress($email, $name);
+        // Recipients
+        $mail->setFrom($mailConfig['from_email'], $mailConfig['from_name']);
+        $mail->addAddress($email, $name);
 
-            // Content
-            $mail->isHTML(true);
-            $mail->Subject = 'Verify your MedConnect Account';
-            $mail->Body    = "
-                <div style='font-family: Outfit, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 12px; max-width: 500px; color: #1e293b;'>
-                    <h2 style='color: #0284c7;'>MedConnect Verification</h2>
-                    <p>Hello <strong>$name</strong>,</p>
-                    <p>Thank you for joining MedConnect. Please use the following 6-digit code to verify your account:</p>
-                    <div style='background: #f0f7ff; padding: 15px; border-radius: 8px; text-align: center; font-size: 2rem; font-weight: 700; color: #0284c7; letter-spacing: 5px; margin: 20px 0;'>
-                        $otp
-                    </div>
-                    <p>This code will expire in 10 minutes.</p>
-                    <p style='font-size: 0.85rem; color: #64748b; margin-top: 20px;'>If you did not request this, please ignore this email.</p>
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Verify your MedConnect Account';
+        $mail->Body    = "
+            <div style='font-family: Outfit, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 12px; max-width: 500px; color: #1e293b;'>
+                <h2 style='color: #0284c7;'>MedConnect Verification</h2>
+                <p>Hello <strong>$name</strong>,</p>
+                <p>Thank you for joining MedConnect. Please use the following 6-digit code to verify your account:</p>
+                <div style='background: #f0f7ff; padding: 15px; border-radius: 8px; text-align: center; font-size: 2rem; font-weight: 700; color: #0284c7; letter-spacing: 5px; margin: 20px 0;'>
+                    $otp
                 </div>
-            ";
+                <p>This code will expire in 10 minutes.</p>
+                <p style='font-size: 0.85rem; color: #64748b; margin-top: 20px;'>If you did not request this, please ignore this email.</p>
+            </div>
+        ";
 
-            return $mail->send();
-        } catch (Exception $e) {
-            error_log("PHPMailer error: " . $e->getMessage());
-            return false;
-        }
+        return $mail->send();
+    } catch (Exception $e) {
+        error_log("PHPMailer error: " . $e->getMessage());
+        return false;
     }
 }
 
@@ -194,11 +192,7 @@ if ($action == 'signup') {
         $fees = $_POST['fees'] ?? 0;
         $langs = $_POST['languages'] ?? '';
         $stmt = $conn->prepare("INSERT INTO doctor_profiles (user_id, license_number, specialization, years_experience, consultation_fee, languages_spoken) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE license_number=?, specialization=?, years_experience=?, consultation_fee=?, languages_spoken=?");
-        if (!$stmt) {
-            echo json_encode(["status" => "error", "message" => "Prepare failed: " . $conn->error]);
-            exit;
-        }
-        $stmt->bind_param("issidsssids", $userId, $license, $specialization, $experience, $fees, $langs, $license, $specialization, $experience, $fees, $langs);
+        $stmt->bind_param("issidssssis", $userId, $license, $specialization, $experience, $fees, $langs, $license, $specialization, $experience, $fees, $langs);
         if ($stmt->execute()) {
             $conn->query("UPDATE users SET status = 'pending' WHERE id = $userId");
             $success = true;
@@ -240,11 +234,6 @@ if ($action == 'signup') {
             $conn->query("UPDATE users SET status = 'pending' WHERE id = $userId");
             $success = true;
         }
-    }
-
-    // Double check: if NOT patient, must be pending
-    if ($success && $role !== 'patient') {
-        $conn->query("UPDATE users SET status = 'pending' WHERE id = $userId");
     }
 
     if ($success) {

@@ -127,8 +127,6 @@
                     } else if (data.user.role === 'doctor') {
                         // For doctors, we might want to check if they are already approved
                         window.location.href = 'index.php';
-                    } else if (data.user.role === 'pharmacy') {
-                        window.location.href = 'pharmacy_dashboard_enhanced.php';
                     } else {
                         window.location.href = 'index.php';
                     }

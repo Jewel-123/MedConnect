@@ -91,16 +91,19 @@ if (isset($data['credential'])) {
             ]
         ]);
     } else {
-        // New User - Auto register
+        // New User - Auto register as Patient (default)
+        // Or prompt? For better UX, let's assume 'patient' or return a specific code to frontend to ask for role.
+        // For simplicity: Default to 'patient'
+        // Default to 'patient' or use provided role
         $role = $data['role'] ?? 'patient';
         // Validate role
-        if (!in_array($role, ['patient', 'doctor', 'pharmacy', 'clinic', 'hospital', 'admin'])) {
+        if (!in_array($role, ['patient', 'doctor', 'pharmacy', 'admin'])) {
             $role = 'patient';
         }
         // Generate random password
         $password = password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT);
         
-        // Determine status based on role: only patient is approved
+        // Determine status based on role
         $status = ($role === 'patient') ? 'approved' : 'pending';
         
         $insert = $conn->prepare("INSERT INTO users (full_name, email, password, role, google_id, is_verified, status) VALUES (?, ?, ?, ?, ?, 1, ?)");

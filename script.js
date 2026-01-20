@@ -76,84 +76,84 @@ const PAGES = {
             <h2 style="text-align: center; margin-bottom: 2rem;">Our Specialists</h2>
             <div class="features-grid">
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_emily_smith.png" alt="Dr. Emily Smith" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. Emily Smith</h3>
                     <p>General Physician</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">15+ years experience • MBBS, MD</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Emily Smith', 'General Physician', '15+ years experience', 'MBBS, MD from Harvard Medical School. Specializes in preventive care and chronic disease management.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_james_wilson.png" alt="Dr. James Wilson" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. James Wilson</h3>
                     <p>Cardiologist</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">20+ years experience • MBBS, DM</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. James Wilson', 'Cardiologist', '20+ years experience', 'MBBS, DM in Cardiology from Johns Hopkins. Expert in interventional cardiology and heart disease prevention.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_sarah_lee.png" alt="Dr. Sarah Lee" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. Sarah Lee</h3>
                     <p>Pediatrician</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">12+ years experience • MBBS, DCH</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Sarah Lee', 'Pediatrician', '12+ years experience', 'MBBS, DCH from Stanford Medical School. Specializes in child development and pediatric care.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_michael_brown.png" alt="Dr. Michael Brown" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. Michael Brown</h3>
                     <p>Neurologist</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">18+ years experience • MBBS, MD, DM</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Michael Brown', 'Neurologist', '18+ years experience', 'MBBS, MD, DM in Neurology from Mayo Clinic. Expert in stroke management and neurological disorders.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_sophia_martinez.png" alt="Dr. Sophia Martinez" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. Sophia Martinez</h3>
                     <p>Dermatologist</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">10+ years experience • MBBS, MD</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Sophia Martinez', 'Dermatologist', '10+ years experience', 'MBBS, MD in Dermatology from Yale School of Medicine. Specialist in medical and cosmetic dermatology.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_david_chen.png" alt="Dr. David Chen" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. David Chen</h3>
                     <p>Orthopedic Surgeon</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">16+ years experience • MBBS, MS, MCh</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. David Chen', 'Orthopedic Surgeon', '16+ years experience', 'MBBS, MS, MCh from Cleveland Clinic. Expert in joint replacement and sports medicine.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_elena_rodriguez.png" alt="Dr. Elena Rodriguez" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. Elena Rodriguez</h3>
                     <p>Psychiatrist</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">14+ years experience • MBBS, MD (Psych)</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Elena Rodriguez', 'Psychiatrist', '14+ years experience', 'MBBS, MD from Columbia University. Specialist in clinical psychiatry and mental health wellness.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_robert_taylor.png" alt="Dr. Robert Taylor" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. Robert Taylor</h3>
                     <p>Ophthalmologist</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">22+ years experience • MBBS, MS</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Robert Taylor', 'Ophthalmologist', '22+ years experience', 'MBBS, MS from University of Pennsylvania. Expert in cataract surgery and retinal health.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_lisa_wong.png" alt="Dr. Lisa Wong" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. Lisa Wong</h3>
                     <p>ENT Specialist</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">11+ years experience • MBBS, DLO</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Lisa Wong', 'ENT Specialist', '11+ years experience', 'MBBS, DLO from UCLA Health. Specializes in otolaryngology and head/neck surgery.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_jennifer_adams.png" alt="Dr. Jennifer Adams" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. Jennifer Adams</h3>
                     <p>Gynecologist</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">15+ years experience • MBBS, MD</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Jennifer Adams', 'Gynecologist', '15+ years experience', 'MBBS, MD from Northwestern Memorial Hospital. expert in womens reproductive health and maternity care.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_kevin_park.png" alt="Dr. Kevin Park" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. Kevin Park</h3>
                     <p>Gastroenterologist</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">13+ years experience • MBBS, MD, DM</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Kevin Park', 'Gastroenterologist', '13+ years experience', 'MBBS, MD, DM from Massachusetts General Hospital. Specializes in digestive disorders and endoscopy.')">View Profile</button>
                 </div>
                 <div class="feature-card">
-                    <img src="assets/img/doctors/dr_amanda_white.png" alt="Dr. Amanda White" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem;">
+                    <i class="ph ph-user-circle feature-icon"></i>
                     <h3>Dr. Amanda White</h3>
                     <p>Endocrinologist</p>
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">17+ years experience • MBBS, MD</p>
@@ -209,7 +209,7 @@ const PAGES = {
                     <li><a href="symptom_checker.php"><i class="ph ph-clipboard-text"></i> Symptom Checker</a></li>
                     <li><a href="appointment_booking.php"><i class="ph ph-calendar-check"></i> Book Appointment</a></li>
                     <li><a href="payment_gateway.php"><i class="ph ph-credit-card"></i> Payments</a></li>
-                    <li><a href="#" onclick="showPage('consultationHistory')"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
+                    <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
                     <li><a href="#" onclick="logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
                 </ul>
             </aside>
@@ -436,7 +436,7 @@ const PAGES = {
             <main class="main-area">
                 <div class="dash-header">
                     <h2>Consultation History</h2>
-                    <button class="btn btn-primary" onclick="window.location.href='symptom_checker.php'">+ New Consultation</button>
+                    <button class="btn btn-primary" onclick="showPage('symptomChecker')">+ New Consultation</button>
                 </div>
                 
                 <div id="consultationsList" style="margin-top: 1.5rem;">

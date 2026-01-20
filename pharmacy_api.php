@@ -1,12 +1,27 @@
 <?php
 /**
- * Pharmacy API - Redirects to Enhanced Version
+ * Pharmacy API
+ * Pharmacy management and prescription fulfillment
  */
 
-// Redirect all requests to the enhanced API
-require_once 'pharmacy_api_enhanced.php';
-exit;
-?>
+session_start();
+header('Content-Type: application/json');
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
+require_once 'db.php';
+require_once 'notification_service.php';
+
+// Authentication check
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'Please login first']);
+    exit;
+}
+
+$action = $_GET['action'] ?? $_POST['action'] ?? '';
+$userId = $_SESSION['user_id'];
+$userRole = $_SESSION['role'] ?? '';
 
 try {
     switch ($action) {

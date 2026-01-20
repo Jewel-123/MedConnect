@@ -7,10 +7,20 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'pharmacy') {
     exit;
 }
 
-// Redirect to enhanced dashboard
-header('Location: pharmacy_dashboard_enhanced.php');
-exit;
-?>
+$pharmacyId = $_SESSION['user_id'];
+
+// Get pharmacy profile
+$profile = $conn->query("
+    SELECT pp.*, u.full_name, u.email
+    FROM pharmacy_profiles pp
+    JOIN users u ON pp.user_id = u.id
+    WHERE pp.user_id = $pharmacyId
+")->fetch_assoc();
+
+if (!$profile) {
+    echo "Please complete your pharmacy profile first.";
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
