@@ -107,4 +107,25 @@ function isEmailConfigured() {
     
     return !empty($config['username']) && !empty($config['password']);
 }
-?>
+
+// =============================================
+// SMS NOTIFICATION CONFIGURATION
+// =============================================
+
+/**
+ * SMS Notification Settings
+ * 
+ * Set SMS_ENABLED to true to enable simulated SMS notifications.
+ * Messages will be logged to the 'notification_log' table.
+ */
+
+define('SMS_ENABLED', true);  // Enable/disable SMS simulation
+define('SMS_PROVIDER', 'simulator'); // Options: 'simulator' (standard)
+
+/**
+ * Check if SMS is enabled
+ * @return bool
+ */
+function isSMSEnabled() {
+    return defined('SMS_ENABLED') && SMS_ENABLED === true;
+}

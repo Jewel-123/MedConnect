@@ -7,20 +7,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'pharmacy') {
     exit;
 }
 
-$pharmacyId = $_SESSION['user_id'];
-
-// Get pharmacy profile
-$profile = $conn->query("
-    SELECT pp.*, u.full_name, u.email
-    FROM pharmacy_profiles pp
-    JOIN users u ON pp.user_id = u.id
-    WHERE pp.user_id = $pharmacyId
-")->fetch_assoc();
-
-if (!$profile) {
-    echo "Please complete your pharmacy profile first.";
-    exit;
-}
+// Redirect to enhanced pharmacy dashboard
+header('Location: pharmacy_dashboard_enhanced.php');
+exit;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,16 +20,16 @@ if (!$profile) {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; }
-        .header { background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); color: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .header h1 { font-size: 24px; }
         .header p { opacity: 0.9; margin-top: 5px; font-size: 14px; }
         .nav { background: white; padding: 0 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; gap: 30px; }
         .nav-item { padding: 15px 0; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; color: #64748b; font-weight: 500; }
-        .nav-item:hover { color: #f59e0b; }
-        .nav-item.active { color: #f59e0b; border-bottom-color: #f59e0b; }
+        .nav-item:hover { color: #0d9488; }
+        .nav-item.active { color: #0d9488; border-bottom-color: #0d9488; }
         .container { padding: 30px 40px; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #f59e0b; }
+        .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #0d9488; }
         .stat-value { font-size: 32px; font-weight: 700; color: #1e293b; margin: 10px 0; }
         .stat-label { color: #64748b; font-size: 14px; }
         .content-section { display: none; }

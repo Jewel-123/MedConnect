@@ -24,8 +24,10 @@
     
     // Fetch user status
     $stmt = $conn->prepare("SELECT full_name, email, role, status FROM users WHERE id = ?");
-    $stmt->execute([$_SESSION['user_id']]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
     
     if (!$user) {
         header('Location: login.php');

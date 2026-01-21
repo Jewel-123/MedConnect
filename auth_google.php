@@ -54,6 +54,28 @@ if (isset($data['credential'])) {
             }
         }
         
+        if ($user['status'] == 'pending') {
+            if ($user['role'] == 'patient') {
+                $conn->query("UPDATE users SET status = 'approved' WHERE id = " . $user['id']);
+                $user['status'] = 'approved';
+            } else {
+                echo json_encode(["status" => "pending", "message" => "Your account is awaiting admin approval"]);
+                exit;
+            }
+        } elseif ($user['status'] == 'rejected') {
+            echo json_encode(["status" => "error", "message" => "Your account application was rejected"]);
+            exit;
+        } elseif ($user['status'] == 'pending_onboarding') {
+            // Fix: Allow patients to login even if status is pending_onboarding (auto-approve like new users)
+            if ($user['role'] == 'patient') {
+                $conn->query("UPDATE users SET status = 'approved' WHERE id = " . $user['id']);
+                $user['status'] = 'approved';
+            } else {
+                echo json_encode(["status" => "onboarding_required", "message" => "Please complete your profile", "user" => $user]);
+                exit;
+            }
+        }
+
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['role'] = $user['role'];
         $_SESSION['email'] = $user['email'];
@@ -81,11 +103,23 @@ if (isset($data['credential'])) {
         // Generate random password
         $password = password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT);
         
-        $insert = $conn->prepare("INSERT INTO users (full_name, email, password, role, google_id, is_verified) VALUES (?, ?, ?, ?, ?, 1)");
-        $insert->bind_param("sssss", $name, $email, $password, $role, $google_id);
+        // Determine status based on role
+        $status = ($role === 'patient') ? 'approved' : 'pending';
+        
+        $insert = $conn->prepare("INSERT INTO users (full_name, email, password, role, google_id, is_verified, status) VALUES (?, ?, ?, ?, ?, 1, ?)");
+        $insert->bind_param("ssssss", $name, $email, $password, $role, $google_id, $status);
         
         if ($insert->execute()) {
              $new_id = $conn->insert_id;
+             
+             if ($status === 'pending') {
+                 echo json_encode([
+                     "status" => "pending",
+                     "message" => "Account created, but awaiting admin approval."
+                 ]);
+                 exit;
+             }
+
              $_SESSION['user_id'] = $new_id;
              $_SESSION['role'] = $role;
              $_SESSION['email'] = $email;
