@@ -89,10 +89,6 @@ if ($action == 'signup') {
 
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $stmt = $conn->prepare("INSERT INTO users (full_name, email, password, phone, status, is_verified) VALUES (?, ?, ?, ?, 'pending_onboarding', 1)");
-    if (!$stmt) {
-        echo json_encode(["status" => "error", "message" => "Database error during account creation: " . $conn->error]);
-        exit;
-    }
     $stmt->bind_param("ssss", $name, $email, $hashedPassword, $phone);
 
     if ($stmt->execute()) {
@@ -202,22 +198,8 @@ if ($action == 'signup') {
         $reg = $_POST['reg_number'] ?? '';
         $depts = $_POST['departments'] ?? '';
         $addr = $_POST['address'] ?? '';
-        
-        if ($role == 'hospital') {
-            $stmt = $conn->prepare("INSERT INTO hospital_profiles (user_id, hospital_name, address, registration_number) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE hospital_name=?, address=?, registration_number=?");
-            if (!$stmt) {
-                echo json_encode(["status" => "error", "message" => "Database error during hospital onboarding: " . $conn->error]);
-                exit;
-            }
-            $stmt->bind_param("issssss", $userId, $name, $addr, $reg, $name, $addr, $reg);
-        } else {
-            $stmt = $conn->prepare("INSERT INTO clinic_profiles (user_id, clinic_name, registration_number, departments, address) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE clinic_name=?, registration_number=?, departments=?, address=?");
-            if (!$stmt) {
-                echo json_encode(["status" => "error", "message" => "Database error during clinic onboarding: " . $conn->error]);
-                exit;
-            }
-            $stmt->bind_param("issssssss", $userId, $name, $reg, $depts, $addr, $name, $reg, $depts, $addr);
-        }
+        $stmt = $conn->prepare("INSERT INTO clinic_profiles (user_id, clinic_name, registration_number, departments, address) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE clinic_name=?, registration_number=?, departments=?, address=?");
+        $stmt->bind_param("issssssss", $userId, $name, $reg, $depts, $addr, $name, $reg, $depts, $addr);
         if ($stmt->execute()) {
             $conn->query("UPDATE users SET status = 'pending' WHERE id = $userId");
             $success = true;
@@ -260,28 +242,7 @@ if ($action == 'signup') {
             } elseif ($user['status'] == 'pending_onboarding') {
                 echo json_encode(["status" => "onboarding_required", "message" => "Please complete your profile", "user" => $user]);
             } elseif ($user['status'] == 'pending') {
-                if ($user['role'] == 'patient') {
-                    // Auto-approve patients if they somehow ended up in pending status
-                    $conn->query("UPDATE users SET status = 'approved' WHERE id = " . $user['id']);
-                    $user['status'] = 'approved';
-                    
-                    // Proceed with login
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['role'] = $user['role'];
-                    $_SESSION['email'] = $user['email'];
-
-                    echo json_encode([
-                        "status" => "success",
-                        "user" => [
-                            "id" => $user['id'],
-                            "name" => $user['full_name'],
-                            "role" => $user['role'],
-                            "email" => $user['email']
-                        ]
-                    ]);
-                } else {
-                    echo json_encode(["status" => "pending", "message" => "Your account is awaiting admin approval"]);
-                }
+                echo json_encode(["status" => "pending", "message" => "Your account is awaiting admin approval"]);
             } elseif ($user['status'] == 'rejected') {
                 echo json_encode(["status" => "error", "message" => "Your account application was rejected"]);
             } else {

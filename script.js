@@ -18,36 +18,28 @@ const state = {
 
 const PAGES = {
     landing: () => `
-        <div class="blob-container">
-            <div class="blob blob-1"></div>
-            <div class="blob blob-2"></div>
-        </div>
-
-        <section id="landing" class="hero-section fade-in">
+        <section class="hero-section fade-in">
             <div class="hero-text">
-                <h1>Your Health, <br><span class="text-gradient">Now Connected.</span></h1>
-                <p>Experience the future of healthcare with expert medical consultation, AI-driven symptom analysis, and instant e-prescriptions—right at your fingertips.</p>
+                <h1>Your Health, <br><span class="text-gradient">Connected.</span></h1>
+                <p>Expert medical consultation, AI-driven symptom checking, and instant e-prescriptions—all from the comfort of your home.</p>
                 <div style="display: flex; gap: 1rem;">
                     ${state.currentUser
             ? `<button class="btn btn-primary" onclick="navigateToDashboard()">Go to Dashboard</button>`
-            : `<a href="login.php" class="btn btn-primary">Join the Portal</a>`
+            : `<a href="login.php" class="btn btn-primary">Login to Portal</a>`
         }
-                    <button class="btn btn-outline" style="background:white;" onclick="document.querySelector('#doctors').scrollIntoView()">Explore Specialists</button>
+                    <button class="btn btn-outline" style="background:white;" onclick="document.querySelector('#doctors').scrollIntoView()">Find a Doctor</button>
                 </div>
             </div>
             <div class="hero-visual">
-                <div class="hero-image-container">
-                    <img src="assets/img/hero.png" alt="Medical Consultation">
-                </div>
                 <div class="stats-card">
                     <h2>24/7</h2>
-                    <p>Specialist Access</p>
+                    <p>Doctor Availability</p>
                     <hr style="margin: 1rem 0; opacity: 0.2">
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <i class="ph ph-shield-check" style="font-size: 2rem; color: var(--primary)"></i>
                         <div>
-                            <strong>Fully Secure</strong><br>
-                            <small>Safe & Private</small>
+                            <strong>Secure & Private</strong><br>
+                            <small>HIPAA Compliant</small>
                         </div>
                     </div>
                 </div>
@@ -96,69 +88,6 @@ const PAGES = {
                     <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">12+ years experience • MBBS, DCH</p>
                     <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Sarah Lee', 'Pediatrician', '12+ years experience', 'MBBS, DCH from Stanford Medical School. Specializes in child development and pediatric care.')">View Profile</button>
                 </div>
-                <div class="feature-card">
-                    <i class="ph ph-user-circle feature-icon"></i>
-                    <h3>Dr. Michael Brown</h3>
-                    <p>Neurologist</p>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">18+ years experience • MBBS, MD, DM</p>
-                    <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Michael Brown', 'Neurologist', '18+ years experience', 'MBBS, MD, DM in Neurology from Mayo Clinic. Expert in stroke management and neurological disorders.')">View Profile</button>
-                </div>
-                <div class="feature-card">
-                    <i class="ph ph-user-circle feature-icon"></i>
-                    <h3>Dr. Sophia Martinez</h3>
-                    <p>Dermatologist</p>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">10+ years experience • MBBS, MD</p>
-                    <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Sophia Martinez', 'Dermatologist', '10+ years experience', 'MBBS, MD in Dermatology from Yale School of Medicine. Specialist in medical and cosmetic dermatology.')">View Profile</button>
-                </div>
-                <div class="feature-card">
-                    <i class="ph ph-user-circle feature-icon"></i>
-                    <h3>Dr. David Chen</h3>
-                    <p>Orthopedic Surgeon</p>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">16+ years experience • MBBS, MS, MCh</p>
-                    <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. David Chen', 'Orthopedic Surgeon', '16+ years experience', 'MBBS, MS, MCh from Cleveland Clinic. Expert in joint replacement and sports medicine.')">View Profile</button>
-                </div>
-                <div class="feature-card">
-                    <i class="ph ph-user-circle feature-icon"></i>
-                    <h3>Dr. Elena Rodriguez</h3>
-                    <p>Psychiatrist</p>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">14+ years experience • MBBS, MD (Psych)</p>
-                    <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Elena Rodriguez', 'Psychiatrist', '14+ years experience', 'MBBS, MD from Columbia University. Specialist in clinical psychiatry and mental health wellness.')">View Profile</button>
-                </div>
-                <div class="feature-card">
-                    <i class="ph ph-user-circle feature-icon"></i>
-                    <h3>Dr. Robert Taylor</h3>
-                    <p>Ophthalmologist</p>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">22+ years experience • MBBS, MS</p>
-                    <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Robert Taylor', 'Ophthalmologist', '22+ years experience', 'MBBS, MS from University of Pennsylvania. Expert in cataract surgery and retinal health.')">View Profile</button>
-                </div>
-                <div class="feature-card">
-                    <i class="ph ph-user-circle feature-icon"></i>
-                    <h3>Dr. Lisa Wong</h3>
-                    <p>ENT Specialist</p>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">11+ years experience • MBBS, DLO</p>
-                    <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Lisa Wong', 'ENT Specialist', '11+ years experience', 'MBBS, DLO from UCLA Health. Specializes in otolaryngology and head/neck surgery.')">View Profile</button>
-                </div>
-                <div class="feature-card">
-                    <i class="ph ph-user-circle feature-icon"></i>
-                    <h3>Dr. Jennifer Adams</h3>
-                    <p>Gynecologist</p>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">15+ years experience • MBBS, MD</p>
-                    <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Jennifer Adams', 'Gynecologist', '15+ years experience', 'MBBS, MD from Northwestern Memorial Hospital. expert in womens reproductive health and maternity care.')">View Profile</button>
-                </div>
-                <div class="feature-card">
-                    <i class="ph ph-user-circle feature-icon"></i>
-                    <h3>Dr. Kevin Park</h3>
-                    <p>Gastroenterologist</p>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">13+ years experience • MBBS, MD, DM</p>
-                    <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Kevin Park', 'Gastroenterologist', '13+ years experience', 'MBBS, MD, DM from Massachusetts General Hospital. Specializes in digestive disorders and endoscopy.')">View Profile</button>
-                </div>
-                <div class="feature-card">
-                    <i class="ph ph-user-circle feature-icon"></i>
-                    <h3>Dr. Amanda White</h3>
-                    <p>Endocrinologist</p>
-                    <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">17+ years experience • MBBS, MD</p>
-                    <button class="btn btn-outline" style="margin-top: 1rem;" onclick="viewDoctorProfile('Dr. Amanda White', 'Endocrinologist', '17+ years experience', 'MBBS, MD from Duke University. Expert in diabetes management and hormonal disorders.')">View Profile</button>
-                </div>
             </div>
         </section>
 
@@ -206,9 +135,7 @@ const PAGES = {
                 <h3><i class="ph ph-user-circle"></i> Patient Portal</h3>
                 <ul>
                     <li><a href="#" class="active"><i class="ph ph-squares-four"></i> Dashboard</a></li>
-                    <li><a href="symptom_checker.php"><i class="ph ph-clipboard-text"></i> Symptom Checker</a></li>
-                    <li><a href="appointment_booking.php"><i class="ph ph-calendar-check"></i> Book Appointment</a></li>
-                    <li><a href="payment_gateway.php"><i class="ph ph-credit-card"></i> Payments</a></li>
+                    <li><a href="#" onclick="showPage('symptomChecker')"><i class="ph ph-clipboard-text"></i> Symptom Checker</a></li>
                     <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
                     <li><a href="#" onclick="logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
                 </ul>
@@ -216,10 +143,7 @@ const PAGES = {
             <main class="main-area">
                 <div class="dash-header">
                     <h2>Hello </h2>
-                    <div style="display: flex; gap: 0.75rem;">
-                        <a href="symptom_checker.php" class="btn btn-primary" style="text-decoration: none; display: inline-flex; align-items: center;">🩺 Symptom Checker</a>
-                        <a href="appointment_booking.php" class="btn btn-outline" style="text-decoration: none; display: inline-flex; align-items: center;">📅 Book Appointment</a>
-                    </div>
+                    <button class="btn btn-primary" onclick="showPage('symptomChecker')">+ New Consultation</button>
                 </div>
                 
                 <div class="stat-row">
@@ -254,7 +178,6 @@ const PAGES = {
                 <ul>
                     <li><a href="#" onclick="showPage('patientDashboard')"><i class="ph ph-squares-four"></i> Dashboard</a></li>
                     <li><a href="#" class="active"><i class="ph ph-clipboard-text"></i> Start Consultation</a></li>
-                    <li><a href="appointment_booking.php"><i class="ph ph-calendar-check"></i> Book Appointment</a></li>
                     <li><a href="#" onclick="showPage('consultationHistory')"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
                     <li><a href="#" onclick="logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
                 </ul>
@@ -323,39 +246,6 @@ const PAGES = {
                                     <input type="radio" name="severity" value="high" required>
                                     <span class="severity-label severity-high">🔴 High</span>
                                 </label>
-                            </div>
-                        </div>
-
-                        <!-- Consultation Mode -->
-                        <div class="form-group" style="margin-top: 1.5rem;">
-                            <label>Preferred Consultation Mode <span style="color: red;">*</span></label>
-                            <div class="mode-options" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 0.5rem;">
-                                <label class="mode-option selected" onclick="selectConsultationMode(this)" style="border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                    <input type="radio" name="consultation_mode" value="text" checked required style="display:none;">
-                                    <i class="ph ph-chat-circle" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: #64748b;"></i>
-                                    <span style="font-weight: 500; color: #475569;">Text Chat</span>
-                                </label>
-                                <label class="mode-option" onclick="selectConsultationMode(this)" style="border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                    <input type="radio" name="consultation_mode" value="audio" required style="display:none;">
-                                    <i class="ph ph-microphone" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: #64748b;"></i>
-                                    <span style="font-weight: 500; color: #475569;">Audio Call</span>
-                                </label>
-                                <label class="mode-option" onclick="selectConsultationMode(this)" style="border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                    <input type="radio" name="consultation_mode" value="video" required style="display:none;">
-                                    <i class="ph ph-video-camera" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: #64748b;"></i>
-                                    <span style="font-weight: 500; color: #475569;">Video Call</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- File Upload -->
-                        <div class="form-group" style="margin-top: 1.5rem;">
-                            <label>Attach Medical Reports (Optional)</label>
-                            <div style="border: 2px dashed #ddd; border-radius: 8px; padding: 2rem; text-align: center; cursor: pointer; position: relative;" onclick="document.getElementById('reportInput').click()">
-                                <i class="ph ph-file-arrow-up" style="font-size: 2rem; color: #64748b;"></i>
-                                <p style="margin-top: 1rem; font-size: 0.9rem; color: #64748b;">Drop files here or click to upload (PDF, JPG, PNG)</p>
-                                <input type="file" id="reportInput" style="display:none;" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(this)">
-                                <div id="fileName" style="margin-top: 0.5rem; font-weight: 600; color: var(--primary);"></div>
                             </div>
                         </div>
 
@@ -428,7 +318,6 @@ const PAGES = {
                 <ul>
                     <li><a href="#" onclick="showPage('patientDashboard')"><i class="ph ph-squares-four"></i> Dashboard</a></li>
                     <li><a href="#" onclick="showPage('symptomChecker')"><i class="ph ph-clipboard-text"></i> Start Consultation</a></li>
-                    <li><a href="appointment_booking.php"><i class="ph ph-calendar-check"></i> Book Appointment</a></li>
                     <li><a href="#" class="active"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
                     <li><a href="#" onclick="logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
                 </ul>
@@ -782,13 +671,10 @@ async function submitConsultation(event) {
         symptoms: document.getElementById('symptomsInput').value.trim(),
         duration: document.getElementById('durationInput').value,
         severity: document.querySelector('input[name="severity"]:checked')?.value,
-        consultation_mode: document.querySelector('input[name="consultation_mode"]:checked')?.value || 'text',
         age: document.getElementById('ageInput').value || null,
         gender: document.getElementById('genderInput').value || null,
         existing_conditions: document.getElementById('conditionsInput').value.trim() || null,
-        input_method: inputMethod,
-        attachment_base64: window.tempReportBase64 || null,
-        attachment_name: window.tempReportName || null
+        input_method: inputMethod
     };
 
     // Validate required fields
@@ -815,13 +701,11 @@ async function submitConsultation(event) {
         if (result.success) {
             showFormMessage('Consultation submitted successfully! Redirecting...', 'success');
             form.reset();
-            window.tempReportBase64 = null;
-            window.tempReportName = null;
             inputMethod = 'text';
 
-            // Redirect to consultation room after 2 seconds
+            // Redirect to consultation history after 2 seconds
             setTimeout(() => {
-                window.location.href = 'consultation_room.php?id=' + result.consultation_id;
+                showPage('consultationHistory');
             }, 2000);
         } else {
             showFormMessage(result.error || 'Failed to submit consultation. Please try again.', 'error');
@@ -830,51 +714,10 @@ async function submitConsultation(event) {
         }
     } catch (error) {
         console.error('Error submitting consultation:', error);
-
-        // Try to get raw text if it was a parsing error
-        let errorMsg = 'Network error. Please check your connection and try again.';
-        if (error instanceof SyntaxError) {
-            console.log('JSON Parsing failed. Response might be corrupted.');
-        }
-
-        showFormMessage(errorMsg, 'error');
+        showFormMessage('Network error. Please check your connection and try again.', 'error');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit Consultation';
     }
-}
-
-function selectConsultationMode(element) {
-    // Remove selected class from all siblings
-    const options = document.querySelectorAll('.mode-option');
-    options.forEach(opt => opt.classList.remove('selected'));
-
-    // Add selected class to clicked element
-    element.classList.add('selected');
-
-    // Ensure the radio button inside is checked
-    const radio = element.querySelector('input[type="radio"]');
-    if (radio) radio.checked = true;
-}
-
-function handleFileSelect(input) {
-    const file = input.files[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-        alert('File size exceeds 5MB limit.');
-        input.value = '';
-        return;
-    }
-
-    const fileNameDisplay = document.getElementById('fileName');
-    if (fileNameDisplay) fileNameDisplay.textContent = 'Selected: ' + file.name;
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        window.tempReportBase64 = e.target.result.split(',')[1];
-        window.tempReportName = file.name;
-    };
-    reader.readAsDataURL(file);
 }
 
 function showFormMessage(message, type) {
@@ -927,11 +770,6 @@ async function loadConsultationHistory() {
                                     <span><strong>Severity:</strong> <span class="severity-${consultation.severity}">${consultation.severity.toUpperCase()}</span></span>
                                     ${consultation.input_method === 'voice' ? '<span style="color: var(--primary);"><i class="ph ph-microphone"></i> Voice Input</span>' : ''}
                                 </div>
-                                ${(consultation.status === 'assigned' || consultation.status === 'in_progress') ? `
-                                    <div style="margin-top: 1rem;">
-                                        <a href="consultation_room.php?id=${consultation.id}" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none; display: inline-block;">Join Consultation</a>
-                                    </div>
-                                ` : ''}
                             </div>
                         </div>
                     </div>
@@ -1042,7 +880,7 @@ function navigateToDashboard() {
     const user = JSON.parse(userJson);
 
     if (user.role === 'patient') showPage('patientDashboard');
-    else if (user.role === 'doctor') window.location.href = 'doctor_dashboard.php';
+    else if (user.role === 'doctor') showPage('doctorDashboard');
     else if (user.role === 'pharmacy') showPage('pharmacyDashboard');
     else if (user.role === 'clinic' || user.role === 'hospital') showPage('clinicDashboard');
     else if (user.role === 'admin') window.location.href = 'admin_dashboard.php';
@@ -1104,69 +942,58 @@ function viewDoctorProfile(name, specialty, experience, bio) {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(15, 118, 110, 0.2);
-        backdrop-filter: blur(8px);
+        background: rgba(0, 0, 0, 0.5);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 10000;
-        animation: fadeIn 0.4s ease forwards;
+        animation: fadeIn 0.3s ease;
     `;
 
     modal.innerHTML = `
         <div style="
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px);
+            background: white;
             padding: 3rem;
-            border-radius: 32px;
+            border-radius: 20px;
             max-width: 600px;
             width: 90%;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
             position: relative;
         ">
             <button onclick="closeDoctorModal()" style="
                 position: absolute;
                 top: 1.5rem;
                 right: 1.5rem;
-                background: rgba(0,0,0,0.05);
+                background: none;
                 border: none;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.2rem;
+                font-size: 1.5rem;
                 cursor: pointer;
                 color: #64748b;
-                transition: all 0.2s;
-            " onmouseover="this.style.background='rgba(244, 63, 94, 0.1)'; this.style.color='#f43f5e'" onmouseout="this.style.background='rgba(0,0,0,0.05)'; this.style.color='#64748b'">
+                transition: color 0.2s;
+            " onmouseover="this.style.color='#0d9488'" onmouseout="this.style.color='#64748b'">
                 <i class="ph ph-x"></i>
             </button>
             
             <div style="text-align: center; margin-bottom: 2rem;">
-                <div style="width: 100px; height: 100px; background: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.1);">
-                    <i class="ph ph-user-circle" style="font-size: 5rem; color: var(--primary);"></i>
-                </div>
+                <i class="ph ph-user-circle" style="font-size: 5rem; color: var(--primary);"></i>
             </div>
             
-            <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2rem;">${name}</h2>
-            <p style="text-align: center; color: var(--primary); font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">${specialty}</p>
-            <p style="text-align: center; color: #64748b; font-size: 0.95rem; margin-bottom: 2rem; font-weight: 500;">${experience}</p>
+            <h2 style="text-align: center; margin-bottom: 0.5rem;">${name}</h2>
+            <p style="text-align: center; color: var(--primary); font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem;">${specialty}</p>
+            <p style="text-align: center; color: #64748b; font-size: 0.9rem; margin-bottom: 2rem;">${experience}</p>
             
-            <div style="background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); padding: 2rem; border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid rgba(13, 148, 136, 0.1);">
-                <h4 style="margin-bottom: 0.75rem; color: var(--primary-dark); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Professional Background</h4>
-                <p style="color: #475569; line-height: 1.7; font-size: 1rem;">${bio}</p>
+            <div style="background: #f0fdfa; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 0.75rem; color: var(--primary-dark);">About</h4>
+                <p style="color: #64748b; line-height: 1.6;">${bio}</p>
             </div>
             
-            <div style="display: flex; gap: 1.2rem;">
+            <div style="display: flex; gap: 1rem;">
                 ${state.currentUser
-            ? `<button onclick="showPage('symptomChecker'); closeDoctorModal();" class="btn btn-primary" style="flex: 2;">Instant Consultation</button>`
-            : `<a href="login.php" class="btn btn-primary" style="flex: 2; text-decoration: none;">Login to Book</a>`
+            ? `<button onclick="showPage('symptomChecker'); closeDoctorModal();" class="btn btn-primary" style="flex: 1;">Book Consultation</button>`
+            : `<a href="login.php" class="btn btn-primary" style="flex: 1; text-decoration: none;">Login to Book</a>`
         }
-                <button onclick="closeDoctorModal()" class="btn btn-outline" style="flex: 1; border-color: #e2e8f0; color: #64748b;">Dismiss</button>
+                <button onclick="closeDoctorModal()" class="btn btn-outline" style="flex: 1;">Close</button>
             </div>
         </div>
     `;

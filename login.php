@@ -140,6 +140,7 @@
                     window.location.href = 'signup.php?step=3';
                 } else if (data.status === 'pending') {
                     alert(data.message);
+                    window.location.href = 'approval_status.php';
                 } else {
                     alert("Login Failed: " + (data.message || "Unknown error"));
                 }
