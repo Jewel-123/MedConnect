@@ -11,6 +11,7 @@ ini_set('display_errors', 0);
 
 require_once 'db.php';
 require_once 'notification_service.php';
+require_once 'razorpay_config.php';
 
 // Authentication check
 if (!isset($_SESSION['user_id'])) {
@@ -46,20 +47,21 @@ try {
                 throw new Exception('Invalid payment method');
             }
             
-            // Generate transaction number
+            // Generate transaction number and receipt
             $transactionNumber = 'TXN' . time() . rand(1000, 9999);
+            $receiptId = 'RCPT' . time() . rand(100, 999);
             
             // Determine related type
             $relatedType = null;
             if ($transactionType === 'consultation_fee') {
-                $relatedType = 'consultation';
+                $relatedType = 'appointment';
                 
-                // Verify consultation exists and belongs to user
-                $stmt = $conn->prepare("SELECT id FROM consultations WHERE id = ? AND patient_id = ?");
+                // Verify appointment exists and belongs to user
+                $stmt = $conn->prepare("SELECT id FROM appointments WHERE id = ? AND patient_id = ?");
                 $stmt->bind_param("ii", $relatedId, $userId);
                 $stmt->execute();
                 if ($stmt->get_result()->num_rows === 0) {
-                    throw new Exception('Invalid consultation');
+                    throw new Exception('Invalid appointment');
                 }
                 
             } elseif ($transactionType === 'medication_payment') {
@@ -74,19 +76,96 @@ try {
                 }
             }
             
-            // Create payment transaction
+            // Convert amount to paise for Razorpay
+            $amountInPaise = convertToPaise($amount);
+            
+            // Check if test mode is enabled
+            if (defined('PAYMENT_TEST_MODE') && PAYMENT_TEST_MODE === true) {
+                // Simulate Razorpay order for testing
+                $razorpayOrder = [
+                    'id' => 'order_test_' . time() . rand(1000, 9999),
+                    'amount' => $amountInPaise,
+                    'currency' => RAZORPAY_CURRENCY,
+                    'status' => 'created'
+                ];
+                
+                error_log("TEST MODE: Simulated Razorpay order created: " . $razorpayOrder['id']);
+                error_log("TEST MODE: Order amount: " . $amountInPaise . " paise (₹" . $amount . ")");
+            } else {
+                // Real Razorpay API call
+                // Prepare Razorpay order data
+                $orderData = [
+                    'amount' => $amountInPaise,
+                    'currency' => RAZORPAY_CURRENCY,
+                    'receipt' => $receiptId,
+                    'notes' => [
+                        'transaction_type' => $transactionType,
+                        'related_id' => $relatedId,
+                        'user_id' => $userId,
+                        'transaction_number' => $transactionNumber
+                    ]
+                ];
+                
+                // Create order with Razorpay API
+                $ch = curl_init(RAZORPAY_API_URL . '/orders');
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($orderData));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Authorization: ' . getRazorpayAuthHeader()
+                ]);
+                
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $curlError = curl_error($ch);
+                
+                // Debug logging
+                if ($httpCode !== 200) {
+                    error_log("Razorpay API Error - HTTP Code: $httpCode");
+                    error_log("Razorpay Response: $response");
+                    error_log("Using Key ID: " . RAZORPAY_KEY_ID);
+                    if ($curlError) {
+                        error_log("cURL Error: $curlError");
+                    }
+                }
+                
+                curl_close($ch);
+                
+                // Check for cURL errors
+                if ($curlError) {
+                    throw new Exception('Network error: ' . $curlError);
+                }
+                
+                if ($httpCode !== 200) {
+                    $error = json_decode($response, true);
+                    $errorMsg = 'Razorpay API error: ';
+                    
+                    if (json_last_error() === JSON_ERROR_NONE && isset($error['error']['description'])) {
+                        $errorMsg .= $error['error']['description'];
+                    } else {
+                        $errorMsg .= 'Authentication failed. Please verify your Razorpay credentials in razorpay_config.php';
+                    }
+                    
+                    throw new Exception($errorMsg);
+                }
+                
+                $razorpayOrder = json_decode($response, true);
+            }
+            
+            // Create payment transaction with Razorpay order ID
             $stmt = $conn->prepare("
                 INSERT INTO payment_transactions (
                     transaction_number, user_id, transaction_type, related_id,
                     related_type, amount, currency, payment_method,
-                    payment_gateway, status
-                ) VALUES (?, ?, ?, ?, ?, ?, 'INR', ?, 'simulator', 'pending')
+                    payment_gateway, razorpay_order_id, status
+                ) VALUES (?, ?, ?, ?, ?, ?, 'INR', ?, 'razorpay', ?, 'pending')
             ");
             
             $stmt->bind_param(
-                "sisisds",
+                "sisisdss",
                 $transactionNumber, $userId, $transactionType, $relatedId,
-                $relatedType, $amount, $paymentMethod
+                $relatedType, $amount, $paymentMethod, $razorpayOrder['id']
             );
             
             if (!$stmt->execute()) {
@@ -95,14 +174,17 @@ try {
             
             $transactionId = $stmt->insert_id;
             
-            // In production, redirect to actual payment gateway
-            // For now, simulate payment gateway response
+            // Return order details for Razorpay checkout
             echo json_encode([
                 'success' => true,
                 'transaction_id' => $transactionId,
                 'transaction_number' => $transactionNumber,
-                'payment_url' => "simulate_payment.php?txn=$transactionId",
-                'message' => 'Payment initiated. Redirecting to payment gateway...'
+                'razorpay_order_id' => $razorpayOrder['id'],
+                'amount' => $amount,
+                'amount_paise' => $amountInPaise,
+                'currency' => RAZORPAY_CURRENCY,
+                'key_id' => RAZORPAY_KEY_ID,
+                'message' => 'Payment initiated successfully'
             ]);
             break;
         
@@ -111,8 +193,13 @@ try {
         // ==================================================
         case 'process_payment':
             $transactionId = $_POST['transaction_id'] ?? 0;
-            $gatewayTxnId = $_POST['gateway_txn_id'] ?? 'SIM' . time();
+            $razorpayPaymentId = $_POST['razorpay_payment_id'] ?? '';
+            $razorpayOrderId = $_POST['razorpay_order_id'] ?? '';
+            $razorpaySignature = $_POST['razorpay_signature'] ?? '';
             $status = $_POST['status'] ?? 'success'; // 'success' or 'failed'
+            
+            // Use Razorpay payment ID as gateway transaction ID
+            $gatewayTxnId = $razorpayPaymentId ?: ('SIM' . time());
             
             // Get transaction details
             $stmt = $conn->prepare("
@@ -127,28 +214,108 @@ try {
             }
             
             if ($status === 'success') {
-                // Update transaction status
+                // Check if test mode is enabled
+                $isTestMode = defined('PAYMENT_TEST_MODE') && PAYMENT_TEST_MODE === true;
+                $isTestOrder = strpos($razorpayOrderId, 'order_test_') === 0;
+                
+                error_log("PAYMENT PROCESSING: Test Mode = " . ($isTestMode ? 'YES' : 'NO'));
+                error_log("PAYMENT PROCESSING: Test Order = " . ($isTestOrder ? 'YES' : 'NO'));
+                error_log("PAYMENT PROCESSING: Order ID = " . $razorpayOrderId);
+                error_log("PAYMENT PROCESSING: Transaction ID = " . $transactionId);
+                
+                // Verify Razorpay signature (skip for test mode)
+                if (!$isTestMode && !$isTestOrder) {
+                    if ($razorpayPaymentId && $razorpayOrderId && $razorpaySignature) {
+                        if (!verifyRazorpaySignature($razorpayOrderId, $razorpayPaymentId, $razorpaySignature)) {
+                            throw new Exception('Invalid payment signature - Payment verification failed');
+                        }
+                    } else {
+                        throw new Exception('Missing payment verification parameters');
+                    }
+                } else {
+                    error_log("TEST MODE: Skipping signature verification for test payment");
+                }
+                
+                // Update transaction status with Razorpay details
+                error_log("PAYMENT PROCESSING: Updating transaction status to completed");
                 $stmt = $conn->prepare("
                     UPDATE payment_transactions
                     SET status = 'completed',
                         gateway_transaction_id = ?,
+                        razorpay_payment_id = ?,
+                        razorpay_signature = ?,
                         completed_at = NOW()
                     WHERE id = ?
                 ");
                 
-                $stmt->bind_param("si", $gatewayTxnId, $transactionId);
-                $stmt->execute();
+                $stmt->bind_param("sssi", $razorpayPaymentId, $razorpayPaymentId, $razorpaySignature, $transactionId);
+                
+                if (!$stmt->execute()) {
+                    error_log("PAYMENT PROCESSING ERROR: Failed to update transaction - " . $stmt->error);
+                    throw new Exception('Failed to update transaction status');
+                }
+                
+                $affectedRows = $stmt->affected_rows;
+                error_log("PAYMENT PROCESSING: Transaction update affected $affectedRows rows");
+                
+                if ($affectedRows === 0) {
+                    error_log("PAYMENT PROCESSING WARNING: No rows updated for transaction ID $transactionId");
+                }
                 
                 // Process revenue split
-                processRevenueplit($conn, $transaction);
+                error_log("PAYMENT PROCESSING: Processing revenue split");
+                processRevenueSplit($conn, $transaction);
                 
                 // Update related records
                 if ($transaction['transaction_type'] === 'consultation_fee') {
-                    $conn->query("
-                        UPDATE consultations
-                        SET payment_status = 'paid'
-                        WHERE id = {$transaction['related_id']}
+                    error_log("PAYMENT PROCESSING: Updating appointment payment status");
+                    // Update appointment payment status and link transaction
+                    $stmt = $conn->prepare("
+                        UPDATE appointments
+                        SET payment_status = 'paid',
+                            payment_transaction_id = ?,
+                            status = CASE 
+                                WHEN status = 'booked' THEN 'pending'
+                                ELSE status
+                            END
+                        WHERE id = ?
                     ");
+                    $stmt->bind_param("ii", $transactionId, $transaction['related_id']);
+                    
+                    if (!$stmt->execute()) {
+                        error_log("PAYMENT PROCESSING ERROR: Failed to update appointment - " . $stmt->error);
+                        throw new Exception('Failed to update appointment status');
+                    }
+                    
+                    $appointmentAffected = $stmt->affected_rows;
+                    error_log("PAYMENT PROCESSING: Appointment update affected $appointmentAffected rows for appointment ID " . $transaction['related_id']);
+                    
+                    // Get appointment details for notification
+                    $stmt = $conn->prepare("
+                        SELECT a.*, u.full_name as patient_name
+                        FROM appointments a
+                        JOIN users u ON a.patient_id = u.id
+                        WHERE a.id = ?
+                    ");
+                    $stmt->bind_param("i", $transaction['related_id']);
+                    $stmt->execute();
+                    $appointment = $stmt->get_result()->fetch_assoc();
+                    
+                    if ($appointment) {
+                        // NOW send notification to doctor (after payment is completed)
+                        $notifService = getNotificationService();
+                        $notifService->send(
+                            $appointment['doctor_id'],
+                            'all',
+                            'New Paid Appointment',
+                            "New appointment from {$appointment['patient_name']} on {$appointment['scheduled_date']} at {$appointment['scheduled_time']}. Payment confirmed.",
+                            [
+                                'role' => 'doctor',
+                                'notification_type' => 'new_consultation',
+                                'related_id' => $appointment['id']
+                            ]
+                        );
+                    }
                     
                 } elseif ($transaction['transaction_type'] === 'medication_payment') {
                     $conn->query("

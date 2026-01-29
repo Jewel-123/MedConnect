@@ -280,11 +280,12 @@ $doctors = $conn->query("
                 const data = await response.json();
                 
                 if (data.success) {
-                    showAlert(`Appointment booked successfully with Dr. ${selectedDoctorName}!`, 'success');
-                    // Redirect to patient dashboard after 1.5 seconds
+                    showAlert(`Appointment booked with Dr. ${selectedDoctorName}! Redirecting to payment...`, 'success');
+                    
+                    // Redirect to payment gateway after 1 second
                     setTimeout(() => {
-                        window.location.href = 'index.php?appointment_success=true&doctor=' + encodeURIComponent(selectedDoctorName);
-                    }, 1500);
+                        window.location.href = `payment_gateway.php?type=consultation&related_id=${data.appointment_id}&amount=${data.consultation_fee}`;
+                    }, 1000);
                 } else {
                     showAlert(data.error || 'Failed to book appointment', 'error');
                 }

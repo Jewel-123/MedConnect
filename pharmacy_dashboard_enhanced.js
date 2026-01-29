@@ -44,16 +44,22 @@ function showToast(message, type = 'success') {
 // Load dashboard stats
 async function loadDashboard() {
     try {
-        const response = await fetch('pharmacy_api_enhanced.php?action=get_dashboard_stats');
+        // Use the new pharmacy_dashboard_api for real-time data
+        const response = await fetch('pharmacy_dashboard_api.php?action=get_dashboard_summary');
         const data = await response.json();
 
         if (data.success) {
-            const stats = data.stats;
+            const stats = data.summary;
 
             document.getElementById('pendingCount').textContent = stats.pending_prescriptions;
             document.getElementById('activeCount').textContent = stats.active_orders;
             document.getElementById('monthEarnings').textContent = '₹' + stats.month_earnings.toFixed(2);
-            document.getElementById('fulfillmentRate').textContent = stats.fulfillment_rate + '%';
+
+            // Calculate fulfillment rate
+            const fulfillmentRate = stats.total_orders > 0
+                ? Math.round((stats.total_orders - stats.active_orders) / stats.total_orders * 100)
+                : 0;
+            document.getElementById('fulfillmentRate').textContent = fulfillmentRate + '%';
 
             // Update notification badge
             if (stats.pending_prescriptions > 0) {
@@ -264,7 +270,8 @@ async function loadHistory() {
 // Load analytics
 async function loadAnalytics() {
     try {
-        const response = await fetch('pharmacy_api_enhanced.php?action=get_earnings&period=all');
+        // Get total earnings from new API
+        const response = await fetch('pharmacy_dashboard_api.php?action=get_total_earnings');
         const data = await response.json();
 
         const container = document.getElementById('analyticsData');
@@ -278,7 +285,7 @@ async function loadAnalytics() {
                         <div class="stat-icon success">
                             <i class="fas fa-rupee-sign"></i>
                         </div>
-                        <div class="stat-value">₹${(e.total_gross || 0).toFixed(2)}</div>
+                        <div class="stat-value">₹${(e.gross || 0).toFixed(2)}</div>
                         <div class="stat-label">Gross Earnings</div>
                     </div>
                     
@@ -286,15 +293,15 @@ async function loadAnalytics() {
                         <div class="stat-icon danger">
                             <i class="fas fa-percentage"></i>
                         </div>
-                        <div class="stat-value">-₹${(e.total_commission || 0).toFixed(2)}</div>
-                        <div class="stat-label">Platform Commission</div>
+                        <div class="stat-value">-₹${(e.commission || 0).toFixed(2)}</div>
+                        <div class="stat-label">Platform Commission (${e.avg_commission_percent || 0}%)</div>
                     </div>
                     
                     <div class="stat-card info">
                         <div class="stat-icon info">
                             <i class="fas fa-wallet"></i>
                         </div>
-                        <div class="stat-value">₹${(e.total_net || 0).toFixed(2)}</div>
+                        <div class="stat-value">₹${(e.net || 0).toFixed(2)}</div>
                         <div class="stat-label">Net Earnings</div>
                     </div>
                     
@@ -306,11 +313,63 @@ async function loadAnalytics() {
                         <div class="stat-label">Total Orders</div>
                     </div>
                 </div>
+                
+                <div class="card" style="margin-top: 2rem;">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-history"></i>
+                            Payment History
+                        </h2>
+                    </div>
+                    <div id="paymentHistoryList"></div>
+                </div>
             `;
+
+            // Load payment history
+            loadPaymentHistory();
         }
     } catch (error) {
         console.error('Error loading analytics:', error);
         showToast('Error loading analytics', 'error');
+    }
+}
+
+// Load payment history
+async function loadPaymentHistory() {
+    try {
+        const response = await fetch('pharmacy_dashboard_api.php?action=get_payment_history&limit=20');
+        const data = await response.json();
+
+        const container = document.getElementById('paymentHistoryList');
+
+        if (!data.success || !data.payments || data.payments.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-receipt"></i><p>No payment history</p></div>';
+            return;
+        }
+
+        container.innerHTML = data.payments.map(payment => `
+            <div class="prescription-card">
+                <div class="prescription-header">
+                    <div class="patient-info">
+                        <h3>Order #${payment.order_number}</h3>
+                        <p>${payment.patient_name} • ${payment.patient_email}</p>
+                        <p style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">
+                            <i class="fas fa-clock"></i> ${formatDate(payment.created_at)}
+                        </p>
+                    </div>
+                    <div>
+                        <span class="badge badge-${payment.status === 'completed' ? 'ready' : 'pending'}">${payment.status}</span>
+                        <p style="margin-top: 0.5rem; font-weight: 600; color: var(--success);">₹${payment.amount.toFixed(2)}</p>
+                    </div>
+                </div>
+                <div style="color: #64748b; font-size: 0.875rem; margin-top: 0.75rem;">
+                    <i class="fas fa-credit-card"></i> ${payment.payment_method.toUpperCase()}
+                    ${payment.razorpay_payment_id ? ` • ID: ${payment.razorpay_payment_id}` : ''}
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading payment history:', error);
     }
 }
 

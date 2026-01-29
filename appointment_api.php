@@ -41,90 +41,33 @@ try {
                 throw new Exception('Doctor, date, and time are required');
             }
             
-            // Validate doctor exists and is approved
-            $stmt = $conn->prepare("SELECT id FROM users WHERE id = ? AND role = 'doctor' AND status = 'approved'");
+            // Validate doctor exists and is approved, and get consultation fee
+            $stmt = $conn->prepare("
+                SELECT u.id, d.consultation_fee 
+                FROM users u
+                JOIN doctor_profiles d ON u.id = d.user_id
+                WHERE u.id = ? AND u.role = 'doctor' AND u.status = 'approved'
+            ");
             $stmt->bind_param("i", $doctorId);
             $stmt->execute();
-            if ($stmt->get_result()->num_rows === 0) {
+            $doctor = $stmt->get_result()->fetch_assoc();
+            
+            if (!$doctor) {
                 throw new Exception('Invalid doctor');
             }
+            
+            $consultationFee = floatval($doctor['consultation_fee']);
             $stmt->close();
             
-            // Skip availability check for now - allow all bookings
-            // Doctor will confirm later
+            // Create appointment with status 'booked' and payment_status 'pending'
+            $stmt = $conn->prepare("
+                INSERT INTO appointments (
+                    patient_id, doctor_id, scheduled_date, scheduled_time,
+                    status, payment_status, consultation_fee, notes
+                ) VALUES (?, ?, ?, ?, 'booked', 'pending', ?, ?)
+            ");
             
-            // Try to insert with different column combinations
-            // First, check what columns exist
-            $checkCols = $conn->query("SHOW COLUMNS FROM appointments");
-            $existingCols = [];
-            while ($col = $checkCols->fetch_assoc()) {
-                $existingCols[] = $col['Field'];
-            }
-            
-            // Build INSERT query based on existing columns
-            $insertCols = ['patient_id', 'doctor_id'];
-            $insertVals = ['?', '?'];
-            $bindTypes = 'ii';
-            $bindVars = [$userId, $doctorId];
-            
-            // Add date column (try different names)
-            if (in_array('scheduled_date', $existingCols)) {
-                $insertCols[] = 'scheduled_date';
-                $insertVals[] = '?';
-                $bindTypes .= 's';
-                $bindVars[] = $scheduledDate;
-            } elseif (in_array('appointment_date', $existingCols)) {
-                $insertCols[] = 'appointment_date';
-                $insertVals[] = '?';
-                $bindTypes .= 's';
-                $bindVars[] = $scheduledDate;
-            } elseif (in_array('date', $existingCols)) {
-                $insertCols[] = 'date';
-                $insertVals[] = '?';
-                $bindTypes .= 's';
-                $bindVars[] = $scheduledDate;
-            }
-            
-            // Add time column (try different names)
-            if (in_array('scheduled_time', $existingCols)) {
-                $insertCols[] = 'scheduled_time';
-                $insertVals[] = '?';
-                $bindTypes .= 's';
-                $bindVars[] = $scheduledTime;
-            } elseif (in_array('appointment_time', $existingCols)) {
-                $insertCols[] = 'appointment_time';
-                $insertVals[] = '?';
-                $bindTypes .= 's';
-                $bindVars[] = $scheduledTime;
-            } elseif (in_array('time', $existingCols)) {
-                $insertCols[] = 'time';
-                $insertVals[] = '?';
-                $bindTypes .= 's';
-                $bindVars[] = $scheduledTime;
-            }
-            
-            // Add status
-            if (in_array('status', $existingCols)) {
-                $insertCols[] = 'status';
-                $insertVals[] = '?';
-                $bindTypes .= 's';
-                $bindVars[] = 'pending';
-            }
-            
-            // Add notes
-            if (in_array('notes', $existingCols) && !empty($notes)) {
-                $insertCols[] = 'notes';
-                $insertVals[] = '?';
-                $bindTypes .= 's';
-                $bindVars[] = $notes;
-            }
-            
-            // Build and execute query
-            $sql = "INSERT INTO appointments (" . implode(', ', $insertCols) . ") VALUES (" . implode(', ', $insertVals) . ")";
-            $stmt = $conn->prepare($sql);
-            
-            // Bind parameters dynamically
-            $stmt->bind_param($bindTypes, ...$bindVars);
+            $stmt->bind_param("iissds", $userId, $doctorId, $scheduledDate, $scheduledTime, $consultationFee, $notes);
             
             if (!$stmt->execute()) {
                 throw new Exception('Failed to create appointment: ' . $stmt->error);
@@ -133,24 +76,14 @@ try {
             $appointmentId = $stmt->insert_id;
             $stmt->close();
             
-            // Send notifications
-            try {
-                $notifService = getNotificationService();
-                $notifService->send($doctorId, 'in_app', 'New Appointment Request', 
-                    "New appointment scheduled for $scheduledDate at $scheduledTime", [
-                    'role' => 'doctor',
-                    'notification_type' => 'new_consultation',
-                    'related_id' => $appointmentId
-                ]);
-            } catch (Exception $e) {
-                // Notification failed, but appointment was created
-                error_log("Notification failed: " . $e->getMessage());
-            }
+            // DO NOT send notification to doctor yet - only after payment
+            // Notification will be sent when payment is completed
             
             echo json_encode([
                 'success' => true,
                 'appointment_id' => $appointmentId,
-                'message' => 'Appointment created successfully'
+                'consultation_fee' => $consultationFee,
+                'message' => 'Appointment booked. Please complete payment to confirm.'
             ]);
             break;
         
@@ -172,13 +105,14 @@ try {
                     WHERE a.patient_id = ?
                 ";
             } else {
+                // For doctors: ONLY show appointments where payment_status = 'paid'
                 $query = "
                     SELECT a.*, 
                            u.full_name as patient_name,
                            u.email as patient_email
                     FROM appointments a
                     JOIN users u ON a.patient_id = u.id
-                    WHERE a.doctor_id = ?
+                    WHERE a.doctor_id = ? AND a.payment_status = 'paid'
                 ";
             }
             

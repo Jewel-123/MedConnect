@@ -8,8 +8,10 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
-$transactionId = $_GET['txn'] ??0;
-$paymentType = $_GET['type'] ?? 'consultation'; // or 'medication'
+$transactionId = $_GET['txn'] ?? 0;
+$paymentType = $_GET['type'] ?? 'consultation'; // 'consultation' or 'medication'
+$relatedId = $_GET['related_id'] ?? 0;
+$amount = $_GET['amount'] ?? 0;
 
 // Get transaction details if ID provided
 $transaction = null;
@@ -18,6 +20,17 @@ if ($transactionId) {
     $stmt->bind_param("ii", $transactionId, $userId);
     $stmt->execute();
     $transaction = $stmt->get_result()->fetch_assoc();
+} elseif ($relatedId && $amount) {
+    // Create transaction for consultation fee from URL parameters
+    $transaction = [
+        'id' => 0,
+        'user_id' => $userId,
+        'amount' => floatval($amount),
+        'transaction_type' => $paymentType === 'consultation' ? 'consultation_fee' : 'medication_payment',
+        'related_id' => $relatedId,
+        'payment_method' => 'card',
+        'status' => 'pending'
+    ];
 }
 ?>
 <!DOCTYPE html>
@@ -26,6 +39,7 @@ if ($transactionId) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Gateway - MedConnect</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -77,10 +91,12 @@ if ($transactionId) {
                         <span><?php echo ucfirst($paymentType); ?></span>
                     </div>
                     <?php if ($transaction): ?>
+                    <?php if (isset($transaction['transaction_number'])): ?>
                     <div class="summary-row">
                         <span>Transaction ID:</span>
                         <span><?php echo $transaction['transaction_number']; ?></span>
                     </div>
+                    <?php endif; ?>
                     <div class="summary-row">
                         <span>Amount to Pay:</span>
                         <span style="color: #10b981; font-size: 24px;">₹<?php echo number_format($transaction['amount'], 2); ?></span>
@@ -215,36 +231,170 @@ if ($transactionId) {
         });
         
         async function processPayment() {
+            <?php if ($transaction): ?>
             // Show processing
             document.getElementById('paymentForm').style.display = 'none';
             document.getElementById('processingState').style.display = 'block';
             
-            // Simulate payment processing (2 seconds)
-            setTimeout(async () => {
-                try {
-                    // Process payment via API
-                    const formData = new FormData();
-                    formData.append('transaction_id', transactionId);
-                    formData.append('gateway_txn_id', 'SIM' + Date.now());
-                    formData.append('status', 'success'); // For simulation, always success
+            try {
+                // Step 1: Create Razorpay order
+                const orderResponse = await fetch('payment_api.php?action=initiate_payment', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        transaction_type: '<?php echo $paymentType === 'consultation' ? 'consultation_fee' : 'medication_payment'; ?>',
+                        related_id: <?php echo $transaction['related_id'] ?? 0; ?>,
+                        amount: <?php echo $transaction['amount']; ?>,
+                        payment_method: selectedMethod
+                    })
+                });
+                
+                const orderData = await orderResponse.json();
+                
+                if (!orderData.success) {
+                    throw new Error(orderData.error || 'Failed to create order');
+                }
+                
+                // Check if this is a test mode order
+                const isTestMode = orderData.razorpay_order_id.startsWith('order_test_');
+                
+                console.log('Order Data:', orderData);
+                console.log('Is Test Mode:', isTestMode);
+                
+                if (isTestMode) {
+                    // Simulate payment for test mode
+                    console.log('TEST MODE: Simulating payment success');
                     
-                    const response = await fetch('payment_api.php?action=process_payment', {
-                        method: 'POST',
-                        body: formData
-                    });
+                    const testResponse = {
+                        razorpay_payment_id: 'pay_test_' + Date.now(),
+                        razorpay_order_id: orderData.razorpay_order_id,
+                        razorpay_signature: 'test_sig_' + Date.now()
+                    };
                     
-                    const data = await response.json();
+                    console.log('Test Response:', testResponse);
                     
-                    // Show success
-                    document.getElementById('processingState').style.display = 'none';
-                    document.getElementById('successState').classList.add('active');
-                    
-                } catch (error) {
-                    alert('Payment failed. Please try again.');
+                    // Process payment verification
+                    try {
+                        const formData = new FormData();
+                        formData.append('transaction_id', orderData.transaction_id);
+                        formData.append('razorpay_payment_id', testResponse.razorpay_payment_id);
+                        formData.append('razorpay_order_id', testResponse.razorpay_order_id);
+                        formData.append('razorpay_signature', testResponse.razorpay_signature);
+                        formData.append('status', 'success');
+                        
+                        console.log('Sending verification request...');
+                        
+                        const verifyResponse = await fetch('payment_api.php?action=process_payment', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        console.log('Verify Response Status:', verifyResponse.status);
+                        
+                        const verifyData = await verifyResponse.json();
+                        
+                        console.log('Verify Data:', verifyData);
+                        
+                        if (verifyData.success) {
+                            document.getElementById('processingState').style.display = 'none';
+                            document.getElementById('successState').classList.add('active');
+                        } else {
+                            throw new Error(verifyData.error || 'Payment verification failed');
+                        }
+                    } catch (error) {
+                        console.error('Payment verification failed:', error);
+                        alert('Payment verification failed: ' + error.message);
+                        document.getElementById('processingState').style.display = 'none';
+                        document.getElementById('paymentForm').style.display = 'block';
+                    }
+                    return;
+                }
+                
+                // Step 2: Open Razorpay checkout (for real payments)
+                const options = {
+                    "key": orderData.key_id,
+                    "amount": orderData.amount_paise,
+                    "currency": orderData.currency,
+                    "name": "MedConnect",
+                    "description": "<?php echo ucfirst($paymentType); ?> Payment",
+                    "order_id": orderData.razorpay_order_id,
+                    "handler": async function (response) {
+                        // Show processing
+                        document.getElementById('processingState').style.display = 'block';
+                        
+                        try {
+                            // Step 3: Verify payment on server
+                            const formData = new FormData();
+                            formData.append('transaction_id', orderData.transaction_id);
+                            formData.append('razorpay_payment_id', response.razorpay_payment_id);
+                            formData.append('razorpay_order_id', response.razorpay_order_id);
+                            formData.append('razorpay_signature', response.razorpay_signature);
+                            formData.append('status', 'success');
+                            
+                            const verifyResponse = await fetch('payment_api.php?action=process_payment', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            const verifyData = await verifyResponse.json();
+                            
+                            if (verifyData.success) {
+                                // Show success
+                                document.getElementById('processingState').style.display = 'none';
+                                document.getElementById('successState').classList.add('active');
+                            } else {
+                                throw new Error(verifyData.error || 'Payment verification failed');
+                            }
+                            
+                        } catch (error) {
+                            console.error('Payment verification failed:', error);
+                            alert('Payment verification failed: ' + error.message);
+                            document.getElementById('processingState').style.display = 'none';
+                            document.getElementById('paymentForm').style.display = 'block';
+                        }
+                    },
+                    "prefill": {
+                        "name": "<?php echo $_SESSION['name'] ?? ''; ?>",
+                        "email": "<?php echo $_SESSION['email'] ?? ''; ?>",
+                        "contact": "<?php echo $_SESSION['phone'] ?? ''; ?>"
+                    },
+                    "theme": {
+                        "color": "#667eea"
+                    },
+                    "modal": {
+                        "ondismiss": function() {
+                            // User closed the payment modal
+                            console.log('Payment cancelled by user');
+                            document.getElementById('processingState').style.display = 'none';
+                            document.getElementById('paymentForm').style.display = 'block';
+                        }
+                    }
+                };
+                
+                const rzp = new Razorpay(options);
+                
+                rzp.on('payment.failed', function (response) {
+                    alert('Payment failed: ' + response.error.description);
+                    console.error('Payment error:', response.error);
                     document.getElementById('processingState').style.display = 'none';
                     document.getElementById('paymentForm').style.display = 'block';
-                }
-            }, 2000);
+                });
+                
+                // Hide processing and open Razorpay
+                document.getElementById('processingState').style.display = 'none';
+                rzp.open();
+                
+            } catch (error) {
+                console.error('Order creation failed:', error);
+                alert('Failed to initiate payment: ' + error.message);
+                document.getElementById('processingState').style.display = 'none';
+                document.getElementById('paymentForm').style.display = 'block';
+            }
+            
+            <?php else: ?>
+            alert('No transaction found. Please try again.');
+            return;
+            <?php endif; ?>
         }
     </script>
 </body>

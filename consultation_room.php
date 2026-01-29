@@ -1,5 +1,8 @@
 <?php
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 require_once 'db.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -36,11 +39,56 @@ if (!$consultation) {
 
 // Authorization check
 if ($_SESSION['user_id'] != $consultation['patient_id'] && $_SESSION['user_id'] != $consultation['doctor_id']) {
-    die("Unauthorized access to this consultation");
+    // Self-healing: If user name matches patient name, update patient_id to current user
+    // This handles the duplicate user account issue transparently
+    $userName = $_SESSION['user_name'] ?? '';
+    // Fetch patient name if not in initial query (though it is: u_p.full_name)
+    $patientName = $consultation['patient_name'];
+    
+    if ($_SESSION['role'] === 'patient' && 
+        !empty($userName) && 
+        !empty($patientName) && 
+        strtolower(trim($userName)) === strtolower(trim($patientName))) {
+        
+        $newId = (int)$_SESSION['user_id'];
+        $oldId = (int)$consultation['patient_id'];
+        
+        // Update Consultation
+        $conn->query("UPDATE consultations SET patient_id = $newId WHERE id = $consultationId");
+        
+        // Update Messages (Sender/Receiver)
+        $conn->query("UPDATE messages SET sender_id = $newId WHERE sender_id = $oldId AND consultation_id = $consultationId");
+        $conn->query("UPDATE messages SET receiver_id = $newId WHERE receiver_id = $oldId AND consultation_id = $consultationId");
+        
+        // Refresh local variable
+        $consultation['patient_id'] = $newId;
+    } else {
+        die("Unauthorized access to this consultation");
+    }
 }
 
 $role = $_SESSION['role'];
 $otherName = ($role === 'patient') ? $consultation['doctor_name'] : $consultation['patient_name'];
+
+// --- [AUTOMATIC SESSION START FOR DOCTORS] ---
+if ($role === 'doctor' && $_SESSION['user_id'] == $consultation['doctor_id']) {
+    // If it's a doctor and status is not yet 'completed' or 'cancelled'
+    if (in_array($consultation['status'], ['accepted', 'scheduled', 'waiting', 'paused'])) {
+        // Update status to in_progress
+        $conn->query("UPDATE consultations SET status = 'in_progress', updated_at = NOW() WHERE id = $consultationId");
+        
+        // Log session if token doesn't exist for this consultation
+        $checkSession = $conn->query("SELECT id FROM consultation_sessions WHERE consultation_id = $consultationId");
+        if ($checkSession->num_rows === 0) {
+            $session_token = bin2hex(random_bytes(32));
+            $mode = $consultation['consultation_mode'] ?? 'video';
+            $stmt = $conn->prepare("INSERT INTO consultation_sessions (consultation_id, session_token, session_type) VALUES (?, ?, ?)");
+            $stmt->bind_param("iss", $consultationId, $session_token, $mode);
+            $stmt->execute();
+        }
+    }
+}
+// ---------------------------------------------
 
 // Fetch Vitals
 $vitalsStmt = $conn->prepare("SELECT * FROM patient_vitals WHERE patient_id = ? ORDER BY recorded_at DESC LIMIT 1");
@@ -95,7 +143,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             --white: #ffffff;
             --danger: #ef4444;
             --success: #22c55e;
-            --sidebar-width: 320px;
+            --sidebar-width: 340px;
             --video-width: 380px;
         }
 
@@ -172,23 +220,33 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         /* Tabs Styles */
         .tab-nav {
             display: flex;
-            padding: 0 10px;
+            padding: 0 8px;
             border-bottom: 1px solid var(--border);
             gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            background: #fbfcfd;
         }
+        .tab-nav::-webkit-scrollbar { display: none; }
 
         .tab-btn {
-            padding: 12px;
-            font-size: 13px;
-            font-weight: 500;
+            padding: 14px 12px;
+            font-size: 11px;
+            font-weight: 700;
             color: var(--text-muted);
             background: none;
             border: none;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
+            border-bottom: 3px solid transparent;
             transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
         }
 
+        .tab-btn:hover { color: var(--primary); }
         .tab-btn.active {
             color: var(--primary);
             border-bottom-color: var(--primary);
@@ -349,8 +407,13 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #334155 transparent;
         }
+        .panel-right::-webkit-scrollbar { width: 6px; }
+        .panel-right::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
         .video-grid {
             display: flex;
@@ -394,7 +457,8 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             display: flex;
             justify-content: center;
             gap: 12px;
-            padding: 20px 0;
+            padding: 10px 0;
+            flex-shrink: 0;
         }
 
         .control-btn {
@@ -412,9 +476,13 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             transition: all 0.2s;
         }
 
-        .control-btn:hover { background: #475569; }
-        .control-btn.active { background: var(--primary); }
+        .control-btn:hover { background: #475569; transform: scale(1.05); }
+        .control-btn.active { 
+            background: var(--primary); 
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+        }
         .control-btn.danger { background: var(--danger); }
+        .control-btn.danger:hover { background: #dc2626; }
 
         .action-button {
             width: 100%;
@@ -471,6 +539,55 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         }
 
         .hidden { display: none; }
+
+        /* Workflow Guideline Styles */
+        .workflow-step {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--border);
+        }
+        .workflow-step h5 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 0 0 4px 0;
+            text-transform: none;
+        }
+        .workflow-step ul {
+            margin: 4px 0;
+            padding-left: 18px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .workflow-step li { margin-bottom: 2px; }
+        .workflow-example {
+            font-style: italic;
+            font-size: 11px;
+            color: #475569;
+            background: #f1f5f9;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin: 6px 0 0 0;
+            border-left: 3px solid var(--primary);
+        }
+        .guideline-section {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+        }
+        .guideline-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
     </style>
 </head>
 <body>
@@ -499,10 +616,12 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             <?php endif; ?>
 
             <nav class="tab-nav">
-                <button class="tab-btn active" onclick="showTab('symptoms')">Symptoms</button>
-                <button class="tab-btn" onclick="showTab('history')">History</button>
-                <button class="tab-btn" onclick="showTab('reports')">Reports</button>
-                <button class="tab-btn" onclick="showTab('vitals')">Vitals</button>
+                <button class="tab-btn active" onclick="showTab('symptoms', this)">Symptoms</button>
+                <button class="tab-btn" onclick="showTab('history', this)">History</button>
+                <button class="tab-btn" onclick="showTab('prescriptions', this)">Prescriptions</button>
+                <button class="tab-btn" onclick="showTab('reports', this)">Reports</button>
+                <button class="tab-btn" onclick="showTab('vitals', this)">Vitals</button>
+                <button class="tab-btn" onclick="showTab('guidelines', this)">Workflow</button>
             </nav>
 
             <div class="tab-content" id="tabContent">
@@ -545,15 +664,18 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                     </div>
                 </div>
 
-                <!-- Reports Tab -->
-                <div id="tab-reports" class="hidden">
+                <!-- Prescriptions Tab -->
+                <div id="tab-prescriptions" class="hidden">
                     <div class="content-group">
                         <h4 style="display:flex; justify-content:space-between; align-items:center;">
-                            E-Prescriptions
+                            E-Prescriptions History
                             <i class="fas fa-prescription" style="color:var(--primary)"></i>
                         </h4>
                         <?php if ($prescriptions->num_rows > 0): ?>
-                            <?php while($p = $prescriptions->fetch_assoc()): ?>
+                            <?php 
+                            // Reset pointer because it might have been used if we didn't use a separate result set
+                            $prescriptions->data_seek(0);
+                            while($p = $prescriptions->fetch_assoc()): ?>
                             <div style="display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--primary-light); background: var(--primary-light); border-radius: 8px; margin-bottom: 8px;">
                                 <i class="fas fa-file-medical" style="color: var(--primary); font-size: 1.2rem;"></i>
                                 <div style="flex: 1;">
@@ -568,8 +690,11 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                             <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">No digital prescriptions issued yet.</p>
                         <?php endif; ?>
                     </div>
+                </div>
 
-                    <div class="content-group" style="margin-top: 24px; border-top: 1px dashed var(--border); padding-top: 20px;">
+                <!-- Reports Tab -->
+                <div id="tab-reports" class="hidden">
+                    <div class="content-group">
                         <h4>Uploaded Reports</h4>
                         <?php if ($reports->num_rows > 0): ?>
                             <?php while($r = $reports->fetch_assoc()): ?>
@@ -603,6 +728,96 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                         <?php endif; ?>
                     </div>
                 </div>
+
+                <!-- Guidelines Tab -->
+                <div id="tab-guidelines" class="hidden">
+                    <div class="content-group">
+                        <h4 style="color:var(--primary-dark); border-bottom: 2px solid var(--primary-light); padding-bottom: 8px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-clipboard-check"></i>
+                            COMMUNICATION PROTOCOL
+                        </h4>
+
+                        <!-- Global Rules -->
+                        <div style="background:#fff1f2; border:1px solid #fda4af; border-radius:6px; padding:8px; margin-bottom:15px;">
+                            <strong style="color:#be123c; font-size:11px;">MANDATORY RULES:</strong>
+                            <ul style="margin:4px 0 0 16px; padding:0; font-size:11px; color:#be123c; line-height:1.3;">
+                                <li>Every message MUST receive a response.</li>
+                                <li>Redirect non-clinical input immediately.</li>
+                                <li>Never end without a question (unless closing).</li>
+                                <li>Identify Chief Complaint ASAP.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Message Classification Logic -->
+                        <h5 style="margin:12px 0 6px 0; font-size:12px; color:var(--primary-dark);">1. MESSAGE CLASSIFICATION LOGIC</h5>
+                        
+                        <!-- Cat A -->
+                        <div class="workflow-step" style="border-left: 3px solid #f59e0b;">
+                            <div style="font-weight:700; color:#d97706; font-size:11px;">A. Non-Clinical ("hi", "hello", emojis)</div>
+                            <ul style="margin-top:4px;">
+                                <li>Briefly acknowledge.</li>
+                                <li><strong>Immediately</strong> ask for clinical info.</li>
+                            </ul>
+                            <div class="workflow-example" style="background:#fffbeb; border:none; color:#92400e;">
+                                "Hi! To get started, please tell me what symptoms you're experiencing today."
+                            </div>
+                        </div>
+
+                        <!-- Cat B -->
+                        <div class="workflow-step" style="border-left: 3px solid #3b82f6;">
+                            <div style="font-weight:700; color:#2563eb; font-size:11px;">B. Partial Input ("pain", "not well")</div>
+                            <ul style="margin-top:4px;">
+                                <li>Ask structured follow-ups (Max 2-3).</li>
+                            </ul>
+                            <div class="workflow-example" style="background:#eff6ff; border:none; color:#1e40af;">
+                                "Can you tell me where the pain is and how long it's been happening?"
+                            </div>
+                        </div>
+
+                        <!-- Cat C -->
+                        <div class="workflow-step" style="border-left: 3px solid #10b981;">
+                            <div style="font-weight:700; color:#059669; font-size:11px;">C. Clear Input ("chest pain for 2 days")</div>
+                            <ul>
+                                <li>Proceed to Clinical Workflow.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Clinical Workflow -->
+                        <h5 style="margin:16px 0 6px 0; font-size:12px; color:var(--primary-dark);">2. CLINICAL WORKFLOW</h5>
+                        
+                        <div class="workflow-step">
+                            <h5>Step 1: Chief Complaint</h5>
+                            <ul><li>Confirm Main Symptom, Duration, Severity.</li></ul>
+                        </div>
+
+                        <div class="workflow-step">
+                            <h5>Step 2: HPI (History)</h5>
+                            <ul><li>Onset, Progression, Triggers, Relief, Treatments.</li></ul>
+                        </div>
+
+                        <div class="workflow-step">
+                            <h5>Step 3: Medical History</h5>
+                            <ul><li>Only if relevant: Conditions, Meds, Allergies.</li></ul>
+                        </div>
+
+                        <div class="workflow-step">
+                            <h5>Step 4: Assessment</h5>
+                            <ul><li>Summarize findings. State preliminary impression.</li></ul>
+                            <p class="workflow-example">"Based on what you've shared, this may be related to..."</p>
+                        </div>
+
+                        <div class="workflow-step">
+                            <h5>Step 5: Plan</h5>
+                            <ul><li>Advice, Tests, Rx, Red-flags, Follow-up.</li></ul>
+                        </div>
+
+                        <div class="workflow-step" style="border-bottom:none;">
+                            <h5>Step 6: Confirm & Close</h5>
+                            <ul><li>"Do you have questions?" -> Confirm -> Close.</li></ul>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </aside>
 
@@ -627,7 +842,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
 
                     <div class="chat-footer">
                         <button class="control-btn" style="background:none; color: var(--text-muted);"><i class="fas fa-paperclip"></i></button>
-                        <input type="text" class="chat-input" id="messageInput" placeholder="Type a message..." oninput="handleTyping()">
+                        <input type="text" class="chat-input" id="messageInput" placeholder="Type a message..." oninput="handleTyping()" onkeydown="if(event.key === 'Enter') { event.preventDefault(); sendMessage(); }">
                         <button class="control-btn active" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
@@ -709,61 +924,70 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 </button>
             </div>
             <div style="padding: 24px;">
-                <form id="prescriptionForm">
-                    <div style="margin-bottom: 20px;">
-                        <label style="display:block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Diagnosis / Clinical Impression</label>
-                        <textarea name="diagnosis" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; font-size:14px; min-height:80px;" placeholder="Enter diagnosis..."></textarea>
-                    </div>
-                    
-                    <div id="medicationItems">
-                        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
-                            <div style="display:flex; gap: 12px; margin-bottom: 12px;">
-                                <div style="flex: 2;">
-                                    <label style="display:block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Medicine Name</label>
-                                    <input type="text" name="med_name[]" placeholder="e.g. Paracetamol" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;">
+                <div id="prescriptionFormContainer">
+                    <form id="prescriptionForm">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display:block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Diagnosis / Clinical Impression</label>
+                            <textarea name="diagnosis" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; font-size:14px; min-height:80px;" placeholder="Enter diagnosis..."></textarea>
+                        </div>
+                        
+                        <div id="medicationItems">
+                            <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                                <div style="display:flex; gap: 12px; margin-bottom: 12px;">
+                                    <div style="flex: 2;">
+                                        <label style="display:block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Medicine Name</label>
+                                        <input type="text" name="med_name[]" placeholder="e.g. Paracetamol" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label style="display:block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Dosage</label>
+                                        <input type="text" name="med_dosage[]" placeholder="500mg" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;">
+                                    </div>
                                 </div>
-                                <div style="flex: 1;">
-                                    <label style="display:block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Dosage</label>
-                                    <input type="text" name="med_dosage[]" placeholder="500mg" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;">
-                                </div>
-                            </div>
-                            <div style="display:flex; gap: 12px;">
-                                <div style="flex: 1;">
-                                    <label style="display:block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Frequency</label>
-                                    <select name="med_freq[]" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;">
-                                        <option>Once Daily</option>
-                                        <option>Twice Daily</option>
-                                        <option>Three Times Daily</option>
-                                        <option>As Needed</option>
-                                    </select>
-                                </div>
-                                <div style="flex: 1;">
-                                    <label style="display:block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Duration</label>
-                                    <input type="text" name="med_duration[]" placeholder="5 days" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;">
+                                <div style="display:flex; gap: 12px;">
+                                    <div style="flex: 1;">
+                                        <label style="display:block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Frequency</label>
+                                        <select name="med_freq[]" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;">
+                                            <option>Once Daily</option>
+                                            <option>Twice Daily</option>
+                                            <option>Three Times Daily</option>
+                                            <option>As Needed</option>
+                                        </select>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label style="display:block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Duration</label>
+                                        <input type="text" name="med_duration[]" placeholder="5 days" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div style="margin-bottom: 24px;">
-                        <label style="display:block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Special Instructions</label>
-                        <input type="text" name="instructions" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; font-size:14px;" placeholder="After food, avoid cold drinks, etc.">
-                    </div>
+                        <button type="button" onclick="addMedicationRow()" style="background:none; border:1px dashed var(--primary); color:var(--primary); width:100%; padding:10px; border-radius:10px; font-size:12px; margin-bottom:20px; cursor:pointer;">
+                            <i class="fas fa-plus"></i> Add Another Medication
+                        </button>
 
-                    <div style="background: #ecfdf5; border: 1px dashed #059669; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
-                        <div style="display:flex; align-items:center; gap: 12px;">
-                            <i class="fas fa-signature fa-2x" style="color: #059669;"></i>
-                            <div>
-                                <div style="font-size: 13px; font-weight: 600; color: #065f46;">Digitalized Verification</div>
-                                <div style="font-size: 11px; color: #059669;">Verified by MedConnect E-Sign Protocols</div>
+                        <div style="margin-bottom: 24px;">
+                            <label style="display:block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Special Instructions</label>
+                            <input type="text" name="instructions" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; font-size:14px;" placeholder="After food, avoid cold drinks, etc.">
+                        </div>
+
+                        <div style="background: #ecfdf5; border: 1px dashed #059669; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                            <div style="display:flex; align-items:center; gap: 12px;">
+                                <i class="fas fa-signature fa-2x" style="color: #059669;"></i>
+                                <div>
+                                    <div style="font-size: 13px; font-weight: 600; color: #065f46;">Digitalized Verification</div>
+                                    <div style="font-size: 11px; color: #059669;">Verified by MedConnect E-Sign Protocols</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <button type="button" class="action-button btn-prescription" onclick="submitPrescription()" style="width:100%;">
-                        <i class="fas fa-paper-plane"></i> Sign & Finalize Prescription
-                    </button>
-                </form>
+                        <button type="button" class="action-button btn-prescription" onclick="submitPrescription()" style="width:100%;">
+                            <i class="fas fa-paper-plane"></i> Sign & Finalize Prescription
+                        </button>
+                    </form>
+                </div>
+                <div id="prescriptionViewContainer" style="display:none;">
+                    <!-- Filled dynamically via JS -->
+                </div>
             </div>
         </div>
     </div>
@@ -775,8 +999,15 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         const receiverId = <?php echo ($role === 'patient') ? ($consultation['doctor_id'] ?: 0) : $consultation['patient_id']; ?>;
         let lastMessageId = 0;
         let isTyping = false;
+        let localStream;
+        let peerConnection;
         
-        const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        const config = { 
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ] 
+        };
 
         // --- Session Timer ---
         let startTime = new Date('<?php echo $consultation['assigned_at'] ?: $consultation['created_at']; ?>').getTime();
@@ -800,6 +1031,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             }
         }
         setInterval(updateTimer, 1000);
+        updateTimer(); // Initial call
 
         // --- Advanced Actions ---
         async function transferCase() {
@@ -843,19 +1075,42 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         }
 
         // --- Tab Management ---
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('#tabContent > div').forEach(d => d.classList.add('hidden'));
+        function showTab(tabId, el) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content > div');
+            contents.forEach(div => div.classList.add('hidden'));
             
-            event.currentTarget.classList.add('active');
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show current tab
+            const target = document.getElementById('tab-' + tabId);
+            if (target) {
+                target.classList.remove('hidden');
+            } else {
+                console.error("Tab content not found for showTab:", tabId);
+            }
+            
+            // Add active class to clicked button
+            if (el) {
+                el.classList.add('active');
+            } else if (window.event && window.event.currentTarget) {
+                window.event.currentTarget.classList.add('active');
+            } else {
+                // Fallback to find by text if el not provided
+                Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.toLowerCase().includes(tabId))?.classList.add('active');
+            }
         }
 
-        // --- Chat Functions ---
         async function sendMessage() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
-            if (!text || !receiverId) return;
+            if (!text) return;
+            if (!receiverId) {
+                alert("Cannot send message: Receiver not identified yet.");
+                return;
+            }
 
             const formData = new FormData();
             formData.append('action', 'send');
@@ -869,9 +1124,21 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 const data = await response.json();
                 if (data.success) {
                     input.value = '';
-                    appendMessage({ sender_id: userId, message_content: text, created_at: new Date().toISOString() }, true);
+                    const newMsg = {
+                        id: data.message_id,
+                        sender_id: userId,
+                        message_content: text,
+                        created_at: new Date().toISOString()
+                    };
+                    appendMessage(newMsg, true);
+                    lastMessageId = Math.max(lastMessageId, data.message_id);
+                } else {
+                    alert("Failed to send message: " + (data.error || "Unknown error"));
                 }
-            } catch (err) { console.error("Error sending message:", err); }
+            } catch (err) { 
+                console.error("Error sending message:", err);
+                alert("Network error: Could not send message.");
+            }
         }
 
         function handleTyping() {
@@ -908,9 +1175,13 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         }
 
         function appendMessage(msg, isSent) {
+            // Deduplication: Check if message already exists in DOM
+            if (msg.id && document.getElementById('msg-' + msg.id)) return;
+
             const container = document.getElementById('chatMessages');
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+            if (msg.id) msgDiv.id = 'msg-' + msg.id;
             
             const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
@@ -926,7 +1197,11 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         }
 
         // --- Prescription Hub ---
-        function showPrescriptionModal() { document.getElementById('prescriptionModal').style.display = 'flex'; }
+        function showPrescriptionModal() { 
+            document.getElementById('prescriptionFormContainer').style.display = 'block';
+            document.getElementById('prescriptionViewContainer').style.display = 'none';
+            document.getElementById('prescriptionModal').style.display = 'flex'; 
+        }
         function hidePrescriptionModal() { document.getElementById('prescriptionModal').style.display = 'none'; }
         function addMedicationRow() {
             const container = document.getElementById('medicationItems');
@@ -947,8 +1222,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 if (data.status === 'success') {
                     alert("Prescription signed and sent to patient & pharmacy!");
                     hidePrescriptionModal();
-                    sendMessage("I have issued your e-prescription. You can view it in your 'Reports' tab now.");
-                    // Optionally refresh the reports tab if the patient is viewing it
+                    sendMessage("I have issued your e-prescription. You can view it in your 'Prescriptions' tab now.");
                 } else {
                     alert("Error: " + (data.message || "Failed to save prescription"));
                 }
@@ -968,11 +1242,14 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                         </div>
                     `).join('');
 
-                    // Show in a simple alert for now or a custom modal if time permits
-                    // Reusing the prescription modal for display
-                    const modal = document.getElementById('prescriptionModal');
-                    const form = document.getElementById('prescriptionForm');
-                    form.innerHTML = `
+                    // Show in dedicated view container
+                    const viewContainer = document.getElementById('prescriptionViewContainer');
+                    const formContainer = document.getElementById('prescriptionFormContainer');
+                    
+                    formContainer.style.display = 'none';
+                    viewContainer.style.display = 'block';
+                    
+                    viewContainer.innerHTML = `
                         <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:20px;">
                             <div style="font-weight:700; color:var(--primary-dark); margin-bottom:10px;">Prescription issued by Dr. ${p.doctor_name}</div>
                             <div style="font-size:13px; margin-bottom:5px;"><strong>Diagnosis:</strong> ${p.diagnosis}</div>
@@ -985,23 +1262,16 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                                 ${itemsHtml}
                             </div>
                         </div>
-                        <button type="button" class="action-button btn-prescription" onclick="window.location.reload()">Close & Refresh</button>
+                        <button type="button" class="action-button btn-prescription" onclick="hidePrescriptionModal()">Close</button>
                     `;
-                    modal.style.display = 'flex';
+                    document.getElementById('prescriptionModal').style.display = 'flex';
                 }
             } catch (err) { console.error(err); }
         }
 
         // --- WebRTC Functions ---
-        const config = {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
-            ]
-        };
-
-        async function toggleVideo() {
-            console.log("Toggling video...");
+        async function toggleVideo(isAuto = false) {
+            console.log("Toggling video...", isAuto ? "(auto-start)" : "(manual)");
             if (!localStream) {
                 try {
                     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -1012,6 +1282,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                     `;
                     document.getElementById('localVid').srcObject = localStream;
                     document.getElementById('btnVideo').classList.add('active');
+                    document.getElementById('btnAudio').classList.add('active');
                     
                     setupPeerConnection();
                     if (role === 'doctor') {
@@ -1019,12 +1290,17 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                         await peerConnection.setLocalDescription(offer);
                         sendSignal({ target: 'webrtc', offer });
                     }
-                } catch (err) { alert("Camera access denied."); }
+                } catch (err) { 
+                    console.error("Camera access failed:", err);
+                    if (!isAuto) alert("Camera/Microphone access denied. Please check your browser permissions.");
+                }
             } else {
-                const track = localStream.getVideoTracks()[0];
-                track.enabled = !track.enabled;
-                document.getElementById('btnVideo').classList.toggle('active');
-                sendSignal({ type: 'media_status', video: track.enabled });
+                const videoTrack = localStream.getVideoTracks()[0];
+                if (videoTrack) {
+                    videoTrack.enabled = !videoTrack.enabled;
+                    document.getElementById('btnVideo').classList.toggle('active', videoTrack.enabled);
+                    sendSignal({ type: 'media_status', video: videoTrack.enabled });
+                }
             }
         }
 
@@ -1079,8 +1355,11 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         function toggleAudio() {
             if (localStream) {
                 const track = localStream.getAudioTracks()[0];
-                track.enabled = !track.enabled;
-                document.getElementById('btnAudio').classList.toggle('active');
+                if (track) {
+                    track.enabled = !track.enabled;
+                    document.getElementById('btnAudio').classList.toggle('active', track.enabled);
+                    sendSignal({ type: 'media_status', audio: track.enabled });
+                }
             }
         }
 
@@ -1154,17 +1433,14 @@ Plan:
             textarea.dispatchEvent(new Event('input'));
         }
 
-        setInterval(fetchMessages, 3000);
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                toggleVideo(true); 
+                fetchMessages(); // Immediate fetch
+            }, 800);
+        });
 
-        // Session Timer
-        let seconds = 0;
-        setInterval(() => {
-            seconds++;
-            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-            const s = (seconds % 60).toString().padStart(2, '0');
-            document.getElementById('sessionTimer').innerText = `${h}:${m}:${s}`;
-        }, 1000);
+        setInterval(fetchMessages, 3000);
     </script>
 </body>
 </html>

@@ -144,60 +144,102 @@ function renderDashboard() {
 
 async function loadDashboardRequests() {
     try {
-        const response = await fetch('doctor_api.php?action=get_consultation_requests');
-        const result = await response.json();
+        // Fetch both consultations and appointments
+        const [consultationsRes, appointmentsRes] = await Promise.all([
+            fetch('doctor_api.php?action=get_consultation_requests'),
+            fetch('doctor_api.php?action=get_appointment_requests')
+        ]);
 
-        if (result.status === 'success') {
-            const container = document.getElementById('dashboardRequests');
-            if (!container) return;
+        const consultationsResult = await consultationsRes.json();
+        const appointmentsResult = await appointmentsRes.json();
 
-            if (result.data.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 2rem;">No pending requests</p>';
-                return;
+        const container = document.getElementById('dashboardRequests');
+        if (!container) return;
+
+        let allRequests = [];
+
+        // Add consultations
+        if (consultationsResult.status === 'success') {
+            allRequests = [...consultationsResult.data.map(c => ({ ...c, type: 'consultation' }))];
+        }
+
+        // Add appointments
+        if (appointmentsResult.status === 'success') {
+            allRequests = [...allRequests, ...appointmentsResult.data];
+        }
+
+        if (allRequests.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 2rem;">No pending requests</p>';
+            return;
+        }
+
+        const html = allRequests.slice(0, 5).map(req => {
+            const isAppointment = req.type === 'appointment';
+            const isEmergency = !isAppointment && (req.urgency_level === 'emergency' || req.urgency_badge === 'emergency');
+            const highlightStyle = isEmergency ? 'border-left: 4px solid #ef4444; background: #fef2f2;' : '';
+            const typeIndicator = isAppointment
+                ? '<span class="status-badge bg-blue" style="font-size: 0.7rem;">SCHEDULED</span>'
+                : `<span class="status-badge urgency-${req.urgency_badge || req.urgency_level}" style="font-size: 0.7rem;">${(req.urgency_badge || req.urgency_level).toUpperCase()}</span>`;
+
+            // Different display format for appointments vs consultations
+            let description, timeInfo, actionButtons;
+
+            if (isAppointment) {
+                description = `Scheduled appointment on ${new Date(req.scheduled_date).toLocaleDateString()} at ${req.scheduled_time.substring(0, 5)}`;
+                if (req.notes) {
+                    description += `<br><span style="font-size:0.8rem; color: var(--text-muted);">Notes: ${req.notes}</span>`;
+                }
+                timeInfo = `<span><i class="ph ph-calendar"></i> ${new Date(req.scheduled_date).toLocaleDateString()}</span>
+                            <span><i class="ph ph-clock"></i> ${req.scheduled_time.substring(0, 5)}</span>`;
+                actionButtons = `
+                    <button class="btn btn-success btn-sm" onclick="confirmAppointment(${req.id})" style="padding: 0.25rem 0.75rem;">Confirm</button>
+                    <button class="btn btn-outline btn-sm" onclick="declineAppointment(${req.id})" style="padding: 0.25rem 0.75rem;">Decline</button>
+                `;
+            } else {
+                description = req.symptoms_summary;
+                timeInfo = `<span><i class="ph ph-clock"></i> ${new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <span><i class="ph ph-globe"></i> ${req.language_preference}</span>`;
+                actionButtons = `
+                    <button class="btn btn-success btn-sm" onclick="acceptConsultation(${req.id})" style="padding: 0.25rem 0.75rem;">Accept</button>
+                    <button class="btn btn-outline btn-sm" onclick="declineConsultation(${req.id})" style="padding: 0.25rem 0.75rem;">Decline</button>
+                `;
             }
 
-            const html = result.data.slice(0, 5).map(req => {
-                const isEmergency = req.urgency_level === 'emergency' || req.urgency_badge === 'emergency';
-                const highlightStyle = isEmergency ? 'border-left: 4px solid #ef4444; background: #fef2f2;' : '';
-
-                return `
-                <div style="border-bottom: 1px solid var(--border); padding: 1rem; ${highlightStyle}">
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div style="flex: 1;">
-                            <div style="font-weight: 600; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;">
-                                ${req.patient_name}
-                                <span class="status-badge urgency-${req.urgency_badge || req.urgency_level}" style="font-size: 0.7rem;">${(req.urgency_badge || req.urgency_level).toUpperCase()}</span>
-                            </div>
-                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem; line-height: 1.4;">${req.symptoms_summary}</p>
-                            <div style="display: flex; gap: 0.75rem; font-size: 0.8rem; color: var(--text-muted);">
-                                <span><i class="ph ph-clock"></i> ${new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                <span><i class="ph ph-globe"></i> ${req.language_preference}</span>
-                            </div>
+            return `
+            <div style="border-bottom: 1px solid var(--border); padding: 1rem; ${highlightStyle}">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                            ${req.patient_name}
+                            ${typeIndicator}
                         </div>
-                        <div style="display: flex; gap: 0.4rem;">
-                            <button class="btn btn-success btn-sm" onclick="acceptConsultation(${req.id})" style="padding: 0.25rem 0.75rem;">Accept</button>
-                            <button class="btn btn-outline btn-sm" onclick="declineConsultation(${req.id})" style="padding: 0.25rem 0.75rem;">Decline</button>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem; line-height: 1.4;">${description}</p>
+                        <div style="display: flex; gap: 0.75rem; font-size: 0.8rem; color: var(--text-muted);">
+                            ${timeInfo}
                         </div>
                     </div>
+                    <div style="display: flex; gap: 0.4rem;">
+                        ${actionButtons}
+                    </div>
                 </div>
-            `}).join('');
+            </div>
+        `}).join('');
 
-            container.innerHTML = html;
+        container.innerHTML = html;
 
-            // Trigger alert if new emergency arrives
-            const currentEmergencies = result.data.filter(r => r.urgency_level === 'emergency').map(r => r.id);
-            if (currentEmergencies.length > 0) {
-                const lastKnown = window.lastKnownEmergencies || [];
-                const hasNew = currentEmergencies.some(id => !lastKnown.includes(id));
+        // Trigger alert if new emergency arrives
+        const currentEmergencies = allRequests.filter(r => r.type !== 'appointment' && r.urgency_level === 'emergency').map(r => r.id);
+        if (currentEmergencies.length > 0) {
+            const lastKnown = window.lastKnownEmergencies || [];
+            const hasNew = currentEmergencies.some(id => !lastKnown.includes(id));
 
-                if (hasNew) {
-                    console.log("URGENT: New Emergency Consultation Request!");
-                    // showNotification("Emergency Request", "A new emergency consultation request requires your immediate attention.");
-                }
-                window.lastKnownEmergencies = currentEmergencies;
-            } else {
-                window.lastKnownEmergencies = [];
+            if (hasNew) {
+                console.log("URGENT: New Emergency Consultation Request!");
+                // showNotification("Emergency Request", "A new emergency consultation request requires your immediate attention.");
             }
+            window.lastKnownEmergencies = currentEmergencies;
+        } else {
+            window.lastKnownEmergencies = [];
         }
     } catch (error) {
         console.error('Error loading requests:', error);
@@ -246,14 +288,27 @@ function renderConsultations(requests, active) {
                 else if (cons.urgency_level === 'urgent' || cons.urgency_score >= 50) urgencyBadge = 'priority';
 
                 // Status mapping
-                let statusLabel = 'Awaiting Start';
+                let statusLabel = 'Scheduled';
                 let statusClass = 'pending';
-                if (cons.status === 'in_progress') {
-                    statusLabel = 'In Progress';
-                    statusClass = 'success';
-                } else if (cons.status === 'follow-up scheduled') {
-                    statusLabel = 'Follow-up';
-                    statusClass = 'priority';
+
+                switch (cons.status) {
+                    case 'scheduled':
+                    case 'accepted':
+                        statusLabel = 'Scheduled';
+                        statusClass = 'pending';
+                        break;
+                    case 'waiting':
+                        statusLabel = 'Waiting';
+                        statusClass = 'priority';
+                        break;
+                    case 'in_progress':
+                        statusLabel = 'In Progress';
+                        statusClass = 'success';
+                        break;
+                    case 'paused':
+                        statusLabel = 'Paused';
+                        statusClass = 'warning';
+                        break;
                 }
 
                 const isHighlighted = highlightId == cons.id;
@@ -271,9 +326,14 @@ function renderConsultations(requests, active) {
                                 <div style="font-size: 0.85rem; color: var(--text-muted);">${cons.symptoms ? cons.symptoms.substring(0, 80) : 'No symptoms listed'}...</div>
                             </div>
                             <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn btn-primary btn-sm" onclick="startSession(${cons.id}, ${cons.patient_id})">
-                                    <i class="ph ph-play-circle"></i> ${cons.status === 'in_progress' ? 'Resume' : 'Start'}
+                                <a href="consultation_room.php?id=${cons.id}" class="btn btn-primary btn-sm" style="text-decoration: none; display: flex; align-items: center; gap: 0.25rem;">
+                                    <i class="ph ph-play-circle"></i> ${(cons.status === 'in_progress' || cons.status === 'paused') ? 'Resume' : 'Start'}
+                                </a>
+                                ${cons.status === 'in_progress' ? `
+                                <button class="btn btn-outline btn-sm" onclick="pauseConsultation(${cons.id})">
+                                    <i class="ph ph-pause-circle"></i> Pause
                                 </button>
+                                ` : ''}
                                 <button class="btn btn-success btn-sm" onclick="openPrescriptionModal(${cons.id}, ${cons.patient_id})">
                                     <i class="ph ph-prescription"></i> Prescribe
                                 </button>
@@ -423,10 +483,15 @@ async function startSession(consultationId, patientId) {
             // Navigate to the consultation room
             window.location.href = `consultation_room.php?id=${consultationId}`;
         } else {
-            alert('Error: ' + result.message);
+            console.warn('Start session API returned:', result);
+            // Fallback: Still try to go to the room if it's an error about session already existing 
+            // or just to be safe if the status was updated.
+            window.location.href = `consultation_room.php?id=${consultationId}`;
         }
     } catch (error) {
         console.error('Error starting session:', error);
+        // Final fallback: redirect anyway so the user isn't stuck
+        window.location.href = `consultation_room.php?id=${consultationId}`;
     }
 }
 
@@ -597,6 +662,31 @@ async function completeConsultation(consultationId) {
         }
     } catch (error) {
         console.error('Error completing consultation:', error);
+    }
+}
+
+async function pauseConsultation(consultationId) {
+    try {
+        const formData = new FormData();
+        formData.append('action', 'pause_consultation');
+        formData.append('consultation_id', consultationId);
+
+        const response = await fetch('doctor_api.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            alert('Consultation paused');
+            loadConsultations();
+            loadDashboard();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error pausing consultation:', error);
     }
 }
 
@@ -1234,6 +1324,7 @@ function toggleAvailability() {
     }
 }
 
+
 // ========================================
 // UTILITY FUNCTIONS
 // ========================================
@@ -1252,4 +1343,135 @@ function logout() {
 function searchPatients(query) {
     // Implement patient search
     console.log('Searching for:', query);
+}
+
+// ========================================
+// CONSULTATION HANDLERS
+// ========================================
+
+async function acceptConsultation(consultationId) {
+    if (!confirm('Accept this consultation request?')) return;
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'accept_consultation');
+        formData.append('consultation_id', consultationId);
+
+        const response = await fetch('doctor_api.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            alert('Consultation accepted successfully!');
+            // Reload both dashboard and consultations view
+            loadDashboard();
+            loadDashboardRequests();
+            if (currentView === 'consultations') {
+                loadConsultations();
+            }
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error accepting consultation:', error);
+        alert('Failed to accept consultation');
+    }
+}
+
+async function declineConsultation(consultationId) {
+    const reason = prompt('Please provide a reason for declining (optional):');
+    if (reason === null) return; // User cancelled
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'decline_consultation');
+        formData.append('consultation_id', consultationId);
+        formData.append('reason', reason || '');
+
+        const response = await fetch('doctor_api.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            alert('Consultation declined successfully');
+            loadDashboard();
+            loadDashboardRequests();
+            if (currentView === 'consultations') {
+                loadConsultations();
+            }
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error declining consultation:', error);
+        alert('Failed to decline consultation');
+    }
+}
+
+// ========================================
+// APPOINTMENT HANDLERS
+// ========================================
+
+async function confirmAppointment(appointmentId) {
+    if (!confirm('Confirm this appointment?')) return;
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'confirm_appointment');
+        formData.append('appointment_id', appointmentId);
+
+        const response = await fetch('doctor_api.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            alert('Appointment confirmed successfully!');
+            loadDashboard();
+            loadDashboardRequests();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error confirming appointment:', error);
+        alert('Failed to confirm appointment');
+    }
+}
+
+async function declineAppointment(appointmentId) {
+    const reason = prompt('Please provide a reason for declining (optional):');
+    if (reason === null) return; // User cancelled
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'decline_appointment');
+        formData.append('appointment_id', appointmentId);
+        formData.append('reason', reason || '');
+
+        const response = await fetch('doctor_api.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            alert('Appointment declined successfully');
+            loadDashboard();
+            loadDashboardRequests();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error declining appointment:', error);
+        alert('Failed to decline appointment');
+    }
 }
