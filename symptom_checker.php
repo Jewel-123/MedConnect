@@ -393,7 +393,7 @@ $patientId = $_SESSION['user_id'];
                         <span class="urgency-badge ${urgencyClass}">${analysis.urgency_level.toUpperCase()}</span>
                     </div>
                     <div style="margin-bottom: 20px;">
-                        <strong>Confidence:</strong> ${analysis.confidence_level}%
+                        <strong>Recommended Doctor:</strong> ${analysis.recommended_doctor}
                     </div>
                     <p style="color: #64748b; margin-bottom: 20px;">
                         ${analysis.urgency_level === 'emergency' ? 

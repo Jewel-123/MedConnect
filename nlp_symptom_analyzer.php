@@ -66,8 +66,8 @@ class SymptomAnalyzer {
         // Determine urgency level
         $urgencyLevel = $this->getUrgencyLevel($maxUrgency);
         
-        // Calculate confidence score
-        $confidence = $this->calculateConfidence($matches, $symptoms);
+        // Get recommended doctor based on specialty
+        $recommendedDoctor = $this->getRecommendedDoctor($primarySpecialty);
         
         return [
             'matched_keywords' => array_column($matches, 'keyword'),
@@ -75,7 +75,7 @@ class SymptomAnalyzer {
             'urgency_level' => $urgencyLevel,
             'primary_specialty' => $primarySpecialty,
             'all_specialties' => $specialties,
-            'confidence' => $confidence,
+            'recommended_doctor' => $recommendedDoctor,
             'is_emergency' => $maxUrgency >= 90
         ];
     }
@@ -126,25 +126,40 @@ class SymptomAnalyzer {
     }
     
     /**
-     * Calculate confidence score (0-100)
+     * Get recommended doctor based on specialty
      */
-    private function calculateConfidence($matches, $symptoms) {
-        if (empty($matches)) {
-            return 30; // Low confidence if no matches
+    private function getRecommendedDoctor($specialty) {
+        // Query for an available doctor with the matching specialty
+        $stmt = $this->conn->prepare("
+            SELECT u.full_name 
+            FROM users u
+            INNER JOIN doctor_profiles dp ON u.id = dp.user_id
+            WHERE u.role = 'doctor' 
+            AND dp.specialization = ?
+            LIMIT 1
+        ");
+        
+        $stmt->bind_param("s", $specialty);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            return $row['full_name'];
         }
         
-        $wordCount = str_word_count($symptoms);
-        $matchCount = count($matches);
+        // If no exact match, try to find any available doctor
+        $generalQuery = $this->conn->query("
+            SELECT u.full_name 
+            FROM users u
+            WHERE u.role = 'doctor'
+            LIMIT 1
+        ");
         
-        // Base confidence on match ratio
-        $confidence = min(100, 50 + ($matchCount * 15));
-        
-        // Adjust for symptom description length
-        if ($wordCount > 10) {
-            $confidence += 10; // More detailed description = higher confidence
+        if ($generalQuery && $row = $generalQuery->fetch_assoc()) {
+            return $row['full_name'];
         }
         
-        return min(100, $confidence);
+        return 'Available Doctor';
     }
     
     /**
