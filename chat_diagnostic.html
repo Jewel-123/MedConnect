@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Diagnostic</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        .test { padding: 10px; margin: 10px 0; border-left: 3px solid #ccc; background: #f5f5f5; }
+        .pass { border-color: #22c55e; background: #f0fdf4; }
+        .fail { border-color: #ef4444; background: #fef2f2; }
+        button { padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #output { white-space: pre-wrap; background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 4px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Chat System Diagnostic</h1>
+    <button onclick="runTests()">Run Diagnostic Tests</button>
+    <div id="output"></div>
+
+    <script>
+        async function runTests() {
+            const output = document.getElementById('output');
+            output.innerHTML = 'Running tests...\n\n';
+
+            // Test 1: Check if consultation_room.php is accessible
+            log('TEST 1: Checking consultation_room.php...');
+            try {
+                const response = await fetch('consultation_room.php?id=1');
+                if (response.ok) {
+                    log('✓ PASS: consultation_room.php is accessible\n', 'pass');
+                } else {
+                    log('✗ FAIL: Got status ' + response.status + '\n', 'fail');
+                }
+            } catch (e) {
+                log('✗ FAIL: ' + e.message + '\n', 'fail');
+            }
+
+            // Test 2: Check chat_api.php
+            log('TEST 2: Checking chat_api.php availability...');
+            try {
+                const response = await fetch('chat_api.php?action=test');
+                const text = await response.text();
+                log('✓ PASS: chat_api.php responds (Status: ' + response.status + ')\n', 'pass');
+                log('  Response: ' + text.substring(0, 100) + '...\n');
+            } catch (e) {
+                log('✗ FAIL: ' + e.message + '\n', 'fail');
+            }
+
+            // Test 3: Try to send a test message (will fail if not logged in, but that's expected)
+            log('TEST 3: Testing send message endpoint...');
+            try {
+                const formData = new FormData();
+                formData.append('action', 'send');
+                formData.append('consultation_id', '1');
+                formData.append('content', 'Test message');
+                formData.append('receiver_id', '1');
+                formData.append('type', 'text');
+
+                const response = await fetch('chat_api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    log('✓ PASS: Message sent successfully!\n', 'pass');
+                } else {
+                    if (data.error && data.error.includes('Unauthorized')) {
+                        log('⚠ INFO: Endpoint works but requires login (expected)\n  Error: ' + data.error + '\n', 'pass');
+                    } else {
+                        log('✗ FAIL: ' + data.error + '\n', 'fail');
+                    }
+                }
+            } catch (e) {
+                log('✗ FAIL: ' + e.message + '\n', 'fail');
+            }
+
+            // Test 4: Check fetch messages endpoint
+            log('TEST 4: Testing fetch messages endpoint...');
+            try {
+                const response = await fetch('chat_api.php?action=fetch&consultation_id=1&last_id=0');
+                const data = await response.json();
+                
+                if (data.success || (data.error && data.error.includes('Unauthorized'))) {
+                    log('✓ PASS: Fetch endpoint responding correctly\n', 'pass');
+                } else {
+                    log('✗ FAIL: ' + data.error + '\n', 'fail');
+                }
+            } catch (e) {
+                log('✗ FAIL: ' + e.message + '\n', 'fail');
+            }
+
+            // Test 5: Check if messages table exists
+            log('TEST 5: Checking database...');
+            try {
+                const response = await fetch('test_chat_connectivity.php');
+                const text = await response.text();
+                log('Database check: ' + text + '\n', 'pass');
+            } catch (e) {
+                log('⚠ INFO: Could not run database check (test file may not exist)\n');
+            }
+
+            log('\n========================================');
+            log('DIAGNOSTIC COMPLETE');
+            log('========================================\n');
+            log('If all tests pass except for "Unauthorized" errors,\nthe chat system is working correctly.\n');
+            log('Issue: You may need to be logged in and on an\nactive consultation page for chat to work.\n');
+        }
+
+        function log(message, status = '') {
+            const output = document.getElementById('output');
+            output.innerHTML += message;
+            if (status === 'pass') {
+                output.style.color = '#22c55e';
+            } else if (status === 'fail') {
+                output.style.color = '#ef4444';
+            }
+        }
+    </script>
+</body>
+</html>

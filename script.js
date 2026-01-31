@@ -209,13 +209,13 @@ const PAGES = {
                     <li><a href="symptom_checker.php"><i class="ph ph-clipboard-text"></i> Symptom Checker</a></li>
                     <li><a href="appointment_booking.php"><i class="ph ph-calendar-check"></i> Book Appointment</a></li>
                     <li><a href="payment_gateway.php"><i class="ph ph-credit-card"></i> Payments</a></li>
-                    <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
+                    <li><a href="#" onclick="showPage('consultationHistory')"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
                     <li><a href="#" onclick="logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
                 </ul>
             </aside>
             <main class="main-area">
                 <div class="dash-header">
-                    <h2>Hello </h2>
+                    <h2>Hello <span id="patientNameDisplay"></span></h2>
                     <div style="display: flex; gap: 0.75rem;">
                         <a href="symptom_checker.php" class="btn btn-primary" style="text-decoration: none; display: inline-flex; align-items: center;">🩺 Symptom Checker</a>
                         <a href="appointment_booking.php" class="btn btn-outline" style="text-decoration: none; display: inline-flex; align-items: center;">📅 Book Appointment</a>
@@ -224,202 +224,23 @@ const PAGES = {
                 
                 <div class="stat-row">
                     <div class="stat-box">
-                        <div class="large-number">3</div>
+                        <div class="large-number" id="pastConsultationsCount">0</div>
                         <p>Past Consultations</p>
                     </div>
                     <div class="stat-box">
-                        <div class="large-number text-gradient">1</div>
-                        <p>Active Prescription</p>
+                        <div class="large-number text-gradient" id="activePrescriptionCount">0</div>
+                        <p>Active Prescriptions</p>
                     </div>
                 </div>
 
                 <h3>Recent Activity</h3>
-                <div class="symptom-box" style="margin-top: 1rem; width: 100%; max-width: 100%;">
-                    <div style="display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #eee;">
-                        <div>
-                            <strong>Dr. Emily Smith</strong><br>
-                            <small>General Physician • Yesterday</small>
-                        </div>
-                        <span style="color: green">Completed</span>
-                    </div>
+                <div id="recentActivityList" class="symptom-box" style="margin-top: 1rem; width: 100%; max-width: 100%;">
+                    <p style="text-align: center; color: #64748b; padding: 1rem;">Loading activity...</p>
                 </div>
             </main>
         </div>
     `,
 
-    symptomChecker: () => `
-        <div class="dashboard-container fade-in">
-            <aside class="sidebar">
-                <h3><i class="ph ph-user-circle"></i> Patient Portal</h3>
-                <ul>
-                    <li><a href="#" onclick="showPage('patientDashboard')"><i class="ph ph-squares-four"></i> Dashboard</a></li>
-                    <li><a href="#" class="active"><i class="ph ph-clipboard-text"></i> Start Consultation</a></li>
-                    <li><a href="appointment_booking.php"><i class="ph ph-calendar-check"></i> Book Appointment</a></li>
-                    <li><a href="#" onclick="showPage('consultationHistory')"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
-                    <li><a href="#" onclick="logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
-                </ul>
-            </aside>
-            <main class="main-area">
-                <h2>Start New Consultation</h2>
-                <div class="symptom-box">
-                    <p style="margin-bottom: 1.5rem; color: #64748b;">Describe your symptoms using text or voice input. Our system will help match you with the right doctor.</p>
-                    
-                    <!-- Voice Input Section -->
-                    <div style="text-align: center; margin-bottom: 2rem;">
-                        <button class="voice-input-btn" id="voiceBtn" onclick="toggleVoiceInput()">
-                            <i class="ph ph-microphone" id="voiceIcon" style="color: var(--primary); font-size: 1.5rem;"></i>
-                            <span id="voiceText">Tap to Speak</span>
-                        </button>
-                        <p id="voiceStatus" style="margin-top: 0.5rem; font-size: 0.85rem; color: #64748b; min-height: 20px;"></p>
-                    </div>
-
-                    <!-- Consultation Form -->
-                    <form id="consultationForm" onsubmit="submitConsultation(event)">
-                        <!-- Symptoms -->
-                        <div class="form-group">
-                            <label>Symptoms <span style="color: red;">*</span></label>
-                            <textarea 
-                                id="symptomsInput" 
-                                name="symptoms"
-                                style="width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; min-height: 120px;" 
-                                rows="5" 
-                                placeholder="Describe your symptoms in detail (e.g., I have a bad headache and mild fever since morning...)"
-                                required
-                            ></textarea>
-                        </div>
-
-                        <!-- Duration -->
-                        <div class="form-group">
-                            <label>Duration <span style="color: red;">*</span></label>
-                            <select 
-                                id="durationInput" 
-                                name="duration"
-                                style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;"
-                                required
-                            >
-                                <option value="">Select duration</option>
-                                <option value="Less than 24 hours">Less than 24 hours</option>
-                                <option value="1-2 days">1-2 days</option>
-                                <option value="3-7 days">3-7 days</option>
-                                <option value="1-2 weeks">1-2 weeks</option>
-                                <option value="2-4 weeks">2-4 weeks</option>
-                                <option value="More than a month">More than a month</option>
-                            </select>
-                        </div>
-
-                        <!-- Severity -->
-                        <div class="form-group">
-                            <label>Severity <span style="color: red;">*</span></label>
-                            <div class="severity-options" style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-                                <label class="severity-option">
-                                    <input type="radio" name="severity" value="low" required>
-                                    <span class="severity-label severity-low">🟢 Low</span>
-                                </label>
-                                <label class="severity-option">
-                                    <input type="radio" name="severity" value="medium" required>
-                                    <span class="severity-label severity-medium">🟡 Medium</span>
-                                </label>
-                                <label class="severity-option">
-                                    <input type="radio" name="severity" value="high" required>
-                                    <span class="severity-label severity-high">🔴 High</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Consultation Mode -->
-                        <div class="form-group" style="margin-top: 1.5rem;">
-                            <label>Preferred Consultation Mode <span style="color: red;">*</span></label>
-                            <div class="mode-options" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 0.5rem;">
-                                <label class="mode-option selected" onclick="selectConsultationMode(this)" style="border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                    <input type="radio" name="consultation_mode" value="text" checked required style="display:none;">
-                                    <i class="ph ph-chat-circle" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: #64748b;"></i>
-                                    <span style="font-weight: 500; color: #475569;">Text Chat</span>
-                                </label>
-                                <label class="mode-option" onclick="selectConsultationMode(this)" style="border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                    <input type="radio" name="consultation_mode" value="audio" required style="display:none;">
-                                    <i class="ph ph-microphone" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: #64748b;"></i>
-                                    <span style="font-weight: 500; color: #475569;">Audio Call</span>
-                                </label>
-                                <label class="mode-option" onclick="selectConsultationMode(this)" style="border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                    <input type="radio" name="consultation_mode" value="video" required style="display:none;">
-                                    <i class="ph ph-video-camera" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: #64748b;"></i>
-                                    <span style="font-weight: 500; color: #475569;">Video Call</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- File Upload -->
-                        <div class="form-group" style="margin-top: 1.5rem;">
-                            <label>Attach Medical Reports (Optional)</label>
-                            <div style="border: 2px dashed #ddd; border-radius: 8px; padding: 2rem; text-align: center; cursor: pointer; position: relative;" onclick="document.getElementById('reportInput').click()">
-                                <i class="ph ph-file-arrow-up" style="font-size: 2rem; color: #64748b;"></i>
-                                <p style="margin-top: 1rem; font-size: 0.9rem; color: #64748b;">Drop files here or click to upload (PDF, JPG, PNG)</p>
-                                <input type="file" id="reportInput" style="display:none;" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(this)">
-                                <div id="fileName" style="margin-top: 0.5rem; font-weight: 600; color: var(--primary);"></div>
-                            </div>
-                        </div>
-
-                        <!-- Optional Fields -->
-                        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
-                            <h4 style="margin-bottom: 1rem; color: #64748b; font-size: 0.9rem;">Optional Information (helps with diagnosis)</h4>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                <!-- Age -->
-                                <div class="form-group">
-                                    <label>Age</label>
-                                    <input 
-                                        type="number" 
-                                        id="ageInput" 
-                                        name="age"
-                                        min="1" 
-                                        max="120"
-                                        style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px;"
-                                        placeholder="Your age"
-                                    >
-                                </div>
-
-                                <!-- Gender -->
-                                <div class="form-group">
-                                    <label>Gender</label>
-                                    <select 
-                                        id="genderInput" 
-                                        name="gender"
-                                        style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px;"
-                                    >
-                                        <option value="">Select gender</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Existing Conditions -->
-                            <div class="form-group" style="margin-top: 1rem;">
-                                <label>Existing Medical Conditions</label>
-                                <textarea 
-                                    id="conditionsInput" 
-                                    name="existing_conditions"
-                                    style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;" 
-                                    rows="3" 
-                                    placeholder="Any chronic conditions, allergies, or ongoing treatments (optional)"
-                                ></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-                            <button type="button" class="btn btn-outline" onclick="showPage('patientDashboard')" style="flex: 1;">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="submitBtn" style="flex: 2;">Submit Consultation</button>
-                        </div>
-                    </form>
-
-                    <!-- Success/Error Messages -->
-                    <div id="formMessage" style="margin-top: 1rem; padding: 1rem; border-radius: 8px; display: none;"></div>
-                </div>
-            </main>
-        </div>
-    `,
 
     consultationHistory: () => `
         <div class="dashboard-container fade-in">
@@ -427,7 +248,7 @@ const PAGES = {
                 <h3><i class="ph ph-user-circle"></i> Patient Portal</h3>
                 <ul>
                     <li><a href="#" onclick="showPage('patientDashboard')"><i class="ph ph-squares-four"></i> Dashboard</a></li>
-                    <li><a href="#" onclick="showPage('symptomChecker')"><i class="ph ph-clipboard-text"></i> Start Consultation</a></li>
+                    <li><a href="symptom_checker.php"><i class="ph ph-clipboard-text"></i> Start Consultation</a></li>
                     <li><a href="appointment_booking.php"><i class="ph ph-calendar-check"></i> Book Appointment</a></li>
                     <li><a href="#" class="active"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
                     <li><a href="#" onclick="logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
@@ -436,7 +257,7 @@ const PAGES = {
             <main class="main-area">
                 <div class="dash-header">
                     <h2>Consultation History</h2>
-                    <button class="btn btn-primary" onclick="showPage('symptomChecker')">+ New Consultation</button>
+                    <button class="btn btn-primary" onclick="window.location.href='symptom_checker.php'">+ New Consultation</button>
                 </div>
                 
                 <div id="consultationsList" style="margin-top: 1.5rem;">
@@ -668,6 +489,11 @@ function showPage(pageName) {
         if (pageName === 'consultationHistory') {
             setTimeout(loadConsultationHistory, 100);
         }
+
+        // Load patient dashboard data
+        if (pageName === 'patientDashboard') {
+            setTimeout(loadPatientDashboardData, 100);
+        }
     }
 }
 
@@ -679,229 +505,62 @@ function logout() {
 }
 
 
-// --- Consultation Functions ---
+// Load patient dashboard data
+async function loadPatientDashboardData() {
+    const nameDisplay = document.getElementById('patientNameDisplay');
+    const pastCount = document.getElementById('pastConsultationsCount');
+    const activeCount = document.getElementById('activePrescriptionCount');
+    const activityList = document.getElementById('recentActivityList');
 
-let recognition = null;
-let isRecording = false;
-let inputMethod = 'text';
+    if (!activityList) return;
 
-// Initialize speech recognition
-function initSpeechRecognition() {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-
-        recognition.onstart = function () {
-            isRecording = true;
-            const voiceBtn = document.getElementById('voiceBtn');
-            const voiceIcon = document.getElementById('voiceIcon');
-            const voiceText = document.getElementById('voiceText');
-            const voiceStatus = document.getElementById('voiceStatus');
-
-            if (voiceBtn) voiceBtn.classList.add('recording');
-            if (voiceIcon) voiceIcon.style.color = '#ef4444';
-            if (voiceText) voiceText.textContent = 'Listening...';
-            if (voiceStatus) voiceStatus.textContent = 'Speak now...';
-        };
-
-        recognition.onresult = function (event) {
-            let interimTranscript = '';
-            let finalTranscript = '';
-
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                const transcript = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                    finalTranscript += transcript + ' ';
-                } else {
-                    interimTranscript += transcript;
-                }
-            }
-
-            const symptomsInput = document.getElementById('symptomsInput');
-            if (symptomsInput) {
-                if (finalTranscript) {
-                    symptomsInput.value += finalTranscript;
-                    inputMethod = 'voice';
-                }
-                const voiceStatus = document.getElementById('voiceStatus');
-                if (voiceStatus && interimTranscript) {
-                    voiceStatus.textContent = interimTranscript;
-                }
-            }
-        };
-
-        recognition.onerror = function (event) {
-            console.error('Speech recognition error:', event.error);
-            const voiceStatus = document.getElementById('voiceStatus');
-            if (voiceStatus) {
-                voiceStatus.textContent = 'Error: ' + event.error;
-                voiceStatus.style.color = '#ef4444';
-            }
-            stopVoiceInput();
-        };
-
-        recognition.onend = function () {
-            stopVoiceInput();
-        };
+    // Set name from session
+    if (nameDisplay && state.currentUser) {
+        nameDisplay.textContent = state.currentUser.full_name;
     }
-}
-
-function toggleVoiceInput() {
-    if (!recognition) {
-        initSpeechRecognition();
-    }
-
-    if (!recognition) {
-        alert('Voice input is not supported in your browser. Please use Chrome, Edge, or Safari.');
-        return;
-    }
-
-    if (isRecording) {
-        recognition.stop();
-    } else {
-        recognition.start();
-    }
-}
-
-function stopVoiceInput() {
-    isRecording = false;
-    const voiceBtn = document.getElementById('voiceBtn');
-    const voiceIcon = document.getElementById('voiceIcon');
-    const voiceText = document.getElementById('voiceText');
-    const voiceStatus = document.getElementById('voiceStatus');
-
-    if (voiceBtn) voiceBtn.classList.remove('recording');
-    if (voiceIcon) voiceIcon.style.color = 'var(--primary)';
-    if (voiceText) voiceText.textContent = 'Tap to Speak';
-    if (voiceStatus) {
-        setTimeout(() => {
-            voiceStatus.textContent = '';
-            voiceStatus.style.color = '#64748b';
-        }, 2000);
-    }
-}
-
-// Submit consultation form
-async function submitConsultation(event) {
-    event.preventDefault();
-
-    const form = document.getElementById('consultationForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const formMessage = document.getElementById('formMessage');
-
-    // Get form data
-    const formData = {
-        symptoms: document.getElementById('symptomsInput').value.trim(),
-        duration: document.getElementById('durationInput').value,
-        severity: document.querySelector('input[name="severity"]:checked')?.value,
-        consultation_mode: document.querySelector('input[name="consultation_mode"]:checked')?.value || 'text',
-        age: document.getElementById('ageInput').value || null,
-        gender: document.getElementById('genderInput').value || null,
-        existing_conditions: document.getElementById('conditionsInput').value.trim() || null,
-        input_method: inputMethod,
-        attachment_base64: window.tempReportBase64 || null,
-        attachment_name: window.tempReportName || null
-    };
-
-    // Validate required fields
-    if (!formData.symptoms || !formData.duration || !formData.severity) {
-        showFormMessage('Please fill in all required fields.', 'error');
-        return;
-    }
-
-    // Disable submit button
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
 
     try {
-        const response = await fetch('start_consultation.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-
+        const response = await fetch('get_consultations.php');
         const result = await response.json();
 
         if (result.success) {
-            showFormMessage('Consultation submitted successfully! Redirecting...', 'success');
-            form.reset();
-            window.tempReportBase64 = null;
-            window.tempReportName = null;
-            inputMethod = 'text';
+            const consultations = result.consultations;
 
-            // Redirect to consultation room after 2 seconds
-            setTimeout(() => {
-                window.location.href = 'consultation_room.php?id=' + result.consultation_id;
-            }, 2000);
+            // Update counts
+            if (pastCount) pastCount.textContent = consultations.filter(c => c.status === 'completed' || c.status === 'cancelled').length;
+            // Prescriptions count is a bit harder without a dedicated API, but we can set it to a placeholder for now or fetch later
+            if (activeCount) activeCount.textContent = consultations.filter(c => c.status === 'completed').length;
+
+            if (consultations.length === 0) {
+                activityList.innerHTML = '<p style="text-align: center; color: #64748b; padding: 1rem;">No recent activity</p>';
+            } else {
+                // Show last 3 consultations
+                activityList.innerHTML = consultations.slice(0, 3).map(consultation => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #eee;">
+                        <div>
+                            <strong>${consultation.status === 'pending' ? 'Seeking Doctor' : (consultation.doctor_name || 'Assigned Specialist')}</strong><br>
+                            <small>${consultation.symptoms_preview} • ${consultation.created_at_formatted}</small>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span class="status-badge status-${consultation.status}" style="padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
+                                ${consultation.status.charAt(0).toUpperCase() + consultation.status.slice(1)}
+                            </span>
+                            ${(consultation.status === 'assigned' || consultation.status === 'in_progress') ? `
+                                <a href="consultation_room.php?id=${consultation.id}" class="btn btn-primary btn-sm" style="text-decoration: none;">Join</a>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
         } else {
-            showFormMessage(result.error || 'Failed to submit consultation. Please try again.', 'error');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit Consultation';
+            activityList.innerHTML = '<p style="text-align: center; color: #ef4444; padding: 1rem;">Error loading activity</p>';
         }
     } catch (error) {
-        console.error('Error submitting consultation:', error);
-
-        // Try to get raw text if it was a parsing error
-        let errorMsg = 'Network error. Please check your connection and try again.';
-        if (error instanceof SyntaxError) {
-            console.log('JSON Parsing failed. Response might be corrupted.');
-        }
-
-        showFormMessage(errorMsg, 'error');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Consultation';
+        console.error('Error loading dashboard data:', error);
+        activityList.innerHTML = '<p style="text-align: center; color: #ef4444; padding: 1rem;">Network error</p>';
     }
 }
 
-function selectConsultationMode(element) {
-    // Remove selected class from all siblings
-    const options = document.querySelectorAll('.mode-option');
-    options.forEach(opt => opt.classList.remove('selected'));
-
-    // Add selected class to clicked element
-    element.classList.add('selected');
-
-    // Ensure the radio button inside is checked
-    const radio = element.querySelector('input[type="radio"]');
-    if (radio) radio.checked = true;
-}
-
-function handleFileSelect(input) {
-    const file = input.files[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-        alert('File size exceeds 5MB limit.');
-        input.value = '';
-        return;
-    }
-
-    const fileNameDisplay = document.getElementById('fileName');
-    if (fileNameDisplay) fileNameDisplay.textContent = 'Selected: ' + file.name;
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        window.tempReportBase64 = e.target.result.split(',')[1];
-        window.tempReportName = file.name;
-    };
-    reader.readAsDataURL(file);
-}
-
-function showFormMessage(message, type) {
-    const formMessage = document.getElementById('formMessage');
-    if (!formMessage) return;
-
-    formMessage.textContent = message;
-    formMessage.style.display = 'block';
-    formMessage.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
-    formMessage.style.color = type === 'success' ? '#155724' : '#721c24';
-    formMessage.style.border = `1px solid ${type === 'success' ? '#c3e6cb' : '#f5c6cb'}`;
-}
 
 // Load consultation history
 async function loadConsultationHistory() {
@@ -918,7 +577,7 @@ async function loadConsultationHistory() {
                     <div style="text-align: center; padding: 3rem; color: #64748b;">
                         <i class="ph ph-clipboard-text" style="font-size: 4rem; opacity: 0.3;"></i>
                         <p style="margin-top: 1rem;">No consultations yet</p>
-                        <button class="btn btn-primary" onclick="showPage('symptomChecker')" style="margin-top: 1rem;">Start Your First Consultation</button>
+                        <button class="btn btn-primary" onclick="window.location.href='symptom_checker.php'" style="margin-top: 1rem;">Start Your First Consultation</button>
                     </div>
                 `;
             } else {
@@ -935,6 +594,7 @@ async function loadConsultationHistory() {
                                     </span>
                                 </div>
                                 <p style="color: #1e293b; margin-bottom: 0.5rem;">
+                                    <strong>Doctor:</strong> ${consultation.doctor_name || (consultation.status === 'pending' ? 'Pending Assignment' : 'N/A')}<br>
                                     <strong>Symptoms:</strong> ${consultation.symptoms_preview}
                                 </p>
                                 <div style="display: flex; gap: 1.5rem; font-size: 0.9rem; color: #64748b;">
@@ -970,20 +630,6 @@ async function loadConsultationHistory() {
 }
 
 
-function simulateMatching() {
-    // Simulate AI thinking
-    const btn = document.querySelector('.symptom-box .btn-primary');
-    const originalText = btn.innerText;
-    btn.innerText = 'Analyzing Symptoms...';
-    btn.disabled = true;
-
-    setTimeout(() => {
-        alert('Match Found! Dr. Smith (General Physician) is available.');
-        btn.innerText = originalText;
-        btn.disabled = false;
-        showPage('patientDashboard');
-    }, 2000);
-}
 
 
 function sendMessage() {
@@ -1178,7 +824,7 @@ function viewDoctorProfile(name, specialty, experience, bio) {
             
             <div style="display: flex; gap: 1.2rem;">
                 ${state.currentUser
-            ? `<button onclick="showPage('symptomChecker'); closeDoctorModal();" class="btn btn-primary" style="flex: 2;">Instant Consultation</button>`
+            ? `<button onclick="window.location.href='symptom_checker.php'; closeDoctorModal();" class="btn btn-primary" style="flex: 2;">Instant Consultation</button>`
             : `<a href="login.php" class="btn btn-primary" style="flex: 2; text-decoration: none;">Login to Book</a>`
         }
                 <button onclick="closeDoctorModal()" class="btn btn-outline" style="flex: 1; border-color: #e2e8f0; color: #64748b;">Dismiss</button>

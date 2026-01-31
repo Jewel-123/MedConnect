@@ -1104,10 +1104,18 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         }
 
         async function sendMessage() {
+            console.log('[Chat] sendMessage() called');
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
-            if (!text) return;
+            console.log('[Chat] Message text:', text);
+            console.log('[Chat] receiverId:', receiverId);
+            
+            if (!text) {
+                console.log('[Chat] Empty message, ignoring');
+                return;
+            }
             if (!receiverId) {
+                console.error('[Chat] ERROR: receiverId is not set!');
                 alert("Cannot send message: Receiver not identified yet.");
                 return;
             }
@@ -1120,8 +1128,11 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             formData.append('type', 'text');
 
             try {
+                console.log('[Chat] Sending message to chat_api.php...', { consultationId, receiverId, text });
                 const response = await fetch('chat_api.php', { method: 'POST', body: formData });
                 const data = await response.json();
+                console.log('[Chat] Response received:', data);
+                
                 if (data.success) {
                     input.value = '';
                     const newMsg = {
@@ -1132,12 +1143,14 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                     };
                     appendMessage(newMsg, true);
                     lastMessageId = Math.max(lastMessageId, data.message_id);
+                    console.log('[Chat] Message sent successfully!', data.message_id);
                 } else {
+                    console.error('[Chat] Failed to send:', data.error);
                     alert("Failed to send message: " + (data.error || "Unknown error"));
                 }
             } catch (err) { 
                 console.error("Error sending message:", err);
-                alert("Network error: Could not send message.");
+                alert("Network error: Could not send message. Check console for details.");
             }
         }
 
@@ -1154,24 +1167,40 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
 
         async function fetchMessages() {
             try {
+                console.log('[Chat] Fetching messages - consultationId:', consultationId, 'lastMessageId:', lastMessageId);
                 const response = await fetch(`chat_api.php?action=fetch&consultation_id=${consultationId}&last_id=${lastMessageId}`);
                 const data = await response.json();
+                console.log('[Chat] Fetch response:', data);
+                
                 if (data.success && data.messages.length > 0) {
+                    console.log('[Chat] Received', data.messages.length, 'new messages');
                     data.messages.forEach(msg => {
                         if (msg.message_type === 'signal') {
-                            const signal = JSON.parse(msg.message_content);
-                            if (signal.type === 'typing') {
-                                document.getElementById('typingIndicator').style.visibility = signal.isTyping ? 'visible' : 'hidden';
-                            } else {
-                                handleSignal(signal);
+                            try {
+                                const signal = JSON.parse(msg.message_content);
+                                if (signal.type === 'typing') {
+                                    document.getElementById('typingIndicator').style.visibility = signal.isTyping ? 'visible' : 'hidden';
+                                } else {
+                                    if (typeof handleSignal === 'function') {
+                                        handleSignal(signal);
+                                    }
+                                }
+                            } catch (signalErr) {
+                                console.error('[Chat] Signal processing error (non-fatal):', signalErr);
                             }
                         } else {
+                            console.log('[Chat] Appending message:', msg.id, msg.message_content);
                             appendMessage(msg, msg.sender_id == userId);
                         }
                         lastMessageId = Math.max(lastMessageId, msg.id);
                     });
+                    console.log('[Chat] Updated lastMessageId to:', lastMessageId);
+                } else if (data.success) {
+                    console.log('[Chat] No new messages');
+                } else {
+                    console.error('[Chat] Fetch failed:', data.error);
                 }
-            } catch (err) { console.error("Error fetching messages:", err); }
+            } catch (err) { console.error("[Chat] Error fetching messages:", err); }
         }
 
         function appendMessage(msg, isSent) {
@@ -1433,14 +1462,36 @@ Plan:
             textarea.dispatchEvent(new Event('input'));
         }
 
+
         window.addEventListener('load', () => {
             setTimeout(() => {
-                toggleVideo(true); 
-                fetchMessages(); // Immediate fetch
+                // Video initialization (can fail, that's OK)
+                try {
+                    if (typeof toggleVideo === 'function') {
+                        toggleVideo(true);
+                    }
+                } catch (err) {
+                    console.error('[Video] Failed to initialize (non-fatal):', err);
+                }
+                
+                // Chat initialization (critical, but protected)
+                try {
+                    fetchMessages();
+                    console.log('[Chat] Initial fetch complete');
+                } catch (err) {
+                    console.error('[Chat] Initial fetch failed:', err);
+                }
             }, 800);
         });
 
-        setInterval(fetchMessages, 3000);
+        // Polling with protection
+        setInterval(() => {
+            try {
+                fetchMessages();
+            } catch (err) {
+                console.error('[Chat] Polling error:', err);
+            }
+        }, 3000);
     </script>
 </body>
 </html>

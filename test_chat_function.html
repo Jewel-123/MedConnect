@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quick Chat Fix Test</title>
+</head>
+
+<body>
+    <h2>Testing if sendMessage function exists...</h2>
+    <button onclick="testChat()">Test Chat Function</button>
+    <pre id="output" style="background:#1e1e1e;color:#4ec9b0;padding:15px;margin-top:20px;"></pre>
+
+    <script>
+        function testChat() {
+            const output = document.getElementById('output');
+            output.innerHTML = '';
+
+            function log(msg) {
+                output.innerHTML += msg + '\n';
+            }
+
+            log('Testing Chat System...\n');
+
+            // Test if we can access the parent window (if in iframe)
+            try {
+                if (typeof sendMessage !== 'undefined') {
+                    log('✓ sendMessage function is defined in this window');
+                } else {
+                    log('✗ sendMessage function NOT found in this window');
+                }
+            } catch (e) {
+                log('✗ Error checking sendMessage: ' + e.message);
+            }
+
+            // Check if consultation room variables are defined
+            const checks = ['consultationId', 'role', 'userId', 'receiverId'];
+            checks.forEach(varName => {
+                try {
+                    if (typeof window[varName] !== 'undefined') {
+                        log(`✓ ${varName} = ${window[varName]}`);
+                    } else {
+                        log(`✗ ${varName} is undefined`);
+                    }
+                } catch (e) {
+                    log(`✗ Error checking ${varName}: ${e.message}`);
+                }
+            });
+
+            log('\n--- Fix Test ---');
+            log('If you see ✗ for sendMessage, the function is not loaded.');
+            log('Solution: Hard refresh the consultation page (Ctrl+Shift+R)');
+        }
+    </script>
+</body>
+
+</html>

@@ -35,20 +35,12 @@ try {
     // Prepare SQL statement to get consultations
     $stmt = $conn->prepare("
         SELECT 
-            id,
-            symptoms,
-            duration,
-            severity,
-            age,
-            gender,
-            existing_conditions,
-            input_method,
-            status,
-            created_at,
-            updated_at
-        FROM consultations 
-        WHERE patient_id = ?
-        ORDER BY created_at DESC
+            c.*,
+            u.full_name as doctor_name
+        FROM consultations c
+        LEFT JOIN users u ON c.doctor_id = u.id
+        WHERE c.patient_id = ?
+        ORDER BY c.created_at DESC
     ");
     
     if (!$stmt) {
@@ -81,7 +73,8 @@ try {
             'status' => $row['status'],
             'created_at' => $row['created_at'],
             'updated_at' => $row['updated_at'],
-            'created_at_formatted' => date('M d, Y g:i A', strtotime($row['created_at']))
+            'created_at_formatted' => date('M d, Y g:i A', strtotime($row['created_at'])),
+            'doctor_name' => $row['doctor_name']
         ];
     }
     

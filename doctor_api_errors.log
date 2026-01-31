@@ -64,3 +64,12 @@ Stack trace:
 [29-Jan-2026 05:45:30 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
 [29-Jan-2026 05:58:41 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
 [29-Jan-2026 05:58:41 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[29-Jan-2026 09:57:04 Europe/Berlin] Prescription save input: null
+[29-Jan-2026 09:57:04 Europe/Berlin] Prescription save error: Missing required fields - consultation_id: 0, patient_id: 0, diagnosis: 
+[29-Jan-2026 09:57:19 Europe/Berlin] Prescription save input: null
+[29-Jan-2026 09:57:19 Europe/Berlin] Prescription save error: Missing required fields - consultation_id: 0, patient_id: 0, diagnosis: 
+[29-Jan-2026 09:57:34 Europe/Berlin] Prescription save input: null
+[29-Jan-2026 09:57:34 Europe/Berlin] Prescription save error: Missing required fields - consultation_id: 0, patient_id: 0, diagnosis: 
+[31-Jan-2026 04:32:05 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"21","patient_id":"2","icd_code":"fnrk","diagnosis":"blod test","medicines":[{"name":"hwkjh","dosage":"100","frequency":"7","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-01-30","notes_for_patient":"follow","notes_for_pharmacy":"pls route this"}
+[31-Jan-2026 04:32:05 Europe/Berlin] Prescription created with ID: 1
+[31-Jan-2026 04:32:05 Europe/Berlin] Prescription saved successfully: ID 1

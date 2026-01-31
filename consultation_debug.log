@@ -438,3 +438,7 @@
 [2026-01-17 06:17:03] Sending notification to doctor...
 [2026-01-17 06:17:05] Notification sent.
 [2026-01-17 06:17:05] Success! Returning response for consultation ID: 71
+[2026-01-30 18:22:03] Starting consultation submission request
+[2026-01-30 18:22:03] Running NLP analysis on symptoms: fever
+[2026-01-30 18:22:03] NLP Result: Specialty=General Physician, Urgency=urgent (70)
+[2026-01-30 18:22:03] FATAL ERROR: Unknown column 'attachment_path' in 'field list' in C:\xampp\htdocs\MedConnect\start_consultation.php on line 156
