@@ -180,6 +180,46 @@ try {
             break;
         
         // ==================================================
+        // Get Advanced AI Analysis
+        // ==================================================
+        case 'get_ai_analysis':
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            // Validate required fields
+            if (empty($input['symptoms'])) {
+                throw new Exception('Symptoms description is required');
+            }
+            
+            // Prepare context
+            $context = [];
+            if (!empty($input['age'])) {
+                $context['age'] = intval($input['age']);
+            }
+            if (!empty($input['gender'])) {
+                $context['gender'] = $input['gender'];
+            }
+            if (!empty($input['existing_conditions'])) {
+                $context['existing_conditions'] = $input['existing_conditions'];
+            }
+            
+            // Run AI analysis
+            require_once 'medical_ai_engine.php';
+            $aiEngine = new MedicalAIEngine($conn);
+            $analysis = $aiEngine->analyze($input['symptoms'], $context);
+            
+            // Log analysis if consultation_id provided
+            if (!empty($input['consultation_id'])) {
+                $aiEngine->logAnalysis($input['consultation_id'], $userId, $analysis);
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'analysis' => $analysis,
+                'message' => 'AI analysis completed successfully'
+            ]);
+            break;
+        
+        // ==================================================
         // Get symptom suggestions (autocomplete)
         // ==================================================
         case 'get_suggestions':

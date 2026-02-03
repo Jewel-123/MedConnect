@@ -1,0 +1,281 @@
+<!-- Prescription Viewer Modal -->
+<div id="prescriptionViewerModal" class="modal" style="display: none;">
+    <div class="modal-content prescription-modal" style="max-width: 800px;">
+        <div class="modal-header">
+            <div>
+                <h2 id="rxPrescriptionNumber">Prescription</h2>
+                <p class="rx-date">Date: <span id="rxDate"></span></p>
+            </div>
+            <span class="close" onclick="PrescriptionViewer.close()">&times;</span>
+        </div>
+
+        <div class="modal-body">
+            <!-- Doctor Info -->
+            <div class="doctor-info-section">
+                <h3>Prescribed By</h3>
+                <p><strong id="rxDoctorName"></strong></p>
+                <p><span id="rxQualification"></span></p>
+                <p>Reg. No: <span id="rxRegNumber"></span></p>
+            </div>
+
+            <!-- Diagnosis -->
+            <div class="diagnosis-section">
+                <h3>Diagnosis</h3>
+                <p id="rxDiagnosis"></p>
+            </div>
+
+            <!-- Medicines -->
+            <div class="medicines-section">
+                <h3>Prescribed Medicines</h3>
+                <div id="rxMedicinesList"></div>
+            </div>
+
+            <!-- Patient Notes -->
+            <div id="rxPatientNotesSection" class="notes-section" style="display: none;">
+                <h3>Instructions for Patient</h3>
+                <p id="rxPatientNotes"></p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" onclick="PrescriptionViewer.printPrescription()">
+                    🖨️ Print
+                </button>
+
+                <button type="button" class="btn btn-primary" onclick="PrescriptionViewer.openOrderModal()">
+                    🛒 Order Medicines
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Medicine Order Modal -->
+<div id="medicineOrderModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h2>Order Medicines</h2>
+            <span class="close"
+                onclick="document.getElementById('medicineOrderModal').style.display='none'">&times;</span>
+        </div>
+
+        <div class="modal-body">
+            <h3>Choose Fulfillment Method</h3>
+
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="fulfillmentType" value="pickup" checked
+                        onchange="PrescriptionViewer.toggleDeliveryFields()">
+                    <div class="radio-content">
+                        <strong>🏪 Pharmacy Pickup</strong>
+                        <p>Collect from nearest pharmacy</p>
+                    </div>
+                </label>
+
+                <label class="radio-option">
+                    <input type="radio" name="fulfillmentType" value="delivery"
+                        onchange="PrescriptionViewer.toggleDeliveryFields()">
+                    <div class="radio-content">
+                        <strong>🚚 Home Delivery</strong>
+                        <p>Get medicines delivered to your address</p>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Delivery Fields (hidden by default) -->
+            <div id="deliveryFields" style="display: none;">
+                <div class="form-group">
+                    <label for="deliveryAddress">Delivery Address *</label>
+                    <textarea id="deliveryAddress" rows="3" placeholder="Enter complete delivery address..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="deliveryContact">Contact Number *</label>
+                    <input type="tel" id="deliveryContact" placeholder="Enter contact number...">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary"
+                    onclick="document.getElementById('medicineOrderModal').style.display='none'">
+                    Cancel
+                </button>
+
+                <button type="button" class="btn btn-primary" id="orderMedicinesBtn"
+                    onclick="PrescriptionViewer.createOrder()">
+                    Confirm Order
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .prescription-modal .doctor-info-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .prescription-modal .doctor-info-section h3 {
+        margin-top: 0;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .prescription-modal .doctor-info-section p {
+        margin: 5px 0;
+    }
+
+    .diagnosis-section {
+        background: #fff3cd;
+        padding: 15px;
+        border-left: 4px solid #ffc107;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .diagnosis-section h3 {
+        margin-top: 0;
+        color: #856404;
+        font-size: 16px;
+    }
+
+    .medicines-section {
+        margin-bottom: 20px;
+    }
+
+    .medicines-section h3 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+
+    .medicine-card {
+        display: flex;
+        gap: 15px;
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border-left: 4px solid #3498db;
+    }
+
+    .medicine-number {
+        background: #3498db;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .medicine-details {
+        flex: 1;
+    }
+
+    .medicine-details h4 {
+        margin: 0 0 10px 0;
+        color: #2c3e50;
+    }
+
+    .medicine-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .medicine-info span {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .instructions {
+        background: white;
+        padding: 8px;
+        border-radius: 4px;
+        margin: 8px 0 0 0;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .notes-section {
+        background: #e7f3ff;
+        padding: 15px;
+        border-left: 4px solid #2196f3;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .notes-section h3 {
+        margin-top: 0;
+        color: #1976d2;
+        font-size: 16px;
+    }
+
+    .rx-date {
+        margin: 5px 0 0 0;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .radio-group {
+        margin: 20px 0;
+    }
+
+    .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .radio-option:hover {
+        border-color: #3498db;
+        background: #f8f9fa;
+    }
+
+    .radio-option input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .radio-option input[type="radio"]:checked+.radio-content {
+        color: #3498db;
+    }
+
+    .radio-content strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .radio-content p {
+        margin: 0;
+        font-size: 14px;
+        color: #777;
+    }
+
+    @media print {
+
+        .modal-header .close,
+        .button-group {
+            display: none !important;
+        }
+
+        .modal-content {
+            box-shadow: none;
+        }
+    }
+</style>

@@ -1242,11 +1242,62 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         async function submitPrescription() {
             const form = document.getElementById('prescriptionForm');
             const formData = new FormData(form);
-            formData.append('action', 'save_prescription');
-            formData.append('consultation_id', consultationId);
+            
+            // Get patient_id from the consultation
+            const patientId = <?php echo $consultation['patient_id']; ?>;
+            
+            // Extract diagnosis
+            const diagnosis = formData.get('diagnosis');
+            if (!diagnosis || diagnosis.trim() === '') {
+                alert("Please enter a diagnosis before submitting the prescription.");
+                return;
+            }
+            
+            // Extract medicines
+            const medNames = formData.getAll('med_name[]');
+            const medDosages = formData.getAll('med_dosage[]');
+            const medFreqs = formData.getAll('med_freq[]');
+            const medDurations = formData.getAll('med_duration[]');
+            
+            const medicines = [];
+            for (let i = 0; i < medNames.length; i++) {
+                if (medNames[i].trim()) {
+                    medicines.push({
+                        name: medNames[i],
+                        dosage: medDosages[i] || '',
+                        frequency: medFreqs[i] || '',
+                        duration: medDurations[i] || '',
+                        instructions: formData.get('instructions') || '',
+                        quantity: 1
+                    });
+                }
+            }
+            
+            if (medicines.length === 0) {
+                alert("Please add at least one medication.");
+                return;
+            }
+            
+            // Prepare JSON payload
+            const payload = {
+                consultation_id: consultationId,
+                patient_id: patientId,
+                diagnosis: diagnosis,
+                medicines: medicines,
+                tests: [],
+                follow_up_date: null,
+                notes_for_patient: formData.get('instructions') || '',
+                notes_for_pharmacy: ''
+            };
             
             try {
-                const response = await fetch('doctor_api.php', { method: 'POST', body: formData });
+                const response = await fetch('doctor_api.php?action=save_prescription', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
                 const data = await response.json();
                 if (data.status === 'success') {
                     alert("Prescription signed and sent to patient & pharmacy!");

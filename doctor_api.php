@@ -513,6 +513,124 @@ try {
             break;
             
         // ========================================
+        // GET POST-CONSULTATION DATA
+        // ========================================
+        case 'get_post_consultation_data':
+            $consultation_id = $_GET['consultation_id'] ?? 0;
+            
+            if (!$consultation_id) {
+                throw new Exception('Consultation ID is required');
+            }
+            
+            // Get consultation with patient info
+            $consultation = $conn->query("
+                SELECT c.*, u.full_name as patient_name, u.email as patient_email,
+                       pp.date_of_birth, pp.gender, pp.blood_group
+                FROM consultations c
+                JOIN users u ON c.patient_id = u.id
+                LEFT JOIN patient_profiles pp ON u.id = pp.user_id
+                WHERE c.id = $consultation_id AND c.doctor_id = $doctor_id
+            ")->fetch_assoc();
+            
+            if (!$consultation) {
+                throw new Exception('Consultation not found');
+            }
+            
+            // Get existing prescription if any
+            $prescription = $conn->query("
+                SELECT * FROM prescriptions_v2 
+                WHERE consultation_id = $consultation_id
+            ")->fetch_assoc();
+            
+            echo json_encode([
+                'status' => 'success',
+                'consultation' => $consultation,
+                'prescription' => $prescription
+            ]);
+            break;
+            
+        // ========================================
+        // SAVE DIAGNOSIS AND NOTES
+        // ========================================
+        case 'save_diagnosis_notes':
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            $consultation_id = $input['consultation_id'] ?? 0;
+            $diagnosis = $input['diagnosis'] ?? '';
+            $medical_advice = $input['medical_advice'] ?? '';
+            
+            if (!$consultation_id) {
+                throw new Exception('Consultation ID is required');
+            }
+            
+            // Update consultation
+            $stmt = $conn->prepare("
+                UPDATE consultations 
+                SET diagnosis = ?, medical_advice = ?, updated_at = NOW()
+                WHERE id = ? AND doctor_id = ?
+            ");
+            $stmt->bind_param("ssii", $diagnosis, $medical_advice, $consultation_id, $doctor_id);
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Failed to save diagnosis: ' . $stmt->error);
+            }
+            
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Diagnosis and notes saved successfully'
+            ]);
+            break;
+            
+        // ========================================
+        // SCHEDULE FOLLOW-UP
+        // ========================================
+        case 'schedule_follow_up':
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            $consultation_id = $input['consultation_id'] ?? 0;
+            $follow_up_date = $input['follow_up_date'] ?? null;
+            $follow_up_notes = $input['follow_up_notes'] ?? '';
+            
+            if (!$consultation_id || !$follow_up_date) {
+                throw new Exception('Consultation ID and follow-up date are required');
+            }
+            
+            // Update consultation
+            $stmt = $conn->prepare("
+                UPDATE consultations 
+                SET follow_up_scheduled = ?, follow_up_notes = ?, updated_at = NOW()
+                WHERE id = ? AND doctor_id = ?
+            ");
+            $stmt->bind_param("ssii", $follow_up_date, $follow_up_notes, $consultation_id, $doctor_id);
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Failed to schedule follow-up: ' . $stmt->error);
+            }
+            
+            // Create notification for patient
+            require_once 'notification_service.php';
+            $notificationService = new NotificationService($conn);
+            
+            // Get patient ID
+            $patient_id = $conn->query("
+                SELECT patient_id FROM consultations WHERE id = $consultation_id
+            ")->fetch_assoc()['patient_id'];
+            
+            $notificationService->send(
+                $patient_id,
+                'all',
+                'Follow-up Scheduled',
+                "Your follow-up consultation has been scheduled for " . date('F j, Y', strtotime($follow_up_date)),
+                ['notification_type' => 'follow_up_reminder', 'related_id' => $consultation_id]
+            );
+            
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Follow-up scheduled successfully'
+            ]);
+            break;
+            
+        // ========================================
         // SAVE PRESCRIPTION
         // ========================================
         case 'save_prescription':
@@ -749,7 +867,19 @@ try {
                 throw new Exception('Consultation ID is required');
             }
             
-            // Update consultation
+            // Get consultation details
+            $consultationData = $conn->query("
+                SELECT c.*, u.full_name as patient_name, u.email as patient_email
+                FROM consultations c
+                JOIN users u ON c.patient_id = u.id
+                WHERE c.id = $consultation_id AND c.doctor_id = $doctor_id
+            ")->fetch_assoc();
+            
+            if (!$consultationData) {
+                throw new Exception('Consultation not found');
+            }
+            
+            // Update consultation status
             $conn->query("
                 UPDATE consultations 
                 SET status = 'completed', completed_at = NOW() 
@@ -763,7 +893,40 @@ try {
                 WHERE consultation_id = $consultation_id
             ");
             
-            // Get consultation fee from doctor profile
+            // Update prescription status to 'issued' if exists
+            $conn->query("
+                UPDATE prescriptions_v2 
+                SET status = 'issued', signature_timestamp = NOW()
+                WHERE consultation_id = $consultation_id AND status = 'draft'
+            ");
+            
+            // Get prescription details for notification
+            $prescription = $conn->query("
+                SELECT * FROM prescriptions_v2 
+                WHERE consultation_id = $consultation_id
+            ")->fetch_assoc();
+            
+            // Auto-send to pharmacy if prescription exists and pharmacy is assigned
+            if ($prescription && $prescription['pharmacy_id']) {
+                $conn->query("
+                    UPDATE prescriptions_v2 
+                    SET status = 'sent_to_pharmacy', sent_at = NOW(), auto_sent_to_pharmacy = TRUE
+                    WHERE id = {$prescription['id']}
+                ");
+                
+                // Notify pharmacy
+                require_once 'notification_service.php';
+                $notificationService = new NotificationService($conn);
+                $notificationService->notifyPharmacyNewPrescription(
+                    $prescription['pharmacy_id'],
+                    $prescription['id'],
+                    $consultationData['patient_name'],
+                    $_SESSION['full_name'] ?? 'Doctor',
+                    null
+                );
+            }
+            
+            // Calculate earnings
             $feeData = $conn->query("
                 SELECT consultation_fee FROM doctor_profiles WHERE user_id = $doctor_id
             ")->fetch_assoc();
@@ -782,7 +945,33 @@ try {
             $stmt->bind_param("iidddd", $doctor_id, $consultation_id, $grossAmount, $commissionPercent, $commissionAmount, $netAmount);
             $stmt->execute();
             
-            echo json_encode(['status' => 'success', 'message' => 'Consultation completed successfully']);
+            // Send notification to patient
+            require_once 'notification_service.php';
+            $notificationService = new NotificationService($conn);
+            
+            $message = "Your consultation has been completed. ";
+            if ($prescription) {
+                $message .= "Your prescription is ready to view.";
+            }
+            
+            $notificationService->send(
+                $consultationData['patient_id'],
+                'all',
+                'Consultation Completed',
+                $message,
+                ['notification_type' => 'consultation_completed', 'related_id' => $consultation_id]
+            );
+            
+            echo json_encode([
+                'status' => 'success', 
+                'message' => 'Consultation completed successfully',
+                'earnings' => [
+                    'gross' => $grossAmount,
+                    'commission' => $commissionAmount,
+                    'net' => $netAmount
+                ],
+                'prescription_sent' => $prescription && $prescription['pharmacy_id'] ? true : false
+            ]);
             break;
             
         // ========================================

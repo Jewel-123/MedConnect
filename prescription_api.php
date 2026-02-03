@@ -48,6 +48,7 @@ try {
                 LEFT JOIN prescription_orders po ON p.id = po.prescription_id
                 LEFT JOIN users pharm ON po.pharmacy_id = pharm.id
                 WHERE p.patient_id = ?
+                AND p.status != 'draft'
             ";
             
             if ($status !== 'all') {

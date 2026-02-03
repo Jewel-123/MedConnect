@@ -1,0 +1,243 @@
+<!-- Post-Consultation Modal -->
+<div id="postConsultationModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h2>Post-Consultation Summary</h2>
+            <span class="close" onclick="PostConsultationModal.close()">&times;</span>
+        </div>
+
+        <div class="modal-body">
+            <!-- Patient Info -->
+            <div class="info-section">
+                <h3>Patient Information</h3>
+                <p><strong>Name:</strong> <span id="postConsultPatientName"></span></p>
+                <p><strong>Symptoms:</strong> <span id="postConsultSymptoms"></span></p>
+            </div>
+
+            <!-- Diagnosis Form -->
+            <div class="form-section">
+                <h3>Diagnosis & Medical Advice</h3>
+
+                <div class="form-group">
+                    <label for="postConsultDiagnosis">Diagnosis *</label>
+                    <textarea id="postConsultDiagnosis" rows="3" placeholder="Enter diagnosis..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="postConsultAdvice">Medical Advice & Instructions</label>
+                    <textarea id="postConsultAdvice" rows="4"
+                        placeholder="Enter medical advice, lifestyle recommendations, precautions..."></textarea>
+                </div>
+            </div>
+
+            <!-- Follow-up Section -->
+            <div class="form-section">
+                <h3>Follow-up (Optional)</h3>
+
+                <div class="form-group">
+                    <label for="postConsultFollowUpDate">Follow-up Date</label>
+                    <input type="date" id="postConsultFollowUpDate"
+                        min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="postConsultFollowUpNotes">Follow-up Notes</label>
+                    <textarea id="postConsultFollowUpNotes" rows="2"
+                        placeholder="Reason for follow-up, what to monitor..."></textarea>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" onclick="PostConsultationModal.openPrescriptionModal()">
+                    📝 Create Prescription
+                </button>
+
+                <button type="button" class="btn btn-primary" id="postConsultCompleteBtn"
+                    onclick="PostConsultationModal.completeWorkflow()">
+                    ✓ Complete Consultation
+                </button>
+            </div>
+
+            <p class="help-text">
+                <small>* You can create a prescription before completing the consultation. The prescription will be
+                    automatically sent to the patient and pharmacy.</small>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header {
+        padding: 20px 30px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 24px;
+    }
+
+    .close {
+        font-size: 28px;
+        font-weight: bold;
+        color: #999;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .close:hover {
+        color: #333;
+    }
+
+    .modal-body {
+        padding: 30px;
+    }
+
+    .info-section {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .info-section h3 {
+        margin-top: 0;
+        color: #2c3e50;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .info-section p {
+        margin: 8px 0;
+        color: #555;
+    }
+
+    .form-section {
+        margin-bottom: 25px;
+    }
+
+    .form-section h3 {
+        color: #2c3e50;
+        font-size: 18px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 8px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-weight: 500;
+    }
+
+    .form-group textarea,
+    .form-group input[type="date"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        font-family: inherit;
+        transition: border-color 0.2s;
+    }
+
+    .form-group textarea:focus,
+    .form-group input[type="date"]:focus {
+        outline: none;
+        border-color: #3498db;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+        flex: 1;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2980b9, #21618c);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #7f8c8d, #6c7a7b);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(127, 140, 141, 0.3);
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    .help-text {
+        margin-top: 15px;
+        color: #777;
+        font-style: italic;
+    }
+</style>

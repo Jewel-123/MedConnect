@@ -52,27 +52,43 @@
     <script>
         // Initialize Google Sign-In
         window.onload = function() {
-            if (window.google) {
-                google.accounts.id.initialize({
-                    client_id: "823874360352-ltjnmvdgru8nnhl3h9r5766o7pg57nrf.apps.googleusercontent.com",
-                    callback: handleGoogleLogin
-                });
+            try {
+                if (window.google && google.accounts) {
+                    google.accounts.id.initialize({
+                        client_id: "823874360352-ltjnmvdgru8nnhl3h9r5766o7pg57nrf.apps.googleusercontent.com",
+                        callback: handleGoogleLogin
+                    });
 
-                google.accounts.id.renderButton(
-                    document.getElementById("google-btn-container"),
-                    { theme: "outline", size: "large", width: "100%" }
-                );
+                    google.accounts.id.renderButton(
+                        document.getElementById("google-btn-container"),
+                        { theme: "outline", size: "large", width: "100%" }
+                    );
+                } else {
+                    // Google Sign-In not available, hide the button
+                    document.getElementById("google-btn-container").style.display = 'none';
+                    console.log("Google Sign-In not available");
+                }
+            } catch (error) {
+                // If Google Sign-In fails, just hide it and allow email/password login
+                document.getElementById("google-btn-container").style.display = 'none';
+                console.error("Google Sign-In initialization failed:", error);
             }
         };
 
         // Handle Google Login
         function handleGoogleLogin(response) {
+            // Check if auth_google.php exists first
             fetch('auth_google.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ credential: response.credential, role: 'patient' })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Server returned ' + res.status);
+                }
+                return res.json();
+            })
             .then(data => {
                 if (data.status === 'success') {
                     if (data.is_new_user) {
@@ -87,8 +103,10 @@
                 }
             })
             .catch(err => {
-                console.error("Error:", err);
-                alert("Google Login Error: " + err.message);
+                console.error("Google Login Error:", err);
+                alert("Google Login is currently unavailable. Please use email/password login instead.");
+                // Hide Google login button
+                document.getElementById("google-btn-container").style.display = 'none';
             });
         }
 

@@ -103,35 +103,63 @@ try {
                 throw new Exception('Prescription not found');
             }
             
-            // Generate order number
-            $orderNumber = 'ORD' . time() . rand(100, 999);
+            // Check if order already exists (created by patient)
+            $stmt = $conn->prepare("
+                SELECT id, order_number FROM prescription_orders
+                WHERE prescription_id = ? AND patient_id = ? AND order_status = 'pending'
+            ");
+            $stmt->bind_param("ii", $prescriptionId, $prescription['patient_id']);
+            $stmt->execute();
+            $existingOrder = $stmt->get_result()->fetch_assoc();
             
-            // Create prescription order
             $fulfillmentType = $deliveryAvailable ? 'delivery' : 'pickup';
             
-            $stmt = $conn->prepare("
-                INSERT INTO prescription_orders (
-                    order_number, prescription_id, pharmacy_id, patient_id,
-                    total_amount, fulfillment_type, order_status
-                ) VALUES (?, ?, ?, ?, ?, ?, 'accepted')
-            ");
-            
-            $stmt->bind_param(
-                "siiids",
-                $orderNumber, $prescriptionId, $userId,
-                $prescription['patient_id'], $totalAmount, $fulfillmentType
-            );
-            
-            if (!$stmt->execute()) {
-                throw new Exception('Failed to create order');
+            if ($existingOrder) {
+                // Update existing order
+                $orderId = $existingOrder['id'];
+                $orderNumber = $existingOrder['order_number'];
+                
+                $stmt = $conn->prepare("
+                    UPDATE prescription_orders
+                    SET order_status = 'accepted',
+                        total_amount = ?,
+                        fulfillment_type = ?,
+                        accepted_at = NOW()
+                    WHERE id = ?
+                ");
+                $stmt->bind_param("dsi", $totalAmount, $fulfillmentType, $orderId);
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to update order');
+                }
+            } else {
+                // Create new order (fallback for old prescriptions)
+                $orderNumber = 'ORD' . time() . rand(100, 999);
+                
+                $stmt = $conn->prepare("
+                    INSERT INTO prescription_orders (
+                        order_number, prescription_id, pharmacy_id, patient_id,
+                        total_amount, fulfillment_type, order_status, accepted_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, 'accepted', NOW())
+                ");
+                
+                $stmt->bind_param(
+                    "siiids",
+                    $orderNumber, $prescriptionId, $userId,
+                    $prescription['patient_id'], $totalAmount, $fulfillmentType
+                );
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to create order');
+                }
+                
+                $orderId = $stmt->insert_id;
             }
             
-            $orderId = $stmt->insert_id;
-            
-            // Update prescription status
+            // Update prescription status to in_progress
             $conn->query("
                 UPDATE prescriptions_v2
-                SET status = 'filled', filled_at = NOW()
+                SET status = 'in_progress', in_progress_at = NOW()
                 WHERE id = $prescriptionId
             ");
             
@@ -147,7 +175,7 @@ try {
                 'success' => true,
                 'order_id' => $orderId,
                 'order_number' => $orderNumber,
-                'message' => 'Prescription accepted and order created'
+                'message' => 'Prescription accepted and order updated'
             ]);
             break;
         
@@ -192,11 +220,25 @@ try {
             $stmt->bind_param("ssi", $status, $noteEntry, $orderId);
             $stmt->execute();
             
-            // Update specific timestamps
+            // Update specific timestamps and prescription status
             if ($status === 'ready') {
                 $conn->query("UPDATE prescription_orders SET ready_at = NOW() WHERE id = $orderId");
+                // Update prescription status to ready for payment
+                $conn->query("
+                    UPDATE prescriptions_v2 p
+                    JOIN prescription_orders po ON p.id = po.prescription_id
+                    SET p.status = 'ready', p.ready_at = NOW()
+                    WHERE po.id = $orderId
+                ");
             } elseif ($status === 'delivered') {
                 $conn->query("UPDATE prescription_orders SET delivered_at = NOW() WHERE id = $orderId");
+            } elseif ($status === 'completed') {
+                $conn->query("
+                    UPDATE prescriptions_v2 p
+                    JOIN prescription_orders po ON p.id = po.prescription_id
+                    SET p.status = 'completed', p.completed_at = NOW()
+                    WHERE po.id = $orderId
+                ");
             }
             
             // Notify patient

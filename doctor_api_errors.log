@@ -73,3 +73,56 @@ Stack trace:
 [31-Jan-2026 04:32:05 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"21","patient_id":"2","icd_code":"fnrk","diagnosis":"blod test","medicines":[{"name":"hwkjh","dosage":"100","frequency":"7","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-01-30","notes_for_patient":"follow","notes_for_pharmacy":"pls route this"}
 [31-Jan-2026 04:32:05 Europe/Berlin] Prescription created with ID: 1
 [31-Jan-2026 04:32:05 Europe/Berlin] Prescription saved successfully: ID 1
+[31-Jan-2026 05:53:00 Europe/Berlin] Prescription save input: null
+[31-Jan-2026 05:53:00 Europe/Berlin] Prescription save error: Missing required fields - consultation_id: 0, patient_id: 0, diagnosis: 
+[31-Jan-2026 05:53:11 Europe/Berlin] Prescription save input: null
+[31-Jan-2026 05:53:11 Europe/Berlin] Prescription save error: Missing required fields - consultation_id: 0, patient_id: 0, diagnosis: 
+[31-Jan-2026 05:55:26 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"27","patient_id":"2","icd_code":"hjmjtjijl","diagnosis":"need chevkups","medicines":[{"name":"cjhdfle","dosage":"100","frequency":"3","duration":"9","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-01-24","notes_for_patient":"ghkko","notes_for_pharmacy":"hjk"}
+[31-Jan-2026 05:55:26 Europe/Berlin] Prescription created with ID: 2
+[31-Jan-2026 05:55:26 Europe/Berlin] Prescription saved successfully: ID 2
+[31-Jan-2026 06:19:59 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
+[31-Jan-2026 06:19:59 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[31-Jan-2026 06:20:06 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
+[31-Jan-2026 06:20:06 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[31-Jan-2026 06:20:14 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
+[31-Jan-2026 06:20:14 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[31-Jan-2026 06:20:21 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
+[31-Jan-2026 06:20:21 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[31-Jan-2026 06:28:48 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
+[31-Jan-2026 06:28:48 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[03-Feb-2026 12:28:32 Europe/Berlin] Prescription save input: null
+[03-Feb-2026 12:28:32 Europe/Berlin] Prescription save error: Missing required fields - consultation_id: 0, patient_id: 0, diagnosis: 
+[03-Feb-2026 12:28:37 Europe/Berlin] Prescription save input: null
+[03-Feb-2026 12:28:37 Europe/Berlin] Prescription save error: Missing required fields - consultation_id: 0, patient_id: 0, diagnosis: 
+[03-Feb-2026 12:34:08 Europe/Berlin] Prescription save input: {"consultation_id":50,"patient_id":26,"diagnosis":"blood test","medicines":[{"name":"paracetamol","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[03-Feb-2026 12:34:10 Europe/Berlin] Prescription created with ID: 3
+[03-Feb-2026 12:34:20 Europe/Berlin] Prescription saved successfully: ID 3
+[03-Feb-2026 12:34:22 Europe/Berlin] Prescription save input: {"consultation_id":50,"patient_id":26,"diagnosis":"blood test","medicines":[{"name":"paracetamol","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription created with ID: 4
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription saved successfully: ID 4
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription save input: {"consultation_id":50,"patient_id":26,"diagnosis":"blood test","medicines":[{"name":"paracetamol","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription created with ID: 5
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription saved successfully: ID 5
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription save input: {"consultation_id":50,"patient_id":26,"diagnosis":"blood test","medicines":[{"name":"paracetamol","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription created with ID: 6
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription saved successfully: ID 6
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription save input: {"consultation_id":50,"patient_id":26,"diagnosis":"blood test","medicines":[{"name":"paracetamol","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription created with ID: 7
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription saved successfully: ID 7
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription save input: {"consultation_id":50,"patient_id":26,"diagnosis":"blood test","medicines":[{"name":"paracetamol","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription created with ID: 8
+[03-Feb-2026 12:34:24 Europe/Berlin] Prescription saved successfully: ID 8
+[03-Feb-2026 12:34:36 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
+[03-Feb-2026 12:34:36 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[03-Feb-2026 12:47:51 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
+[03-Feb-2026 12:47:51 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[03-Feb-2026 13:30:14 Europe/Berlin] Prescription save input: {"consultation_id":54,"patient_id":26,"diagnosis":"blood test","medicines":[{"name":"isoteritenoin","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[03-Feb-2026 13:30:14 Europe/Berlin] Prescription created with ID: 9
+[03-Feb-2026 13:30:14 Europe/Berlin] Prescription saved successfully: ID 9
+[03-Feb-2026 13:30:21 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
+[03-Feb-2026 13:30:21 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[03-Feb-2026 14:08:37 Europe/Berlin] Prescription save input: {"consultation_id":55,"patient_id":26,"diagnosis":"blood test","medicines":[{"name":"paracetamol","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"food ,drink","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"food ,drink","notes_for_pharmacy":""}
+[03-Feb-2026 14:08:37 Europe/Berlin] Prescription created with ID: 10
+[03-Feb-2026 14:08:37 Europe/Berlin] Prescription saved successfully: ID 10
+[03-Feb-2026 14:08:50 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
+[03-Feb-2026 14:08:50 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)

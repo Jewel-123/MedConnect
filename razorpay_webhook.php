@@ -167,13 +167,23 @@ function processPaymentSuccess($conn, $transaction, $razorpayPaymentId) {
         // Process doctor earnings
         processRevenueSplit($conn, $transaction, 'consultation');
         
-    } elseif ($transaction['transaction_type'] === 'medication_payment') {
+    } elseif ($transaction['transaction_type'] === 'medication_payment' || $transaction['transaction_type'] === 'prescription_payment') {
         // Update prescription order payment status
         $conn->query("
             UPDATE prescription_orders
             SET payment_status = 'paid',
-                order_status = 'preparing'
+                order_status = 'completed',
+                completed_at = NOW()
             WHERE id = {$transaction['related_id']}
+        ");
+        
+        // Update prescription status to completed
+        $conn->query("
+            UPDATE prescriptions_v2 p
+            JOIN prescription_orders po ON p.id = po.prescription_id
+            SET p.status = 'completed',
+                p.completed_at = NOW()
+            WHERE po.id = {$transaction['related_id']}
         ");
         
         // Process pharmacy earnings

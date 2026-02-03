@@ -178,6 +178,116 @@ try {
             ]);
             break;
         
+        // ==================================================
+        // Create Prescription Payment Order
+        // ==================================================
+        case 'create_prescription_order':
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            $prescriptionId = intval($input['prescription_id'] ?? 0);
+            $amount = floatval($input['amount'] ?? 0);
+            
+            if (!$prescriptionId || $amount <= 0) {
+                throw new Exception('Invalid prescription or amount');
+            }
+            
+            // Verify prescription order exists and belongs to user
+            $stmt = $conn->prepare("
+                SELECT po.id, po.order_number, po.total_amount
+                FROM prescription_orders po
+                WHERE po.prescription_id = ? AND po.patient_id = ? AND po.payment_status = 'pending'
+            ");
+            $stmt->bind_param("ii", $prescriptionId, $userId);
+            $stmt->execute();
+            $order = $stmt->get_result()->fetch_assoc();
+            
+            if (!$order) {
+                throw new Exception('Prescription order not found or already paid');
+            }
+            
+            // Generate transaction number and receipt
+            $transactionNumber = 'TXN' . time() . rand(1000, 9999);
+            $receiptId = 'RCPT_' . $order['order_number'];
+            
+            // Convert amount to paise
+            $amountInPaise = convertToPaise($amount);
+            
+            // Prepare Razorpay order data
+            $orderData = [
+                'amount' => $amountInPaise,
+                'currency' => RAZORPAY_CURRENCY,
+                'receipt' => $receiptId,
+                'notes' => [
+                    'transaction_type' => 'prescription_payment',
+                    'prescription_id' => $prescriptionId,
+                    'order_id' => $order['id'],
+                    'order_number' => $order['order_number'],
+                    'user_id' => $userId,
+                    'transaction_number' => $transactionNumber
+                ]
+            ];
+            
+            // Create order with Razorpay API
+            $ch = curl_init(RAZORPAY_API_URL . '/orders');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($orderData));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Authorization: ' . getRazorpayAuthHeader()
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            if ($httpCode !== 200) {
+                $error = json_decode($response, true);
+                throw new Exception('Razorpay API error: ' . ($error['error']['description'] ?? 'Unknown error'));
+            }
+            
+            $razorpayOrder = json_decode($response, true);
+            
+            // Store transaction in database
+            $stmt = $conn->prepare("
+                INSERT INTO payment_transactions (
+                    transaction_number, user_id, transaction_type, related_id,
+                    related_type, amount, currency, payment_method,
+                    payment_gateway, razorpay_order_id, status, created_at
+                ) VALUES (?, ?, 'prescription_payment', ?, 'prescription_order', ?, ?, 'razorpay', 'razorpay', ?, 'pending', NOW())
+            ");
+            
+            $stmt->bind_param(
+                "siidss",
+                $transactionNumber, $userId, $order['id'],
+                $amount, RAZORPAY_CURRENCY, $razorpayOrder['id']
+            );
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Failed to store transaction');
+            }
+            
+            $transactionId = $stmt->insert_id;
+            
+            // Update prescription_orders with transaction reference
+            $conn->query("
+                UPDATE prescription_orders 
+                SET payment_transaction_id = $transactionId
+                WHERE id = {$order['id']}
+            ");
+            
+            echo json_encode([
+                'success' => true,
+                'transaction_id' => $transactionId,
+                'transaction_number' => $transactionNumber,
+                'order' => [
+                    'id' => $razorpayOrder['id'],
+                    'amount' => $amountInPaise,
+                    'currency' => RAZORPAY_CURRENCY
+                ]
+            ]);
+            break;
+        
         default:
             throw new Exception('Invalid action');
     }

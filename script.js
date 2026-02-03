@@ -208,6 +208,7 @@ const PAGES = {
                     <li><a href="#" class="active"><i class="ph ph-squares-four"></i> Dashboard</a></li>
                     <li><a href="symptom_checker.php"><i class="ph ph-clipboard-text"></i> Symptom Checker</a></li>
                     <li><a href="appointment_booking.php"><i class="ph ph-calendar-check"></i> Book Appointment</a></li>
+                    <li><a href="patient_prescriptions.php"><i class="ph ph-prescription"></i> My Prescriptions</a></li>
                     <li><a href="payment_gateway.php"><i class="ph ph-credit-card"></i> Payments</a></li>
                     <li><a href="#" onclick="showPage('consultationHistory')"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
                     <li><a href="#" onclick="logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
@@ -219,6 +220,7 @@ const PAGES = {
                     <div style="display: flex; gap: 0.75rem;">
                         <a href="symptom_checker.php" class="btn btn-primary" style="text-decoration: none; display: inline-flex; align-items: center;">🩺 Symptom Checker</a>
                         <a href="appointment_booking.php" class="btn btn-outline" style="text-decoration: none; display: inline-flex; align-items: center;">📅 Book Appointment</a>
+                        <a href="patient_prescriptions.php" class="btn btn-outline" style="text-decoration: none; display: inline-flex; align-items: center;">💊 My Prescriptions</a>
                     </div>
                 </div>
                 
@@ -227,10 +229,10 @@ const PAGES = {
                         <div class="large-number" id="pastConsultationsCount">0</div>
                         <p>Past Consultations</p>
                     </div>
-                    <div class="stat-box">
+                    <a href="patient_prescriptions.php" class="stat-box" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
                         <div class="large-number text-gradient" id="activePrescriptionCount">0</div>
                         <p>Active Prescriptions</p>
-                    </div>
+                    </a>
                 </div>
 
                 <h3>Recent Activity</h3>

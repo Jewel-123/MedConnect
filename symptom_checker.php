@@ -379,12 +379,49 @@ $patientId = $_SESSION['user_id'];
             }
         }
 
+        async function getDetailedAIAnalysis() {
+            const symptoms = document.getElementById('symptomsText').value;
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const conditions = document.getElementById('conditions').value;
+            
+            if (!consultationId) {
+                alert('Please submit symptoms first');
+                return;
+            }
+            
+            try {
+                const response = await fetch('symptom_intake_api.php?action=get_ai_analysis', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        symptoms,
+                        age,
+                        gender,
+                        existing_conditions: conditions,
+                        consultation_id: consultationId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAIAnalysis(data.analysis);
+                } else {
+                    alert(data.error || 'Failed to get AI analysis');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error getting AI analysis');
+            }
+        }
+
         function showAnalysis(analysis) {
             const urgencyClass = 'urgency-' + analysis.urgency_level;
             
             document.getElementById('analysisResult').innerHTML = `
                 <div class="analysis-result">
-                    <h3 style="color: #1e293b; margin-bottom: 15px;">📊 Analysis Complete</h3>
+                    <h3 style="color: #1e293b; margin-bottom: 15px;">📊 Initial Analysis Complete</h3>
                     <div style="margin-bottom: 15px;">
                         <strong>Recommended Specialty:</strong> ${analysis.primary_specialty}
                     </div>
@@ -400,12 +437,160 @@ $patientId = $_SESSION['user_id'];
                             '⚠️ Your symptoms indicate an emergency. Please seek immediate medical attention or call emergency services.' :
                             'We\'re connecting you with the best available doctor for your symptoms.'}
                     </p>
-                    <button class="btn btn-primary" onclick="window.location.href='appointment_booking.php'">
+                    <button class="btn btn-primary" onclick="getDetailedAIAnalysis()" style="margin-right: 10px;">
+                        🤖 Get Detailed AI Analysis
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.location.href='appointment_booking.php'">
                         View in My Consultations
                     </button>
                 </div>
             `;
         }
+        
+        function showAIAnalysis(analysis) {
+            let html = '<div class="analysis-result" style="background: #f8fafc; border: 2px solid #667eea; max-width: 900px;">';
+            
+            // Title
+            html += '<h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🤖 Advanced AI Medical Analysis</h2>';
+            
+            // Extracted Symptoms
+            html += '<div style="margin-bottom: 25px;">';
+            html += '<h3 style="color: #1e293b; margin-bottom: 10px; font-size: 18px;">📋 Extracted Symptoms:</h3>';
+            html += '<ul style="list-style: none; padding-left: 0;">';
+            analysis.extracted_symptoms.forEach(s => {
+                html += `<li style="padding: 8px; background: white; margin-bottom: 5px; border-radius: 6px;">• ${s}</li>`;
+            });
+            html += '</ul></div>';
+            
+            // Normalized Medical Terms
+            if (analysis.normalized_symptoms.length > 0) {
+                html += '<div style="margin-bottom: 25px;">';
+                html += '<h3 style="color: #1e293b; margin-bottom: 10px; font-size: 18px;">🔄 Normalized Medical Terms:</h3>';
+                html += '<ul style="list-style: none; padding-left: 0;">';
+                analysis.normalized_symptoms.forEach(s => {
+                    html += `<li style="padding: 8px; background: white; margin-bottom: 5px; border-radius: 6px;">• ${s}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            // Context
+            html += '<div style="margin-bottom: 25px;">';
+            html += '<h3 style="color: #1e293b; margin-bottom: 10px; font-size: 18px;">👤 Context Considered:</h3>';
+            html += '<ul style="list-style: none; padding-left: 0;">';
+            analysis.context_considered.forEach(c => {
+                html += `<li style="padding: 8px; background: white; margin-bottom: 5px; border-radius: 6px;">• ${c}</li>`;
+            });
+            html += '</ul></div>';
+            
+            // Red Flags (CRITICAL)
+            if (analysis.urgent_warning_signs.length > 0 && analysis.urgent_warning_signs[0] !== 'None detected') {
+                html += '<div style="margin-bottom: 25px; background: #fee2e2; border: 3px solid #dc2626; padding: 20px; border-radius: 12px;">';
+                html += '<h3 style="color: #991b1b; margin-bottom: 15px; font-size: 20px;">🚨 URGENT WARNING SIGNS DETECTED</h3>';
+                analysis.urgent_warning_signs.forEach(flag => {
+                    html += `
+                        <div style="background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid #dc2626;">
+                            <div style="font-weight: bold; color: #991b1b; margin-bottom: 5px;">
+                                ${flag.symptom.toUpperCase()} - ${flag.urgency}
+                            </div>
+                            <div style="margin-bottom: 8px; color: #1e293b;">${flag.warning}</div>
+                            <div style="background: #fef3c7; padding: 10px; border-radius: 6px; font-weight: 600; color: #78350f;">
+                                ⚡ RECOMMENDED ACTION: ${flag.action}
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else {
+                html += '<div style="margin-bottom: 25px; background: #d1fae5; border: 2px solid #10b981; padding: 15px; border-radius: 12px;">';
+                html += '<h3 style="color: #065f46; margin-bottom: 5px; font-size: 18px;">✅ No Urgent Warning Signs Detected</h3>';
+                html += '<p style="color: #047857; margin: 0;">No immediate emergency symptoms identified.</p>';
+                html += '</div>';
+            }
+            
+            // Possible Conditions (Differential Analysis)
+            html += '<div style="margin-bottom: 25px;">';
+            html += '<h3 style="color: #1e293b; margin-bottom: 15px; font-size: 20px;">🔍 Possible Conditions (Ranked by Likelihood):</h3>';
+            
+            if (analysis.possible_conditions.length > 0) {
+                analysis.possible_conditions.forEach((condition, idx) => {
+                    const confidenceColor = condition.confidence >= 70 ? '#10b981' : 
+                                           condition.confidence >= 50 ? '#f59e0b' : '#6b7280';
+                    const bgColor = idx === 0 ? '#f0f9ff' : 'white';
+                    
+                    html += `
+                        <div style="background: ${bgColor}; border: 2px solid ${confidenceColor}; padding: 20px; margin-bottom: 15px; border-radius: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h4 style="color: #1e293b; margin: 0; font-size: 18px;">
+                                    ${idx + 1}. ${condition.condition}
+                                </h4>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="background: ${confidenceColor}; color: white; padding: 6px 16px; border-radius: 20px; font-weight: 600; font-size: 14px;">
+                                        ${condition.confidence}
+                                    </span>
+                                    <span style="color: #64748b; font-size: 14px;">${condition.likelihood}</span>
+                                </div>
+                            </div>
+                            <div style="color: #64748b; margin-bottom: 12px; font-size: 14px;">
+                                <strong>Specialty:</strong> ${condition.specialty}
+                            </div>
+                            <div style="color: #475569; margin-bottom: 15px; font-size: 14px;">
+                                ${condition.description}
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <strong style="color: #10b981;">✓ Supporting Symptoms:</strong>
+                                <div style="margin-top: 5px; color: #64748b; font-size: 14px;">
+                                    ${condition.supporting_symptoms.join(', ')}
+                                </div>
+                            </div>
+                            ${condition.missing_symptoms.length > 0 ? `
+                                <div>
+                                    <strong style="color: #f59e0b;">⚠ Missing/Unclear Symptoms:</strong>
+                                    <div style="margin-top: 5px; color: #64748b; font-size: 14px;">
+                                        ${condition.missing_symptoms.join(', ')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p style="color: #64748b;">Insufficient information to determine likelihood accurately.</p>';
+            }
+            html += '</div>';
+            
+            // Clarifying Questions
+            if (analysis.clarifying_questions.length > 0) {
+                html += '<div style="margin-bottom: 25px; background: #fef3c7; border: 2px solid #f59e0b; padding: 20px; border-radius: 12px;">';
+                html += '<h3 style="color: #78350f; margin-bottom: 15px; font-size: 18px;">❓ Clarifying Questions:</h3>';
+                html += '<p style="color: #92400e; margin-bottom: 15px; font-size: 14px;">Answering these questions can help improve diagnostic accuracy:</p>';
+                html += '<ol style="color: #1e293b; padding-left: 20px;">';
+                analysis.clarifying_questions.forEach(q => {
+                    html += `<li style="margin-bottom: 10px; font-size: 15px;">${q}</li>`;
+                });
+                html += '</ol>';
+                html += '</div>';
+            }
+            
+            // Safety Notice
+            html += '<div style="background: #fee2e2; border: 2px solid #dc2626; padding: 20px; border-radius: 12px; margin-bottom: 20px;">';
+            html += '<h3 style="color: #991b1b; margin-bottom: 10px; font-size: 16px;">⚠️ Important Safety Notice</h3>';
+            html += `<p style="color: #7f1d1d; margin: 0; font-size: 14px; line-height: 1.6;">${analysis.safety_notice}</p>`;
+            html += '</div>';
+            
+            // Action Buttons
+            html += '<div style="text-align: center; margin-top: 25px;">';
+            html += '<button class="btn btn-primary" onclick="window.location.href=\'appointment_booking.php\'" style="margin-right: 10px;">View in My Consultations</button>';
+            html += '<button class="btn btn-secondary" onclick="window.print()">Print Analysis</button>';
+            html += '</div>';
+            
+            html += '</div>';
+            
+            document.getElementById('analysisResult').innerHTML = html;
+            
+            // Scroll to results
+            document.getElementById('analysisResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     </script>
+
 </body>
 </html>

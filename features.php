@@ -66,7 +66,7 @@ $userName = $_SESSION['user_name'] ?? 'User';
                     <span class="badge badge-patient">Patient</span>
                 </a>
                 
-                <a href="prescription_api.php?action=get_my_prescriptions" class="feature-card">
+                <a href="patient_prescriptions.php" class="feature-card">
                     <div class="feature-icon">💊</div>
                     <div class="feature-title">My Prescriptions</div>
                     <div class="feature-desc">View, download, and manage all your prescriptions. Track medication orders and delivery.</div>
