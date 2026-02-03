@@ -126,3 +126,11 @@ Stack trace:
 [03-Feb-2026 14:08:37 Europe/Berlin] Prescription saved successfully: ID 10
 [03-Feb-2026 14:08:50 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
 [03-Feb-2026 14:08:50 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[03-Feb-2026 15:00:20 Europe/Berlin] Prescription save input: {"consultation_id":53,"patient_id":26,"diagnosis":"need urine test","medicines":[{"name":"isoteritenoin","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[03-Feb-2026 15:00:23 Europe/Berlin] Prescription created with ID: 11
+[03-Feb-2026 15:00:23 Europe/Berlin] Prescription saved successfully: ID 11
+[03-Feb-2026 15:00:23 Europe/Berlin] Prescription save input: {"consultation_id":53,"patient_id":26,"diagnosis":"need urine test","medicines":[{"name":"isoteritenoin","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[03-Feb-2026 15:00:23 Europe/Berlin] Prescription created with ID: 12
+[03-Feb-2026 15:00:24 Europe/Berlin] Prescription saved successfully: ID 12
+[03-Feb-2026 15:00:50 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
+[03-Feb-2026 15:00:50 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)

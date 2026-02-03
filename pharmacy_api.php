@@ -47,7 +47,7 @@ try {
                 JOIN users doc ON p.doctor_id = doc.id
                 LEFT JOIN doctor_profiles dp ON doc.id = dp.user_id
                 WHERE p.pharmacy_id = ? AND p.status = 'sent_to_pharmacy'
-                ORDER BY p.sent_at DESC
+                ORDER BY p.sent_to_pharmacy_at DESC
             ");
             
             $stmt->bind_param("i", $userId);
