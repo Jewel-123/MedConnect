@@ -1,0 +1,14 @@
+--- Connection Test ---
+Connection object exists.
+Connection Successful.
+Current Database: medconnect
+
+--- Databases ---
+information_schema
+medconnect
+mysql
+performance_schema
+phpmyadmin
+test
+
+--- Tables in medconnect ---

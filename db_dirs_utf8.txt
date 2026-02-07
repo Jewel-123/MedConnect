@@ -1,0 +1,5 @@
+﻿medconnect
+mysql
+performance_schema
+phpmyadmin
+test

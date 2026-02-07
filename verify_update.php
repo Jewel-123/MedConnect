@@ -58,4 +58,3 @@ if ($all_pass) {
     echo "<h2 style='color: red;'>❌ Some Updates are Missing</h2>";
     echo "<p>Please verify the file permissions or try re-applying the update.</p>";
 }
-?>

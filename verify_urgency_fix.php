@@ -63,4 +63,3 @@ if ($stmt->execute()) {
 $stmt->close();
 $conn->query("DELETE FROM users WHERE id = 999");
 echo "\nVerification Complete.\n";
-?>

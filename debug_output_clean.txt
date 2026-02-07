@@ -1,0 +1,19 @@
+=== DEBUG CONSULTATION DELIVERY ===
+
+ID: 43 | Patient: JEWEL BIJU | Doctor ID: 29 | Status: pending | Payment: paid | Created: 2026-02-07 14:53:01
+ID: 42 | Patient: JEWEL BIJU | Doctor ID: 29 | Status: pending | Payment: paid | Created: 2026-02-07 14:49:23
+ID: 41 | Patient: JEWEL BIJU | Doctor ID: 25 | Status: pending | Payment: paid | Created: 2026-02-07 12:57:11
+ID: 40 | Patient: JEWEL BIJU | Doctor ID: 25 | Status: completed | Payment: paid | Created: 2026-02-07 12:50:31
+ID: 39 | Patient: JEWEL BIJU | Doctor ID: NULL | Status: pending | Payment: paid | Created: 2026-02-07 12:32:35
+ID: 38 | Patient: JEWEL BIJU | Doctor ID: NULL | Status: pending | Payment: paid | Created: 2026-02-07 12:32:35
+ID: 37 | Patient: JEWEL BIJU | Doctor ID: NULL | Status: pending | Payment: paid | Created: 2026-02-07 12:16:41
+ID: 18 | Patient: JEWEL BIJU | Doctor ID: 29 | Status: completed | Payment: paid | Created: 2026-02-07 12:00:53
+ID: 36 | Patient: JEWEL BIJU | Doctor ID: NULL | Status: pending | Payment: paid | Created: 2026-02-07 11:55:36
+ID: 35 | Patient: JEWEL BIJU | Doctor ID: NULL | Status: pending | Payment: paid | Created: 2026-02-07 11:45:21
+
+=== DOCTOR ASSIGNMENT CHECK ===
+Doctor ID: 25 | Name: Emily Smith | Status: approved
+Doctor ID: 26 | Name: James Wilson | Status: approved
+Doctor ID: 27 | Name: Sarah Lee | Status: approved
+Doctor ID: 28 | Name: Michael Brown | Status: approved
+Doctor ID: 29 | Name: Sophia Martinez | Status: approved

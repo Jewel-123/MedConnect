@@ -53,4 +53,3 @@ try {
         echo "❌ Error updating schema: " . $e->getMessage() . "<br>";
     }
 }
-?>

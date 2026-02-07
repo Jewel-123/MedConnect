@@ -32,4 +32,3 @@ if (strpos($output, 'Doctor is not available') !== false) {
 }
 
 echo "</body></html>";
-?>

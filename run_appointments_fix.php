@@ -34,4 +34,3 @@ echo "</table>";
 
 echo "<p><strong>Done! Now try booking an appointment again.</strong></p>";
 echo "</body></html>";
-?>

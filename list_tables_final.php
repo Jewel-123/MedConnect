@@ -6,4 +6,3 @@ while($row = $res->fetch_array()) {
     $tables[] = $row[0];
 }
 echo implode("\n", $tables);
-?>

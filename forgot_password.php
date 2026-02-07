@@ -355,4 +355,3 @@ if ($action == 'request_reset') {
 }
 
 $conn->close();
-?>

@@ -134,3 +134,65 @@ Stack trace:
 [03-Feb-2026 15:00:24 Europe/Berlin] Prescription saved successfully: ID 12
 [03-Feb-2026 15:00:50 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\MedConnect\notification_service.php on line 75
 [03-Feb-2026 15:00:50 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 04:27:25 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 04:27:25 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 06:28:13 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 06:28:13 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 07:13:06 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\debug_incoming_requests.php:13) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[07-Feb-2026 07:13:06 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\debug_incoming_requests.php:13) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[07-Feb-2026 07:13:06 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\debug_incoming_requests.php:61
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\debug_incoming_requests.php(61): mysqli->query('\r\n    SELECT id...')
+#1 {main}
+  thrown in C:\xampp\htdocs\medconnect\debug_incoming_requests.php on line 61
+[07-Feb-2026 07:13:49 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\debug_incoming_requests.php:13) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[07-Feb-2026 07:13:49 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\debug_incoming_requests.php:13) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[07-Feb-2026 07:13:49 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\debug_incoming_requests.php:61
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\debug_incoming_requests.php(61): mysqli->query('\r\n    SELECT id...')
+#1 {main}
+  thrown in C:\xampp\htdocs\medconnect\debug_incoming_requests.php on line 61
+[07-Feb-2026 07:14:35 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 07:14:35 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 07:20:37 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\debug_incoming_requests.php:13) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[07-Feb-2026 07:20:37 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\debug_incoming_requests.php:13) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[07-Feb-2026 07:20:37 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\debug_incoming_requests.php:61
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\debug_incoming_requests.php(61): mysqli->query('\r\n    SELECT id...')
+#1 {main}
+  thrown in C:\xampp\htdocs\medconnect\debug_incoming_requests.php on line 61
+[07-Feb-2026 07:21:59 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 07:21:59 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 07:23:00 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"34","patient_id":"21","icd_code":"","diagnosis":"blood test","medicines":[{"name":"paracetamol","dosage":"500","frequency":"3","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-03-06","notes_for_patient":"pls folooew","notes_for_pharmacy":"pls follow"}
+[07-Feb-2026 07:23:00 Europe/Berlin] Prescription created with ID: 1
+[07-Feb-2026 07:23:00 Europe/Berlin] Prescription saved successfully: ID 1
+[07-Feb-2026 07:31:20 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 07:31:20 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 08:01:36 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 08:01:36 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 08:29:57 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 08:29:57 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 08:45:57 Europe/Berlin] Prescription save input: {"consultation_id":40,"patient_id":21,"diagnosis":"blood tset","medicines":[{"name":"paracetamol","dosage":"500","frequency":"Three Times Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[07-Feb-2026 08:46:02 Europe/Berlin] Prescription created with ID: 2
+[07-Feb-2026 08:46:02 Europe/Berlin] Prescription saved successfully: ID 2
+[07-Feb-2026 08:46:04 Europe/Berlin] Prescription save input: {"consultation_id":40,"patient_id":21,"diagnosis":"blood tset","medicines":[{"name":"paracetamol","dosage":"500","frequency":"Three Times Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[07-Feb-2026 08:46:04 Europe/Berlin] Prescription created with ID: 3
+[07-Feb-2026 08:46:04 Europe/Berlin] Prescription saved successfully: ID 3
+[07-Feb-2026 10:33:20 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 10:33:20 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 10:33:28 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 10:33:28 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 10:43:24 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 10:43:24 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 10:45:48 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 10:45:48 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 10:45:48 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1189
+[07-Feb-2026 10:45:48 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1190
+[07-Feb-2026 10:45:48 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1191
+[07-Feb-2026 10:49:21 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 10:49:21 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 10:54:02 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Feb-2026 10:54:02 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Feb-2026 10:54:02 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1189
+[07-Feb-2026 10:54:02 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1190
+[07-Feb-2026 10:54:02 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1191

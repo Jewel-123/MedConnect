@@ -43,4 +43,3 @@ echo "\n✓✓✓ SUCCESS! ✓✓✓\n\n";
 echo "Login: http://localhost/medconnect/login.php\n";
 echo "Email: admin@medconnect.com\n";
 echo "Password: admin123\n";
-?>

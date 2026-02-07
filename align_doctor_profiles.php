@@ -22,4 +22,3 @@ addColumnIfNotExists($conn, 'doctor_profiles', 'years_experience', 'INT DEFAULT 
 addColumnIfNotExists($conn, 'doctor_profiles', 'languages_spoken', 'VARCHAR(255) DEFAULT \'English\'', 'consultation_fee');
 
 echo "\n=== ALIGNMENT COMPLETE ===\n";
-?>

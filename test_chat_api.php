@@ -96,4 +96,3 @@ if ($data && $data['success']) {
 }
 
 echo "\n===== TEST COMPLETE =====\n";
-?>

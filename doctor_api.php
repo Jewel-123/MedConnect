@@ -18,19 +18,29 @@ ini_set('display_errors', 0);
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
-// Check if user is logged in and is a doctor
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'doctor') {
+// Support both standard POST and JSON POST
+$json_input = json_decode(file_get_contents('php://input'), true);
+$action = $_POST['action'] ?? $_GET['action'] ?? $json_input['action'] ?? '';
+$input_data = array_merge($_POST, $_GET, $json_input ?? []);
+
+// SPECIAL CASE: Allow patients to view prescriptions
+$patient_allowed_actions = ['get_prescription_details'];
+$is_patient_allowed = in_array($action, $patient_allowed_actions) && isset($_SESSION['role']) && $_SESSION['role'] === 'patient';
+
+// Check if user is logged in and is a doctor (OR patient for allowed actions)
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+    http_response_code(401);
+    echo json_encode(['status' => 'error', 'message' => 'Unauthorized. Please login.']);
+    exit;
+}
+
+if ($_SESSION['role'] !== 'doctor' && !$is_patient_allowed) {
     http_response_code(401);
     echo json_encode(['status' => 'error', 'message' => 'Unauthorized. Doctor access required.']);
     exit;
 }
 
 $doctor_id = $_SESSION['user_id'];
-
-// Support both standard POST and JSON POST
-$json_input = json_decode(file_get_contents('php://input'), true);
-$action = $_POST['action'] ?? $_GET['action'] ?? $json_input['action'] ?? '';
-$input_data = array_merge($_POST, $_GET, $json_input ?? []);
 
 try {
     switch ($action) {
@@ -47,10 +57,12 @@ try {
                 WHERE doctor_id = $doctor_id AND DATE(created_at) = '$today'
             ")->fetch_assoc()['count'];
             
-            // Pending requests
+            // Pending requests (paid OR pending consultations ONLY for THIS doctor)
+            // Including 'assigned' status which might come from auto-matcher
             $pendingRequests = $conn->query("
                 SELECT COUNT(*) as count FROM consultations 
-                WHERE doctor_id IS NULL AND status = 'pending'
+                WHERE doctor_id = $doctor_id
+                  AND status IN ('pending', 'assigned')
             ")->fetch_assoc()['count'];
             
             // Follow-ups due
@@ -69,11 +81,13 @@ try {
             $avgRating = $ratingData['avg_rating'] ? round($ratingData['avg_rating'], 1) : 0;
             $totalReviews = $ratingData['total_reviews'];
             
-            // Monthly earnings
+            // Monthly earnings (ONLY completed consultations)
             $currentMonth = date('Y-m');
             $earningsData = $conn->query("
                 SELECT SUM(net_amount) as total FROM doctor_earnings 
-                WHERE doctor_id = $doctor_id AND DATE_FORMAT(created_at, '%Y-%m') = '$currentMonth'
+                WHERE doctor_id = $doctor_id 
+                  AND DATE_FORMAT(created_at, '%Y-%m') = '$currentMonth'
+                  AND payment_status = 'completed'
             ")->fetch_assoc();
             
             $monthlyEarnings = $earningsData['total'] ?? 0;
@@ -92,9 +106,11 @@ try {
             break;
             
         case 'get_consultation_requests':
-            // Show requests that are unassigned OR assigned to this doctor but not yet accepted
+            // STRICT ROUTING: Show ONLY paid consultations assigned to THIS specific doctor
+            // Each consultation is booked for ONE doctor, appears in ONLY that doctor's dashboard
             $requests = $conn->query("
                 SELECT c.*, u.full_name as patient_name, u.email as patient_email,
+                       p.gender as patient_gender,
                        TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
                        (CASE 
                            WHEN c.severity = 'high' OR c.urgency_score >= 75 THEN 'emergency'
@@ -104,8 +120,8 @@ try {
                 FROM consultations c
                 JOIN users u ON c.patient_id = u.id
                 LEFT JOIN patient_profiles p ON u.id = p.user_id
-                WHERE (c.status = 'pending' AND c.doctor_id IS NULL) 
-                   OR (c.status = 'assigned' AND c.doctor_id = $doctor_id)
+                WHERE c.doctor_id = $doctor_id
+                  AND c.status IN ('pending', 'assigned')
                 ORDER BY 
                     (CASE 
                         WHEN c.severity = 'high' OR c.urgency_score >= 75 THEN 1
@@ -135,19 +151,22 @@ try {
                     'id' => $row['id'],
                     'patient_name' => $row['patient_name'],
                     'patient_age' => $row['patient_age'] ?? 'N/A',
+                    'patient_gender' => $row['patient_gender'] ?? 'N/A',
                     'symptoms' => $row['symptoms'],
                     'symptoms_summary' => $symptomsSummary,
                     'severity' => $row['severity'],
                     'urgency_badge' => $urgencyBadge,
                     'urgency_score' => $row['urgency_score'],
                     'consultation_mode' => $row['consultation_mode'],
+                    'consultation_fee' => $row['consultation_fee'] ?? '0.00',
                     'language_preference' => $row['language_preference'],
                     'duration' => $row['duration'],
+                    'payment_status' => $row['payment_status'],
                     'created_at' => $row['created_at']
                 ];
             }
             
-            echo json_encode(['status' => 'success', 'data' => $data]);
+            echo json_encode(['status' => 'success', 'data' => $data, 'count' => count($data)]);
             break;
             
         // ========================================
@@ -276,7 +295,7 @@ try {
             break;
             
         // ========================================
-        // ACCEPT CONSULTATION
+        // ACCEPT CONSULTATION - ENHANCED WITH EARNINGS TRACKING
         // ========================================
         case 'accept_consultation':
             $consultation_id = $_POST['consultation_id'] ?? 0;
@@ -285,62 +304,206 @@ try {
                 throw new Exception('Consultation ID is required');
             }
             
-            // Update consultation status to 'scheduled' (initial active state)
-            $stmt = $conn->prepare("
-                UPDATE consultations 
-                SET doctor_id = ?, status = 'scheduled', assigned_at = NOW(), updated_at = NOW() 
-                WHERE id = ? AND status IN ('pending', 'assigned') AND (doctor_id IS NULL OR doctor_id = ?)
+            // Check doctor online status (if table exists)
+            $onlineCheck = $conn->query("
+                SELECT is_online FROM doctor_online_status 
+                WHERE doctor_id = $doctor_id
             ");
-            $stmt->bind_param("iii", $doctor_id, $consultation_id, $doctor_id);
             
-            if ($stmt->execute() && $stmt->affected_rows > 0) {
+            if ($onlineCheck && $onlineCheck->num_rows > 0) {
+                $status = $onlineCheck->fetch_assoc();
+                if (!$status['is_online']) {
+                    throw new Exception('You must be online to accept consultations');
+                }
+            }
+            
+            // Get consultation details first for earnings calculation
+            $consultation = $conn->query("
+                SELECT patient_id, consultation_fee, payment_transaction_id 
+                FROM consultations 
+                WHERE id = $consultation_id 
+                  AND doctor_id = $doctor_id 
+                  AND status IN ('pending', 'assigned')
+            ")->fetch_assoc();
+            
+            if (!$consultation) {
+                throw new Exception('Consultation not found or not eligible for acceptance');
+            }
+            
+            // Start transaction
+            $conn->begin_transaction();
+            
+            try {
+                // Update consultation status to 'accepted' (NOT started yet)
+                // Consultation will start only when doctor clicks "Start" button
+                $stmt = $conn->prepare("
+                    UPDATE consultations 
+                    SET status = 'accepted', 
+                        assigned_at = NOW() 
+                    WHERE id = ? AND doctor_id = ? AND status IN ('pending', 'assigned')
+                ");
+                $stmt->bind_param("ii", $consultation_id, $doctor_id);
+                
+                if (!$stmt->execute() || $stmt->affected_rows === 0) {
+                    throw new Exception('Failed to update consultation status');
+                }
+                
+                // Create earnings record (initially pending)
+                $gross_amount = floatval($consultation['consultation_fee']);
+                $commission_percent = 10.00; // Platform takes 10%
+                $commission_amount = $gross_amount * ($commission_percent / 100);
+                $net_amount = $gross_amount - $commission_amount;
+                
+                $stmt = $conn->prepare("
+                    INSERT INTO doctor_earnings 
+                    (doctor_id, consultation_id, gross_amount, platform_commission_percent, platform_commission_amount, net_amount, payment_status)
+                    VALUES (?, ?, ?, ?, ?, ?, 'pending')
+                ");
+                $stmt->bind_param("iidddd", 
+                    $doctor_id, 
+                    $consultation_id, 
+                    $gross_amount, 
+                    $commission_percent, 
+                    $commission_amount, 
+                    $net_amount
+                );
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to create earnings record');
+                }
+                
                 // Log audit
                 $conn->query("
-                    INSERT INTO consultation_audit_log (consultation_id, doctor_id, action, ip_address) 
+                    INSERT IGNORE INTO consultation_audit_log (consultation_id, doctor_id, action, ip_address) 
                     VALUES ($consultation_id, $doctor_id, 'accepted_consultation', '{$_SERVER['REMOTE_ADDR']}')
                 ");
                 
-                // Create notification for patient (if notifications table exists)
-                $conn->query("
-                    INSERT INTO doctor_notifications (doctor_id, notification_type, title, message, related_id) 
-                    VALUES ($doctor_id, 'new_consultation', 'Consultation Accepted', 'You have accepted a new consultation request', $consultation_id)
-                ");
+                // Notify patient
+                require_once 'notification_service.php';
+                $notifService = getNotificationService();
+                $notifService->send(
+                    $consultation['patient_id'],
+                    'all',
+                    'Consultation Accepted',
+                    'Doctor has accepted your consultation request. Your session is now active.',
+                    ['notification_type' => 'consultation_accepted', 'related_id' => $consultation_id]
+                );
                 
-                echo json_encode(['status' => 'success', 'message' => 'Consultation accepted successfully']);
-            } else {
-                throw new Exception('Failed to accept consultation. It may have been already assigned.');
+                $conn->commit();
+                
+                echo json_encode([
+                    'status' => 'success', 
+                    'message' => 'Consultation accepted successfully',
+                    'earnings_pending' => number_format($net_amount, 2)
+                ]);
+            } catch (Exception $e) {
+                $conn->rollback();
+                throw $e;
             }
             break;
             
         // ========================================
-        // DECLINE CONSULTATION
+        // DECLINE/REJECT CONSULTATION - ENHANCED WITH REFUND LOGIC
         // ========================================
         case 'decline_consultation':
+        case 'reject_consultation':
             $consultation_id = $_POST['consultation_id'] ?? 0;
-            $reason = $_POST['reason'] ?? '';
+            $reason = $_POST['reason'] ?? 'No reason provided';
             
             if (!$consultation_id) {
                 throw new Exception('Consultation ID is required');
             }
             
-            $stmt = $conn->prepare("
-                UPDATE consultations 
-                SET status = 'declined', updated_at = NOW() 
-                WHERE id = ? AND (status = 'pending' OR doctor_id = ?)
-            ");
-            $stmt->bind_param("ii", $consultation_id, $doctor_id);
+            // Get consultation details
+            $consultation = $conn->query("
+                SELECT patient_id, consultation_fee, payment_transaction_id, payment_status
+                FROM consultations 
+                WHERE id = $consultation_id AND doctor_id = $doctor_id
+            ")->fetch_assoc();
             
-            if ($stmt->execute()) {
-                // Log audit
-                $details = json_encode(['reason' => $reason]);
+            if (!$consultation) {
+                throw new Exception('Consultation not found or not authorized');
+            }
+            
+            // Start transaction for refund process
+            $conn->begin_transaction();
+            
+            try {
+                // Update consultation status to 'declined'
+                $stmt = $conn->prepare("
+                    UPDATE consultations 
+                    SET status = 'declined', updated_at = NOW() 
+                    WHERE id = ? AND doctor_id = ?
+                ");
+                $stmt->bind_param("ii", $consultation_id, $doctor_id);
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to update consultation status');
+                }
+                
+                // Log rejection
+                $refund_amount = floatval($consultation['consultation_fee']);
+                $stmt = $conn->prepare("
+                    INSERT INTO consultation_rejections 
+                    (consultation_id, doctor_id, patient_id, rejection_reason, refund_amount, refund_status)
+                    VALUES (?, ?, ?, ?, ?, 'pending')
+                ");
+                $stmt->bind_param("iiisd", 
+                    $consultation_id, 
+                    $doctor_id, 
+                    $consultation['patient_id'],
+                    $reason,
+                    $refund_amount
+                );
+                $stmt->execute();
+                
+                // Update payment transaction to refunded status
+                if ($consultation['payment_transaction_id']) {
+                    $conn->query("
+                        UPDATE payment_transactions 
+                        SET status = 'refunded', 
+                            refund_amount = {$refund_amount},
+                            refund_status = 'initiated',
+                            refund_initiated_at = NOW()
+                        WHERE id = {$consultation['payment_transaction_id']}
+                    ");
+                }
+                
+                // Mark any pending earnings as cancelled
                 $conn->query("
-                    INSERT INTO consultation_audit_log (consultation_id, doctor_id, action, action_details, ip_address) 
+                    UPDATE doctor_earnings 
+                    SET payment_status = 'cancelled'
+                    WHERE consultation_id = $consultation_id AND doctor_id = $doctor_id
+                ");
+                
+                // Log audit
+                $details = json_encode(['reason' => $reason, 'refund_amount' => $refund_amount]);
+                $conn->query("
+                    INSERT IGNORE INTO consultation_audit_log (consultation_id, doctor_id, action, action_details, ip_address) 
                     VALUES ($consultation_id, $doctor_id, 'declined_consultation', '$details', '{$_SERVER['REMOTE_ADDR']}')
                 ");
                 
-                echo json_encode(['status' => 'success', 'message' => 'Consultation declined']);
-            } else {
-                throw new Exception('Failed to decline consultation');
+                // Notify patient
+                require_once 'notification_service.php';
+                $notifService = getNotificationService();
+                $notifService->send(
+                    $consultation['patient_id'],
+                    'all',
+                    'Consultation Declined',
+                    "Your consultation request has been declined. Reason: $reason. A full refund has been initiated.",
+                    ['notification_type' => 'consultation_declined', 'related_id' => $consultation_id]
+                );
+                
+                $conn->commit();
+                
+                echo json_encode([
+                    'status' => 'success', 
+                    'message' => 'Consultation declined. Refund initiated.',
+                    'refund_amount' => number_format($refund_amount, 2)
+                ]);
+            } catch (Exception $e) {
+                $conn->rollback();
+                throw $e;
             }
             break;
             
@@ -348,10 +511,12 @@ try {
         // GET ACTIVE CONSULTATIONS
         // ========================================
         case 'get_active_consultations':
-            // Show all consultations that are active (scheduled, waiting, in progress, or paused)
-            // Excludes: pending (incoming requests), completed, declined, cancelled
+            // Show ONLY accepted consultations that are currently active
+            // pending = Incoming Requests | in_progress/paused = Active | completed = History
             $active = $conn->query("
                 SELECT c.*, u.full_name as patient_name, u.email as patient_email,
+                       p.gender as patient_gender,
+                       TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
                        (CASE 
                            WHEN c.severity = 'high' OR c.urgency_score >= 75 THEN 'emergency'
                            WHEN c.severity = 'medium' OR c.urgency_score >= 50 THEN 'priority'
@@ -359,15 +524,14 @@ try {
                        END) as urgency_level
                 FROM consultations c
                 JOIN users u ON c.patient_id = u.id
+                LEFT JOIN patient_profiles p ON u.id = p.user_id
                 WHERE c.doctor_id = $doctor_id 
-                  AND c.status IN ('accepted', 'scheduled', 'waiting', 'in_progress', 'paused')
+                  AND c.status IN ('accepted', 'in_progress', 'paused')
                 ORDER BY 
                     (CASE 
-                        WHEN c.status = 'waiting' THEN 1
-                        WHEN c.status = 'in_progress' THEN 2
-                        WHEN c.status = 'paused' THEN 3
-                        WHEN c.status = 'scheduled' THEN 4
-                        ELSE 5
+                        WHEN c.status = 'in_progress' THEN 1
+                        WHEN c.status = 'paused' THEN 2
+                        ELSE 3
                     END) ASC,
                     (CASE 
                         WHEN c.severity = 'high' OR c.urgency_score >= 75 THEN 1
@@ -424,6 +588,72 @@ try {
             break;
 
         // ========================================
+        // START CONSULTATION - Begins timer when doctor clicks Start
+        // ========================================
+        case 'start_consultation':
+            $consultation_id = $_POST['consultation_id'] ?? 0;
+            
+            if (!$consultation_id) {
+                throw new Exception('Consultation ID is required');
+            }
+            
+            // Start consultation: change from 'accepted' to 'in_progress' and start timer
+            $stmt = $conn->prepare("
+                UPDATE consultations 
+                SET status = 'in_progress', 
+                    start_time = NOW() 
+                WHERE id = ? AND doctor_id = ? AND status = 'accepted'
+            ");
+            $stmt->bind_param("ii", $consultation_id, $doctor_id);
+            
+            if (!$stmt->execute() || $stmt->affected_rows === 0) {
+                throw new Exception('Failed to start consultation or consultation not in accepted state');
+            }
+            
+            // Create/update consultation session
+            $conn->query("
+                INSERT INTO consultation_sessions (consultation_id, doctor_id, patient_id, started_at)
+                SELECT id, doctor_id, patient_id, NOW()
+                FROM consultations
+                WHERE id = $consultation_id
+                ON DUPLICATE KEY UPDATE started_at = NOW()
+            ");
+            
+            echo json_encode([
+                'status' => 'success', 
+                'message' => 'Consultation started successfully'
+            ]);
+            break;
+            
+        // ========================================
+        // RESUME CONSULTATION - Resumes from paused state
+        // ========================================
+        case 'resume_consultation':
+            $consultation_id = $_POST['consultation_id'] ?? 0;
+            
+            if (!$consultation_id) {
+                throw new Exception('Consultation ID is required');
+            }
+            
+            // Resume consultation: change from 'paused' to 'in_progress'
+            $stmt = $conn->prepare("
+                UPDATE consultations 
+                SET status = 'in_progress' 
+                WHERE id = ? AND doctor_id = ? AND status = 'paused'
+            ");
+            $stmt->bind_param("ii", $consultation_id, $doctor_id);
+            
+            if (!$stmt->execute() || $stmt->affected_rows === 0) {
+                throw new Exception('Failed to resume consultation or consultation not paused');
+            }
+            
+            echo json_encode([
+                'status' => 'success', 
+                'message' => 'Consultation resumed successfully'
+            ]);
+            break;
+
+        // ========================================
         // PAUSE CONSULTATION
         // ========================================
         case 'pause_consultation':
@@ -436,7 +666,7 @@ try {
             // Update consultation status to 'paused'
             $conn->query("
                 UPDATE consultations 
-                SET status = 'paused', updated_at = NOW() 
+                SET status = 'paused' 
                 WHERE id = $consultation_id AND doctor_id = $doctor_id
             ");
             
@@ -659,7 +889,7 @@ try {
             $stmt = $conn->prepare("
                 INSERT INTO prescriptions_v2 
                 (consultation_id, patient_id, doctor_id, icd_code, diagnosis, follow_up_date, notes_for_patient, notes_for_pharmacy, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft')
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'finalized')
             ");
             $stmt->bind_param("iiisssss", $consultation_id, $patient_id, $doctor_id, $icd_code, $diagnosis, $follow_up_date, $notes_patient, $notes_pharmacy);
             
@@ -893,11 +1123,11 @@ try {
                 WHERE consultation_id = $consultation_id
             ");
             
-            // Update prescription status to 'issued' if exists
+            // Update prescription status to 'finalized' if exists
             $conn->query("
                 UPDATE prescriptions_v2 
-                SET status = 'issued', signature_timestamp = NOW()
-                WHERE consultation_id = $consultation_id AND status = 'draft'
+                SET status = 'finalized', signature_timestamp = NOW()
+                WHERE consultation_id = $consultation_id AND (status = 'draft' OR status = 'issued')
             ");
             
             // Get prescription details for notification
@@ -926,24 +1156,14 @@ try {
                 );
             }
             
-            // Calculate earnings
-            $feeData = $conn->query("
-                SELECT consultation_fee FROM doctor_profiles WHERE user_id = $doctor_id
-            ")->fetch_assoc();
-            
-            $grossAmount = $feeData['consultation_fee'] ?? 50.00;
-            $commissionPercent = 10.00;
-            $commissionAmount = $grossAmount * ($commissionPercent / 100);
-            $netAmount = $grossAmount - $commissionAmount;
-            
-            // Record earnings
-            $stmt = $conn->prepare("
-                INSERT INTO doctor_earnings 
-                (doctor_id, consultation_id, gross_amount, platform_commission_percent, platform_commission_amount, net_amount, payment_status) 
-                VALUES (?, ?, ?, ?, ?, ?, 'pending')
+            // Update earnings from 'pending' to 'completed'
+            // Earnings record was already created during accept_consultation
+            $conn->query("
+                UPDATE doctor_earnings 
+                SET payment_status = 'completed'
+                WHERE consultation_id = $consultation_id AND doctor_id = $doctor_id AND payment_status = 'pending'
             ");
-            $stmt->bind_param("iidddd", $doctor_id, $consultation_id, $grossAmount, $commissionPercent, $commissionAmount, $netAmount);
-            $stmt->execute();
+            
             
             // Send notification to patient
             require_once 'notification_service.php';
@@ -1334,4 +1554,3 @@ try {
 }
 
 $conn->close();
-?>

@@ -15,4 +15,3 @@ if ($checkCol->num_rows == 0) {
 }
 
 $conn->close();
-?>

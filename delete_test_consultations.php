@@ -1,16 +1,57 @@
 <?php
+// Find and delete all test consultations
 require_once 'db.php';
 
-// Delete the test consultations we created
-$result = $conn->query("DELETE FROM consultations WHERE symptoms LIKE '%Test symptoms%' OR symptoms LIKE '%Severe chest pain%' OR symptoms LIKE '%Persistent headache%' OR symptoms LIKE '%Mild cough and runny nose%'");
+echo "=== Finding Test Consultations ===\n\n";
 
-if ($result) {
-    echo "Deleted " . $conn->affected_rows . " test consultations\n";
+// Find test consultations (symptoms containing "Test" or "test")
+$tests = $conn->query("
+    SELECT c.id, c.patient_id, u.full_name, c.doctor_id, c.symptoms, c.status, c.payment_status
+    FROM consultations c
+    JOIN users u ON c.patient_id = u.id
+    WHERE c.symptoms LIKE '%Test%' OR c.symptoms LIKE '%test%'
+    ORDER BY c.created_at DESC
+");
+
+if ($tests && $tests->num_rows > 0) {
+    echo "Found {$tests->num_rows} test consultation(s):\n";
+    $ids = [];
+    while ($row = $tests->fetch_assoc()) {
+        echo "  - ID:{$row['id']}, Patient:{$row['full_name']}, Doctor:{$row['doctor_id']}, Status:{$row['status']}, Symptoms: " . substr($row['symptoms'], 0, 50) . "...\n";
+        $ids[] = $row['id'];
+    }
+    
+    if (!empty($ids)) {
+        $idList = implode(',', $ids);
+        
+        // Delete related earnings first
+        $conn->query("DELETE FROM doctor_earnings WHERE consultation_id IN ($idList)");
+        echo "\n  Deleted related earnings records\n";
+        
+        // Delete consultations
+        $result = $conn->query("DELETE FROM consultations WHERE id IN ($idList)");
+        if ($result) {
+            echo "  ✅ Deleted {$conn->affected_rows} test consultation(s)\n";
+        } else {
+            echo "  ❌ Error deleting: " . $conn->error . "\n";
+        }
+    }
 } else {
-    echo "Error: " . $conn->error . "\n";
+    echo "No test consultations found\n";
 }
 
-// Verify
-$res = $conn->query("SELECT COUNT(*) as count FROM consultations WHERE status = 'pending' AND doctor_id IS NULL");
-$count = $res->fetch_assoc()['count'];
-echo "Remaining unassigned pending consultations: $count\n";
+echo "\n=== Remaining Consultations ===\n";
+$remaining = $conn->query("
+    SELECT c.id, u.full_name as patient, c.doctor_id, c.status, c.payment_status, 
+           c.consultation_fee, LEFT(c.symptoms, 60) as symptoms_preview, c.created_at
+    FROM consultations c
+    JOIN users u ON c.patient_id = u.id
+    ORDER BY c.created_at DESC
+    LIMIT 15
+");
+
+while ($row = $remaining->fetch_assoc()) {
+    $docId = $row['doctor_id'] ?: 'NULL';
+    echo "ID:{$row['id']}, Patient:{$row['patient']}, Doc:$docId, Status:'{$row['status']}', Pay:'{$row['payment_status']}', Fee:{$row['consultation_fee']}, Created:{$row['created_at']}\n";
+    echo "  Symptoms: {$row['symptoms_preview']}\n";
+}

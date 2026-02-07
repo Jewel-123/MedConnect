@@ -87,4 +87,3 @@ echo "Email: admin@medconnect.com\n";
 echo "Password: admin123\n";
 
 $conn->close();
-?>

@@ -48,4 +48,3 @@ if ($result) {
 }
 
 echo "\n=== CHECK COMPLETE ===\n";
-?>

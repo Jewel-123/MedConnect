@@ -54,4 +54,3 @@ echo "Errors: $errorCount\n";
 echo "========================================\n";
 
 $conn->close();
-?>

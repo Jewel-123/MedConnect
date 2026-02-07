@@ -14,4 +14,3 @@ echo json_encode([
     'columns' => $columns,
     'message' => 'These are the actual columns in your appointments table'
 ]);
-?>

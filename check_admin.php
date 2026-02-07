@@ -82,4 +82,3 @@ echo "<br><hr>";
 echo "<p><a href='login.php' style='background: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Go to Login Page</a></p>";
 
 $conn->close();
-?>

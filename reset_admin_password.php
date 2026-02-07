@@ -15,4 +15,3 @@ if ($stmt->execute()) {
 } else {
     echo "Error: " . $conn->error;
 }
-?>

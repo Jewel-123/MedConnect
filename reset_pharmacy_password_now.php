@@ -42,4 +42,3 @@ if ($stmt->execute()) {
 } else {
     echo "❌ Failed to update password: " . $conn->error . "\n";
 }
-?>

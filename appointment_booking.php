@@ -29,7 +29,7 @@ $doctors = $conn->query("
     <title>Book Appointment - MedConnect</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         .header { background: white; padding: 20px 30px; border-radius: 12px 12px 0 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .header h1 { color: #333; font-size: 28px; }
@@ -37,10 +37,10 @@ $doctors = $conn->query("
         .content { background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
         .doctor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .doctor-card { border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; transition: all 0.3s; cursor: pointer; }
-        .doctor-card:hover { border-color: #667eea; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2); transform: translateY(-2px); }
-        .doctor-card.selected { border-color: #667eea; background: #f8f9ff; }
+        .doctor-card:hover { border-color: #0d9488; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2); transform: translateY(-2px); }
+        .doctor-card.selected { border-color: #0d9488; background: #f0fdfa; }
         .doctor-name { font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
-        .doctor-spec { color: #667eea; font-size: 14px; margin-bottom: 10px; }
+        .doctor-spec { color: #0d9488; font-size: 14px; margin-bottom: 10px; }
         .doctor-info { display: flex; gap: 15px; margin-top: 10px; font-size: 13px; color: #64748b; }
         .rating { color: #f59e0b; }
         .fee { font-weight: 600; color: #10b981; }
@@ -49,22 +49,22 @@ $doctors = $conn->query("
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .calendar-header h3 { color: #1e293b; }
         .calendar-nav { display: flex; gap: 10px; }
-        .calendar-nav button { background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .calendar-nav button { background: #0d9488; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px; }
         .calendar-day { text-align: center; padding: 15px; border-radius: 8px; cursor: pointer; border: 2px solid #e2e8f0; background: white; transition: all 0.2s; }
-        .calendar-day:hover { border-color: #667eea; }
-        .calendar-day.selected { background: #667eea; color: white; border-color: #667eea; }
+        .calendar-day:hover { border-color: #0d9488; }
+        .calendar-day.selected { background: #0d9488; color: white; border-color: #0d9488; }
         .calendar-day.disabled { opacity: 0.4; cursor: not-allowed; }
         .time-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 20px; }
         .time-slot { padding: 12px; text-align: center; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; background: white; transition: all 0.2s; }
-        .time-slot:hover { border-color: #667eea; }
-        .time-slot.selected { background: #667eea; color: white; border-color: #667eea; }
+        .time-slot:hover { border-color: #0d9488; }
+        .time-slot.selected { background: #0d9488; color: white; border-color: #0d9488; }
         .notes-section { margin-top: 20px; }
         .notes-section textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; resize: vertical; min-height: 80px; }
         .action-buttons { margin-top: 25px; display: flex; gap: 15px; justify-content: flex-end; }
         .btn { padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+        .btn-primary { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4); }
         .btn-secondary { background: #e2e8f0; color: #475569; }
         .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         .alert-success { background: #d1fae5; border: 2px solid #10b981; color: #065f46; }

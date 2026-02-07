@@ -84,4 +84,3 @@ try {
         $conn->query("DELETE FROM users WHERE id = $userId");
     }
 }
-?>

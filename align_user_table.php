@@ -54,4 +54,3 @@ if ($check && $check->num_rows > 0) {
 }
 
 echo "\n=== ALIGNMENT COMPLETE ===\n";
-?>

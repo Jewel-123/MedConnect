@@ -39,4 +39,3 @@ echo "JSON length: " . strlen($json) . " bytes\n";
 if (strlen($json) < 500) {
     echo "\nJSON output:\n$json\n";
 }
-?>

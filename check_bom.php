@@ -9,4 +9,3 @@ foreach ($files as $file) {
         echo "WARNING: $file has content before <?php\n";
     }
 }
-?>

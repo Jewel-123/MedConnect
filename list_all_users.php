@@ -14,4 +14,3 @@ if ($result) {
 
 file_put_contents('users_list_direct.txt', $output);
 echo "Written to users_list_direct.txt";
-?>

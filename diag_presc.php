@@ -17,4 +17,3 @@ echo "Prescriptions (old) count: " . $prescResOld->fetch_assoc()['count'] . "\n"
 
 $vitalsRes = $conn->query("SELECT COUNT(*) as count FROM patient_vitals WHERE patient_id = $patientId");
 echo "Vitals count: " . $vitalsRes->fetch_assoc()['count'] . "\n";
-?>

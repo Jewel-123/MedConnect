@@ -174,4 +174,3 @@ try {
     echo "<p>" . $e->getMessage() . "</p>";
     echo "</div>";
 }
-?>

@@ -37,4 +37,3 @@ while ($row = $prescriptions->fetch_assoc()) {
     echo "</tr>";
 }
 echo "</table>";
-?>

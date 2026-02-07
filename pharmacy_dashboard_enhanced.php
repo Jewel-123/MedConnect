@@ -32,11 +32,13 @@ if (!$profile) {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
+        
         :root {
-            --primary: #14b8a6;
-            --primary-dark: #0d9488;
-            --primary-light: #2dd4bf;
-            --secondary: #06b6d4;
+            /* Unified Teal/Emerald Theme - Matching Home Page */
+            --primary: #0d9488;
+            --primary-dark: #0f766e;
+            --primary-light: #5eead4;
+            --secondary: #2dd4bf;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
@@ -44,8 +46,8 @@ if (!$profile) {
             --dark: #1e293b;
             --light: #f8fafc;
             --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
         }
         
         body {

@@ -10,4 +10,3 @@ foreach ($queries as $q) {
     }
 }
 echo "Migration v3: $success ok, $errors errors.";
-?>

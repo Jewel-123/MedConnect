@@ -1,0 +1,3 @@
+CONSULTATIONS COLS: id, patient_id, doctor_id, symptoms, duration, severity, urgency_score, urgency_level, age, gender, existing_conditions, input_method, attachment_count, status, consultation_mode, language_preference, matched_specialty, auto_assigned, payment_status, created_at, updated_at, assigned_at, completed_at
+
+APPOINTMENTS COLS: id, patient_id, doctor_id, appointment_date, status, symptom_description, meeting_link, created_at, scheduled_date, scheduled_time, payment_status, consultation_fee, notes, cancellation_reason, payment_transaction_id

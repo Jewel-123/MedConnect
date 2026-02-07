@@ -42,4 +42,3 @@ echo "  Password: admin123\n\n";
 echo "Or login at: http://localhost/medconnect/login.php\n";
 
 $conn->close();
-?>

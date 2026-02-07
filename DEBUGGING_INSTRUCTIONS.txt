@@ -1,0 +1,12 @@
+Please open your browser's Developer Console (press F12) and try the payment again.
+
+When the error appears, take a screenshot of:
+1. The Console tab (showing any errors)
+2. The Network tab (showing the failed request)
+
+This will help me see exactly what's happening!
+
+Alternatively, tell me:
+- What is the EXACT error message in the browser console?
+- Which request is failing in the Network tab?
+- What is the response body of that failed request?

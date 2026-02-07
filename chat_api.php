@@ -23,7 +23,7 @@ try {
         case 'send':
             $consultation_id = $_POST['consultation_id'];
             $content = $_POST['content'];
-            $type = $_POST['type'] ?? 'text';
+            $type = $_POST['type'] ?? 'text'; // 'text', 'image', 'file' or 'signal'
             $receiver_id = $_POST['receiver_id'];
 
             if (!$consultation_id || !$content || !$receiver_id) {
@@ -40,6 +40,44 @@ try {
                 echo json_encode(['success' => true, 'message_id' => $stmt->insert_id]);
             } else {
                 throw new Exception("Failed to send message: " . $conn->error);
+            }
+            break;
+
+        case 'upload_attachment':
+            if (!isset($_FILES['attachment'])) {
+                throw new Exception("No file uploaded");
+            }
+
+            $file = $_FILES['attachment'];
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            
+            if (!in_array($file['type'], $allowed_types)) {
+                throw new Exception("File type not allowed. Please upload an image, PDF, or Word document.");
+            }
+
+            if ($file['size'] > 5 * 1024 * 1024) {
+                throw new Exception("File is too large. Max size is 5MB.");
+            }
+
+            $upload_dir = 'uploads/chat_attachments/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+
+            $file_ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $new_filename = uniqid('chat_') . '.' . $file_ext;
+            $target_path = $upload_dir . $new_filename;
+
+            if (move_uploaded_file($file['tmp_name'], $target_path)) {
+                $file_type = strpos($file['type'], 'image/') === 0 ? 'image' : 'file';
+                echo json_encode([
+                    'success' => true, 
+                    'file_url' => $target_path,
+                    'file_name' => $file['name'],
+                    'file_type' => $file_type
+                ]);
+            } else {
+                throw new Exception("Failed to save uploaded file");
             }
             break;
 
@@ -85,4 +123,3 @@ try {
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
-?>

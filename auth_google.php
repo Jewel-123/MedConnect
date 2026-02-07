@@ -145,4 +145,3 @@ if (isset($data['credential'])) {
 }
 
 $conn->close();
-?>

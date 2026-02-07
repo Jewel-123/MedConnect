@@ -425,4 +425,3 @@ echo "  - Clarifying Questions: $questionCount\n";
 echo "========================================\n";
 
 $conn->close();
-?>

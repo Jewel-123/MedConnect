@@ -30,4 +30,3 @@ echo "Stored Session Role: " . ($_SESSION['role'] ?? 'N/A') . "\n";
 // Check Sophia Martinez ID
 $sophia = $conn->query("SELECT id FROM users WHERE full_name LIKE '%Sophia Martinez%'")->fetch_assoc();
 echo "Sophia Martinez User ID: " . ($sophia['id'] ?? 'Not found') . "\n";
-?>

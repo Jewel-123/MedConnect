@@ -41,4 +41,3 @@ if ($httpCode === 200) {
         echo "Error: " . $error['error']['description'] . "\n";
     }
 }
-?>

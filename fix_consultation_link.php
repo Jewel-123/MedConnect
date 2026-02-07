@@ -104,4 +104,3 @@ if ($pending->num_rows > 0) {
 } else {
     echo "No pending prescriptions found.";
 }
-?>

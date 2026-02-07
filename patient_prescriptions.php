@@ -21,16 +21,16 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; }
         
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .header h1 { font-size: 28px; margin-bottom: 5px; }
         .header p { opacity: 0.9; font-size: 14px; }
         
         .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
-        .back-btn { display: inline-flex; align-items: center; gap: 8px; background: white; color: #667eea; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-bottom: 20px; transition: all 0.3s; }
-        .back-btn:hover { background: #f8f9ff; transform: translateX(-5px); }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; background: white; color: #0d9488; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-bottom: 20px; transition: all 0.3s; }
+        .back-btn:hover { background: #f0fdfa; transform: translateX(-5px); }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #667eea; }
+        .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #0d9488; }
         .stat-value { font-size: 32px; font-weight: 700; color: #1e293b; margin: 10px 0; }
         .stat-label { color: #64748b; font-size: 14px; }
         
@@ -61,12 +61,12 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
         
         .actions { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary { background: #667eea; color: white; }
-        .btn-primary:hover { background: #5568d3; }
+        .btn-primary { background: #0d9488; color: white; }
+        .btn-primary:hover { background: #0f766e; }
         .btn-secondary { background: #10b981; color: white; }
         .btn-secondary:hover { background: #059669; }
-        .btn-outline { background: white; color: #667eea; border: 2px solid #667eea; }
-        .btn-outline:hover { background: #f8f9ff; }
+        .btn-outline { background: white; color: #0d9488; border: 2px solid #0d9488; }
+        .btn-outline:hover { background: #f0fdfa; }
         
         .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
         .empty-state i { font-size: 64px; opacity: 0.3; margin-bottom: 20px; }
@@ -211,7 +211,7 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
                                     <i class="ph ph-download"></i> Download
                                 </a>
                                 
-                                ${rx.status === 'finalized' ? `
+                                ${rx.status === 'finalized' || rx.status === 'issued' ? `
                                     <button class="btn btn-secondary" onclick="proceedWithPrescription(${rx.id})">
                                         <i class="ph ph-shopping-cart"></i> Order Medicine
                                     </button>

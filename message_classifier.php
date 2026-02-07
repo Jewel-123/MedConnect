@@ -190,4 +190,3 @@ class MessageClassifier {
         return $suggestions[$workflowStage] ?? [];
     }
 }
-?>

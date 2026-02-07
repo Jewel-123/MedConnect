@@ -21,4 +21,3 @@ foreach ($tables as $table) {
 }
 
 echo "\n=== DATABASE CHECK COMPLETE ===\n";
-?>

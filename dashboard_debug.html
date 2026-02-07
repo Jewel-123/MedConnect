@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Debug</title>
+</head>
+<body>
+    <h1>Doctor Dashboard Debug Test</h1>
+    <h2>Step 1: Testing doctor_api.php directly</h2>
+    <div id="output"></div>
+    
+    <script>
+    console.log('Testing API calls...');
+    
+    // Test 1: Get consultation requests
+    fetch('doctor_api.php?action=get_consultation_requests')
+        .then(response => response.text())
+        .then(text => {
+            console.log('RAW Response:', text);
+            try {
+                const data = JSON.parse(text);
+                console.log('Parsed data:', data);
+                document.getElementById('output').innerHTML += `
+                    <h3>Consultation Requests Response:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch(e) {
+                console.error('JSON Parse Error:', e);
+                document.getElementById('output').innerHTML += `
+                    <h3>ERROR - Invalid JSON Response:</h3>
+                    <pre>${text}</pre>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            document.getElementById('output').innerHTML += `
+                <h3>FETCH ERROR:</h3>
+                <pre>${error.message}</pre>
+            `;
+        });
+    </script>
+</body>
+</html>

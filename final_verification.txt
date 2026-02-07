@@ -1,0 +1,30 @@
+=== FINAL VERIFICATION OF PENDING PAID REQUESTS ===
+
+--- PENDING PAID CONSULTATIONS ---
+ID: 15 | Patient: JEWEL BIJU | Doctor ID: NULL | Status: pending
+ID: 16 | Patient: JEWEL BIJU | Doctor ID: NULL | Status: pending
+ID: 17 | Patient: JEWEL BIJU | Doctor ID: NULL | Status: pending
+
+--- PENDING PAID APPOINTMENTS ---
+ID: 2 | Patient: JEWEL BIJU | Doctor ID: 28 | Status: pending | Time: 2026-02-18 12:00:00
+ID: 3 | Patient: JEWEL BIJU | Doctor ID: 28 | Status: pending | Time: 2026-02-25 12:30:00
+ID: 4 | Patient: JEWEL BIJU | Doctor ID: 26 | Status: pending | Time: 2026-02-25 12:00:00
+ID: 5 | Patient: JEWEL BIJU | Doctor ID: 26 | Status: pending | Time: 2026-02-18 12:30:00
+ID: 6 | Patient: JEWEL BIJU | Doctor ID: 26 | Status: pending | Time: 2026-02-18 12:00:00
+ID: 9 | Patient: JEWEL BIJU | Doctor ID: 25 | Status: pending | Time: 2026-02-24 16:30:00
+ID: 10 | Patient: JEWEL BIJU | Doctor ID: 28 | Status: pending | Time: 2026-02-17 16:30:00
+ID: 11 | Patient: JEWEL BIJU | Doctor ID: 25 | Status: pending | Time: 2026-02-12 12:30:00
+ID: 12 | Patient: JEWEL BIJU | Doctor ID: 25 | Status: pending | Time: 2026-02-11 16:30:00
+ID: 13 | Patient: JEWEL BIJU | Doctor ID: 25 | Status: pending | Time: 2026-02-25 12:00:00
+
+--- RECENT COMPLETED TRANSACTIONS ---
+ID: 14 | Type: consultation_fee | RelID: 13 | RelType: appointment | DocID: 25 | Status: completed
+ID: 13 | Type: consultation_fee | RelID: 12 | RelType: appointment | DocID: 25 | Status: completed
+ID: 12 | Type: consultation_fee | RelID: 11 | RelType: appointment | DocID: 25 | Status: completed
+ID: 11 | Type: consultation_fee | RelID: 10 | RelType: appointment | DocID: 28 | Status: completed
+ID: 10 | Type: consultation_fee | RelID: 9 | RelType: appointment | DocID: 25 | Status: completed
+ID: 9 | Type: consultation_fee | RelID: 8 | RelType: appointment | DocID: 25 | Status: completed
+ID: 8 | Type: consultation_fee | RelID: 7 | RelType: appointment | DocID: 28 | Status: completed
+ID: 7 | Type: consultation_fee | RelID: 6 | RelType: appointment | DocID: 26 | Status: completed
+ID: 6 | Type: consultation_fee | RelID: 5 | RelType: appointment | DocID: 26 | Status: completed
+ID: 5 | Type: consultation_fee | RelID: 4 | RelType: appointment | DocID: 26 | Status: completed

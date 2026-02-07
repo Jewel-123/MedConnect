@@ -50,29 +50,30 @@ try {
             
             $prescription = $result->fetch_assoc();
             
-            if ($prescription['status'] !== 'finalized') {
-                throw new Exception('Prescription must be finalized before sending to pharmacy');
+            if ($prescription['status'] !== 'finalized' && $prescription['status'] !== 'issued') {
+                throw new Exception('Prescription must be finalized or issued before sending to pharmacy');
             }
             
-            // Get central pharmacy ID
-            $centralPharmacy = $conn->query("
-                SELECT id FROM users 
-                WHERE email = 'central.pharmacy@medconnect.com' 
-                LIMIT 1
-            ")->fetch_assoc();
+            // Get City Pharmacy ID (HARDCODED to 4 as per user request)
+            $pharmacyId = 4;
             
-            if (!$centralPharmacy) {
-                throw new Exception('Central pharmacy not found. Please contact support.');
+            // Check if City Pharmacy exists
+            $checkPharmacy = $conn->query("SELECT id FROM users WHERE id = $pharmacyId AND role = 'pharmacy'");
+            if ($checkPharmacy->num_rows === 0) {
+                // Fallback to central pharmacy if city pharmacy doesn't exist for some reason
+                $centralPharmacy = $conn->query("SELECT id FROM users WHERE email = 'central.pharmacy@medconnect.com' LIMIT 1")->fetch_assoc();
+                if ($centralPharmacy) {
+                    $pharmacyId = $centralPharmacy['id'];
+                } else {
+                    throw new Exception('Pharmacy not found. Please contact support.');
+                }
             }
             
-            $pharmacyId = $centralPharmacy['id'];
-            
-            // Update prescription status
             $stmt = $conn->prepare("
                 UPDATE prescriptions_v2 
                 SET status = 'sent_to_pharmacy',
                     pharmacy_id = ?,
-                    sent_to_pharmacy_at = NOW()
+                    sent_at = NOW()
                 WHERE id = ?
             ");
             $stmt->bind_param("ii", $pharmacyId, $prescriptionId);
@@ -113,7 +114,7 @@ try {
                     'id' => $updated['id'],
                     'status' => $updated['status'],
                     'pharmacy_name' => $updated['pharmacy_name'],
-                    'sent_at' => $updated['sent_to_pharmacy_at'],
+                    'sent_at' => $updated['sent_at'],
                     'order_number' => $orderNumber
                 ]
             ]);
@@ -201,4 +202,3 @@ try {
         'error' => $e->getMessage()
     ]);
 }
-?>

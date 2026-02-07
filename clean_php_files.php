@@ -23,4 +23,3 @@ foreach ($files as $file) {
         echo "No issues found in $file\n";
     }
 }
-?>

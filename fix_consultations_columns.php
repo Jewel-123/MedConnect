@@ -37,4 +37,3 @@ echo "\nFinal consultations table structure:\n";
 while($row = $res->fetch_assoc()) {
     echo "- " . $row['Field'] . " (" . $row['Type'] . ")\n";
 }
-?>

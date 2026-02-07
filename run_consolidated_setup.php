@@ -135,4 +135,3 @@ if ($missing == 0) {
 echo "\n=== SETUP COMPLETE ===\n";
 
 $conn->close();
-?>

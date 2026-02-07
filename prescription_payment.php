@@ -60,13 +60,13 @@ $items = $conn->query("
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; }
         
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .header h1 { font-size: 28px; margin-bottom: 5px; }
         .header p { opacity: 0.9; font-size: 14px; }
         
         .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-        .back-btn { display: inline-flex; align-items: center; gap: 8px; background: white; color: #667eea; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-bottom: 20px; transition: all 0.3s; }
-        .back-btn:hover { background: #f8f9ff; transform: translateX(-5px); }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; background: white; color: #0d9488; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-bottom: 20px; transition: all 0.3s; }
+        .back-btn:hover { background: #f0fdfa; transform: translateX(-5px); }
         
         .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
         .card-header { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f1f5f9; }
@@ -88,14 +88,14 @@ $items = $conn->query("
         .total-row.grand { border-top: 2px solid #e2e8f0; margin-top: 10px; padding-top: 15px; font-size: 24px; font-weight: 700; color: #1e293b; }
         
         .btn { padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+        .btn-primary { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .payment-methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
         .payment-method { padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .payment-method:hover { border-color: #667eea; background: #f8f9ff; }
-        .payment-method.active { border-color: #667eea; background: #f8f9ff; }
+        .payment-method:hover { border-color: #0d9488; background: #f0fdfa; }
+        .payment-method.active { border-color: #0d9488; background: #f0fdfa; }
         
         .success-message { background: #d1fae5; color: #065f46; padding: 15px; border-radius: 8px; margin: 20px 0; display: none; }
         .error-message { background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin: 20px 0; display: none; }
@@ -239,7 +239,7 @@ $items = $conn->query("
                         contact: '<?php echo htmlspecialchars($order['patient_phone']); ?>'
                     },
                     theme: {
-                        color: '#667eea'
+                        color: '#0d9488'
                     },
                     handler: function(response) {
                         verifyPayment(response);

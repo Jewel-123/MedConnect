@@ -56,4 +56,3 @@ if ($result) {
 echo "\n=== SEARCH COMPLETE ===\n";
 echo "\nIf you see your data above (like smith@gmail.com), let me know which database it's in!\n";
 echo "If no data found, unfortunately it may have been permanently deleted.\n";
-?>

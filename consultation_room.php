@@ -90,23 +90,35 @@ if ($role === 'doctor' && $_SESSION['user_id'] == $consultation['doctor_id']) {
 }
 // ---------------------------------------------
 
-// Fetch Vitals
-$vitalsStmt = $conn->prepare("SELECT * FROM patient_vitals WHERE patient_id = ? ORDER BY recorded_at DESC LIMIT 1");
-$vitalsStmt->bind_param('i', $consultation['patient_id']);
-$vitalsStmt->execute();
-$vitals = $vitalsStmt->get_result()->fetch_assoc();
+// Fetch Vitals (only if table exists)
+$vitals = null;
+$vitalsTableExists = $conn->query("SHOW TABLES LIKE 'patient_vitals'")->num_rows > 0;
+if ($vitalsTableExists) {
+    $vitalsStmt = $conn->prepare("SELECT * FROM patient_vitals WHERE patient_id = ? ORDER BY recorded_at DESC LIMIT 1");
+    $vitalsStmt->bind_param('i', $consultation['patient_id']);
+    $vitalsStmt->execute();
+    $vitals = $vitalsStmt->get_result()->fetch_assoc();
+}
 
-// Fetch Reports
-$reportsStmt = $conn->prepare("SELECT * FROM medical_reports WHERE patient_id = ? ORDER BY uploaded_at DESC");
-$reportsStmt->bind_param('i', $consultation['patient_id']);
-$reportsStmt->execute();
-$reports = $reportsStmt->get_result();
+// Fetch Reports (only if table exists)
+$reports = null;
+$reportsTableExists = $conn->query("SHOW TABLES LIKE 'medical_reports'")->num_rows > 0;
+if ($reportsTableExists) {
+    $reportsStmt = $conn->prepare("SELECT * FROM medical_reports WHERE patient_id = ? ORDER BY uploaded_at DESC");
+    $reportsStmt->bind_param('i', $consultation['patient_id']);
+    $reportsStmt->execute();
+    $reports = $reportsStmt->get_result();
+}
 
-// Fetch Medical History Records
-$historyStmt = $conn->prepare("SELECT * FROM patient_medical_history WHERE patient_id = ? ORDER BY record_date DESC");
-$historyStmt->bind_param('i', $consultation['patient_id']);
-$historyStmt->execute();
-$historyRecords = $historyStmt->get_result();
+// Fetch Medical History Records (only if table exists)
+$historyRecords = null;
+$historyTableExists = $conn->query("SHOW TABLES LIKE 'patient_medical_history'")->num_rows > 0;
+if ($historyTableExists) {
+    $historyStmt = $conn->prepare("SELECT * FROM patient_medical_history WHERE patient_id = ? ORDER BY record_date DESC");
+    $historyStmt->bind_param('i', $consultation['patient_id']);
+    $historyStmt->execute();
+    $historyRecords = $historyStmt->get_result();
+}
 
 // Fetch E-Prescriptions
 $prescStmt = $conn->prepare("SELECT * FROM prescriptions_v2 WHERE patient_id = ? ORDER BY created_at DESC");
@@ -655,12 +667,16 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                     </div>
                     <div class="content-group">
                         <h4>Recent Records</h4>
-                        <?php while($h = $historyRecords->fetch_assoc()): ?>
-                        <div style="margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-                            <div style="font-size: 12px; font-weight: 600;"><?php echo htmlspecialchars($h['record_title']); ?></div>
-                            <div style="font-size: 11px; color: var(--text-muted);"><?php echo date('M d, Y', strtotime($h['record_date'])); ?></div>
-                        </div>
-                        <?php endwhile; ?>
+                        <?php if ($historyRecords && $historyRecords->num_rows > 0): ?>
+                            <?php while($h = $historyRecords->fetch_assoc()): ?>
+                            <div style="margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                                <div style="font-size: 12px; font-weight: 600;"><?php echo htmlspecialchars($h['record_title']); ?></div>
+                                <div style="font-size: 11px; color: var(--text-muted);"><?php echo date('M d, Y', strtotime($h['record_date'])); ?></div>
+                            </div>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <p style="font-size: 13px; color: var(--text-muted);">No medical history records.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -696,7 +712,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 <div id="tab-reports" class="hidden">
                     <div class="content-group">
                         <h4>Uploaded Reports</h4>
-                        <?php if ($reports->num_rows > 0): ?>
+                        <?php if ($reports && $reports->num_rows > 0): ?>
                             <?php while($r = $reports->fetch_assoc()): ?>
                             <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px;">
                                 <i class="fas fa-file-pdf" style="color: #ef4444;"></i>
@@ -833,15 +849,22 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                         <div id="typingIndicator" style="font-size: 11px; color: var(--text-muted); visibility: hidden;">typing...</div>
                     </div>
                     
+                    
                     <div class="chat-messages" id="chatMessages">
+                        <?php if ($role === 'patient'): ?>
                         <div class="message received">
                             <div class="bubble">Hello, I am Dr. <?php echo htmlspecialchars($consultation['doctor_name']); ?>. I am reviewing your chart. How can I help you today?</div>
                             <div class="msg-meta"><span>10:00 AM</span></div>
                         </div>
+                        <?php endif; ?>
                     </div>
 
+
                     <div class="chat-footer">
-                        <button class="control-btn" style="background:none; color: var(--text-muted);"><i class="fas fa-paperclip"></i></button>
+                        <input type="file" id="chatAttachmentInput" style="display: none;" onchange="handleFileSelect(this)">
+                        <button class="control-btn" style="background:none; color: var(--text-muted);" onclick="document.getElementById('chatAttachmentInput').click()">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
                         <input type="text" class="chat-input" id="messageInput" placeholder="Type a message..." oninput="handleTyping()" onkeydown="if(event.key === 'Enter') { event.preventDefault(); sendMessage(); }">
                         <button class="control-btn active" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
                     </div>
@@ -856,7 +879,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                             <span>Auto-saving...</span>
                         </div>
                     </div>
-                    <textarea class="notes-textarea" id="privateNotes" placeholder="Jot down symptoms, preliminary diagnosis, or exam notes here..."><?php echo htmlspecialchars($consultation['private_notes']); ?></textarea>
+                    <textarea class="notes-textarea" id="privateNotes" placeholder="Jot down symptoms, preliminary diagnosis, or exam notes here..."><?php echo htmlspecialchars($consultation['private_notes'] ?? ''); ?></textarea>
                 </div>
                 <?php endif; ?>
             </div>
@@ -868,10 +891,10 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 <div class="video-feed" id="remoteVideoWrapper">
                     <div class="feed-label">
                         <div class="quality-indicator" id="remoteQuality"></div>
-                        <span>Dr. <?php echo htmlspecialchars($consultation['doctor_name']); ?></span>
+                        <span><?php echo ($role === 'doctor') ? htmlspecialchars($consultation['patient_name']) : 'Dr. ' . htmlspecialchars($consultation['doctor_name']); ?></span>
                     </div>
                     <div id="remotePlaceholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#64748b;">
-                        <i class="fas fa-user-md fa-3x"></i>
+                        <i class="<?php echo ($role === 'doctor') ? 'fas fa-user' : 'fas fa-user-md'; ?> fa-3x"></i>
                     </div>
                 </div>
                 <div class="video-feed" id="localVideoWrapper" style="height: 140px;">
@@ -1212,10 +1235,22 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             msgDiv.className = `message ${isSent ? 'sent' : 'received'}`;
             if (msg.id) msgDiv.id = 'msg-' + msg.id;
             
-            const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const time = new Date(msg.created_at || new Date()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
+            let contentHtml = msg.message_content;
+            if (msg.message_type === 'image') {
+                contentHtml = `<img src="${msg.message_content}" style="max-width: 100%; border-radius: 8px; cursor: pointer;" onclick="window.open(this.src)">`;
+            } else if (msg.message_type === 'file') {
+                const fileName = msg.message_content.split('/').pop();
+                contentHtml = `<div style="display:flex; align-items:center; gap:8px; padding:8px; background:rgba(0,0,0,0.05); border-radius:8px;">
+                    <i class="fas fa-file-alt"></i>
+                    <span style="font-size:12px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${fileName}</span>
+                    <a href="${msg.message_content}" target="_blank" style="color:inherit;"><i class="fas fa-download"></i></a>
+                </div>`;
+            }
+
             msgDiv.innerHTML = `
-                <div class="bubble">${msg.message_content}</div>
+                <div class="bubble">${contentHtml}</div>
                 <div class="msg-meta">
                     <span>${time}</span>
                     ${isSent ? (msg.is_read ? '<i class="fas fa-check-double" style="color:var(--primary)"></i>' : '<i class="fas fa-check" style="color:var(--text-muted)"></i>') : ''}
@@ -1223,6 +1258,69 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             `;
             container.appendChild(msgDiv);
             container.scrollTop = container.scrollHeight;
+        }
+
+        async function handleFileSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert("File is too large. Max size is 5MB.");
+                input.value = '';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', 'upload_attachment');
+            formData.append('attachment', file);
+
+            try {
+                // Show temporary uploading message
+                const tempId = 'temp-' + Date.now();
+                appendMessage({
+                    id: tempId,
+                    message_content: `Uploading ${file.name}...`,
+                    message_type: 'text',
+                    created_at: new Date()
+                }, true);
+
+                const response = await fetch('chat_api.php', { method: 'POST', body: formData });
+                const data = await response.json();
+                
+                // Remove temporary message
+                const tempMsg = document.getElementById('msg-' + tempId);
+                if (tempMsg) tempMsg.remove();
+
+                if (data.success) {
+                    // Send message with file URL
+                    const msgFormData = new FormData();
+                    msgFormData.append('action', 'send');
+                    msgFormData.append('consultation_id', consultationId);
+                    msgFormData.append('content', data.file_url);
+                    msgFormData.append('receiver_id', receiverId);
+                    msgFormData.append('type', data.file_type);
+
+                    const sendResponse = await fetch('chat_api.php', { method: 'POST', body: msgFormData });
+                    const sendData = await sendResponse.json();
+                    
+                    if (sendData.success) {
+                        appendMessage({
+                            id: sendData.message_id,
+                            message_content: data.file_url,
+                            message_type: data.file_type,
+                            created_at: new Date()
+                        }, true);
+                    } else {
+                        throw new Exception(sendData.error || "Failed to send file info");
+                    }
+                } else {
+                    alert("Upload failed: " + data.error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("An error occurred during upload.");
+            }
+            input.value = '';
         }
 
         // --- Prescription Hub ---

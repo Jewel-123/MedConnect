@@ -19,7 +19,7 @@ $userName = $_SESSION['user_name'] ?? 'User';
     <title>MedConnect - Features</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         .header { text-align: center; color: white; margin-bottom: 40px; }
         .header h1 { font-size: 36px; margin-bottom: 10px; }
@@ -35,8 +35,8 @@ $userName = $_SESSION['user_name'] ?? 'User';
         .badge-doctor { background: #dcfce7; color: #166534; }
         .badge-pharmacy { background: #fef3c7; color: #92400e; }
         .badge-admin { background: #fee2e2; color: #991b1b; }
-        .back-btn { background: white; color: #667eea; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; margin-bottom: 30px; }
-        .back-btn:hover { background: #f8f9ff; }
+        .back-btn { background: white; color: #0d9488; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; margin-bottom: 30px; }
+        .back-btn:hover { background: #f0fdfa; }
     </style>
 </head>
 <body>

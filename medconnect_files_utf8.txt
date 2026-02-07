@@ -1,0 +1,13 @@
+﻿C:\xampp\mysql\data\medconnect
+C:\xampp\mysql\data_backup_20260111_162543\medconnect
+C:\xampp\mysql\data_broken_20260113_1145\medconnect
+C:\xampp\mysql\data_corrupt\medconnect
+C:\xampp\mysql\data_CORRUPTED_20260111_084538\medconnect
+C:\xampp\mysql\data_old_corrupt\medconnect
+C:\xampp\mysql\data_old_corrupt\medconnect_current_backup_20260119_114424
+C:\xampp\mysql\data_old_corrupt\medconnect_old
+C:\xampp\mysql\data_old_corrupt\medconnect_test
+C:\xampp\mysql\data_old_corrupt\medconnect_user_backup
+C:\xampp\mysql\data_recovery_20260111_080258\medconnect
+C:\xampp\mysql\data_recovery_20260111_080401\medconnect
+C:\xampp\mysql\data_recovery_20260111_083446\medconnect

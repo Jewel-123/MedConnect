@@ -144,14 +144,9 @@ function renderDashboard() {
 
 async function loadDashboardRequests() {
     try {
-        // Fetch both consultations and appointments
-        const [consultationsRes, appointmentsRes] = await Promise.all([
-            fetch('doctor_api.php?action=get_consultation_requests'),
-            fetch('doctor_api.php?action=get_appointment_requests')
-        ]);
-
+        // Fetch only consultations for this section
+        const consultationsRes = await fetch('doctor_api.php?action=get_consultation_requests');
         const consultationsResult = await consultationsRes.json();
-        const appointmentsResult = await appointmentsRes.json();
 
         const container = document.getElementById('dashboardRequests');
         if (!container) return;
@@ -163,47 +158,23 @@ async function loadDashboardRequests() {
             allRequests = [...consultationsResult.data.map(c => ({ ...c, type: 'consultation' }))];
         }
 
-        // Add appointments
-        if (appointmentsResult.status === 'success') {
-            allRequests = [...allRequests, ...appointmentsResult.data];
-        }
-
         if (allRequests.length === 0) {
             container.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 2rem;">No pending requests</p>';
             return;
         }
 
-        const html = allRequests.slice(0, 5).map(req => {
-            const isAppointment = req.type === 'appointment';
-            const isEmergency = !isAppointment && (req.urgency_level === 'emergency' || req.urgency_badge === 'emergency');
+        const html = allRequests.map(req => {
+            const isEmergency = (req.urgency_level === 'emergency' || req.urgency_badge === 'emergency');
             const highlightStyle = isEmergency ? 'border-left: 4px solid #ef4444; background: #fef2f2;' : '';
-            const typeIndicator = isAppointment
-                ? '<span class="status-badge bg-blue" style="font-size: 0.7rem;">SCHEDULED</span>'
-                : `<span class="status-badge urgency-${req.urgency_badge || req.urgency_level}" style="font-size: 0.7rem;">${(req.urgency_badge || req.urgency_level).toUpperCase()}</span>`;
+            const typeIndicator = `<span class="status-badge urgency-${req.urgency_badge || req.urgency_level}" style="font-size: 0.7rem;">${(req.urgency_badge || req.urgency_level).toUpperCase()}</span>`;
 
-            // Different display format for appointments vs consultations
-            let description, timeInfo, actionButtons;
-
-            if (isAppointment) {
-                description = `Scheduled appointment on ${new Date(req.scheduled_date).toLocaleDateString()} at ${req.scheduled_time.substring(0, 5)}`;
-                if (req.notes) {
-                    description += `<br><span style="font-size:0.8rem; color: var(--text-muted);">Notes: ${req.notes}</span>`;
-                }
-                timeInfo = `<span><i class="ph ph-calendar"></i> ${new Date(req.scheduled_date).toLocaleDateString()}</span>
-                            <span><i class="ph ph-clock"></i> ${req.scheduled_time.substring(0, 5)}</span>`;
-                actionButtons = `
-                    <button class="btn btn-success btn-sm" onclick="confirmAppointment(${req.id})" style="padding: 0.25rem 0.75rem;">Confirm</button>
-                    <button class="btn btn-outline btn-sm" onclick="declineAppointment(${req.id})" style="padding: 0.25rem 0.75rem;">Decline</button>
-                `;
-            } else {
-                description = req.symptoms_summary;
-                timeInfo = `<span><i class="ph ph-clock"></i> ${new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                            <span><i class="ph ph-globe"></i> ${req.language_preference}</span>`;
-                actionButtons = `
-                    <button class="btn btn-success btn-sm" onclick="acceptConsultation(${req.id})" style="padding: 0.25rem 0.75rem;">Accept</button>
-                    <button class="btn btn-outline btn-sm" onclick="declineConsultation(${req.id})" style="padding: 0.25rem 0.75rem;">Decline</button>
-                `;
-            }
+            const description = req.symptoms_summary;
+            const timeInfo = `<span><i class="ph ph-clock"></i> ${new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                              <span><i class="ph ph-globe"></i> ${req.language_preference}</span>`;
+            const actionButtons = `
+                <button class="btn btn-success btn-sm" onclick="acceptConsultation(${req.id})" style="padding: 0.25rem 0.75rem;">Accept</button>
+                <button class="btn btn-outline btn-sm" onclick="declineConsultation(${req.id})" style="padding: 0.25rem 0.75rem;">Decline</button>
+            `;
 
             return `
             <div style="border-bottom: 1px solid var(--border); padding: 1rem; ${highlightStyle}">
@@ -223,7 +194,8 @@ async function loadDashboardRequests() {
                     </div>
                 </div>
             </div>
-        `}).join('');
+        `;
+        }).join('');
 
         container.innerHTML = html;
 
@@ -294,7 +266,7 @@ function renderConsultations(requests, active) {
                 switch (cons.status) {
                     case 'scheduled':
                     case 'accepted':
-                        statusLabel = 'Scheduled';
+                        statusLabel = 'Not Started';
                         statusClass = 'pending';
                         break;
                     case 'waiting':
@@ -326,9 +298,19 @@ function renderConsultations(requests, active) {
                                 <div style="font-size: 0.85rem; color: var(--text-muted);">${cons.symptoms ? cons.symptoms.substring(0, 80) : 'No symptoms listed'}...</div>
                             </div>
                             <div style="display: flex; gap: 0.5rem;">
-                                <a href="consultation_room.php?id=${cons.id}" class="btn btn-primary btn-sm" style="text-decoration: none; display: flex; align-items: center; gap: 0.25rem;">
-                                    <i class="ph ph-play-circle"></i> ${(cons.status === 'in_progress' || cons.status === 'paused') ? 'Resume' : 'Start'}
-                                </a>
+                                ${cons.status === 'accepted' ? `
+                                    <button class="btn btn-primary btn-sm" onclick="startConsultation(${cons.id})">
+                                        <i class="ph ph-play-circle"></i> Start
+                                    </button>
+                                ` : cons.status === 'paused' ? `
+                                    <button class="btn btn-primary btn-sm" onclick="resumeConsultation(${cons.id})">
+                                        <i class="ph ph-play-circle"></i> Resume
+                                    </button>
+                                ` : `
+                                    <a href="consultation_room.php?id=${cons.id}" class="btn btn-primary btn-sm" style="text-decoration: none; display: flex; align-items: center; gap: 0.25rem;">
+                                        <i class="ph ph-video-camera"></i> Join Room
+                                    </a>
+                                `}
                                 ${cons.status === 'in_progress' ? `
                                 <button class="btn btn-outline btn-sm" onclick="pauseConsultation(${cons.id})">
                                     <i class="ph ph-pause-circle"></i> Pause
@@ -665,6 +647,56 @@ async function completeConsultation(consultationId) {
     }
 }
 
+
+// Start consultation - change from 'accepted' to 'in_progress'
+async function startConsultation(consultationId) {
+    if (!confirm('Start this consultation?')) return;
+
+    try {
+        const response = await fetch('doctor_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=start_consultation&consultation_id=${consultationId}`
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            showNotification('Consultation started successfully', 'success');
+            loadActiveConsultations();
+        } else {
+            showNotification(data.error || 'Failed to start consultation', 'error');
+        }
+    } catch (error) {
+        showNotification('Error starting consultation', 'error');
+        console.error('Start consultation error:', error);
+    }
+}
+
+// Resume consultation - change from 'paused' to 'in_progress'
+async function resumeConsultation(consultationId) {
+    try {
+        const response = await fetch('doctor_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=resume_consultation&consultation_id=${consultationId}`
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            showNotification('Consultation resumed', 'success');
+            loadActiveConsultations();
+        } else {
+            showNotification(data.error || 'Failed to resume consultation', 'error');
+        }
+    } catch (error) {
+        showNotification('Error resuming consultation', 'error');
+        console.error('Resume consultation error:', error);
+    }
+}
+
+// Pause consultation - change from 'in_progress' to 'paused'
 async function pauseConsultation(consultationId) {
     try {
         const formData = new FormData();

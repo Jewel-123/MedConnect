@@ -307,4 +307,3 @@ if ($action == 'signup') {
     }
 }
 $conn->close();
- ?>

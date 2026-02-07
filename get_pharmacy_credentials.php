@@ -85,4 +85,3 @@ echo "<ul>";
 echo "<li><a href='login.php' style='color: #667eea; font-weight: bold;'>Login Page</a></li>";
 echo "<li><a href='pharmacy_dashboard.php' style='color: #667eea; font-weight: bold;'>Pharmacy Dashboard</a></li>";
 echo "</ul>";
-?>

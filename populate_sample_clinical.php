@@ -28,4 +28,3 @@ VALUES ($pid, 'Blood Test Results - Oct 2025', 'uploads/reports/blood_test.pdf',
        ($pid, 'Chest X-Ray', 'uploads/reports/xray.jpg', 'image', 'Routine screening')");
 
 echo "Sample clinical data added for Patient #$pid";
-?>

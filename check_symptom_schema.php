@@ -11,4 +11,3 @@ foreach ($tables as $t) {
     }
     echo "\n";
 }
-?>

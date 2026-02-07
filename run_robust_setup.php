@@ -56,4 +56,3 @@ foreach ($tables as $table) {
 }
 
 echo "\n=== SETUP COMPLETE ===\n";
-?>

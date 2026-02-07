@@ -83,4 +83,3 @@ echo "Passed: $passCount ✓\n";
 echo "Failed: $failCount ✗\n";
 echo "Success Rate: " . number_format(($passCount / count($testCases)) * 100, 1) . "%\n";
 echo "========================================\n";
-?>

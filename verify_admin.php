@@ -25,4 +25,3 @@ if ($conn->connect_error) {
         echo "❌ Admin not found in database\n";
     }
 }
-?>

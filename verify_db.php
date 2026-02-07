@@ -108,4 +108,3 @@ echo "You can now close this page.\n";
 echo "</pre>";
 
 $conn->close();
-?>

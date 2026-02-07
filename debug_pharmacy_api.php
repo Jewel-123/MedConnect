@@ -106,4 +106,3 @@ if ($userId) {
 }
 
 echo "<br><br><a href='pharmacy_dashboard.php'>Back to Pharmacy Dashboard</a>";
-?>

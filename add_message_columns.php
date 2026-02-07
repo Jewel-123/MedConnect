@@ -59,4 +59,3 @@ foreach ($indexes as $indexName => $columnName) {
 }
 
 echo "\n✓ Messages table enhancement complete!\n";
-?>

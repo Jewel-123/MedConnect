@@ -42,9 +42,9 @@ if ($transactionId) {
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .payment-container { background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 500px; width: 100%; overflow: hidden; }
-        .payment-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        .payment-header { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; padding: 30px; text-align: center; }
         .payment-header h1 { font-size: 24px; margin-bottom: 10px; }
         .payment-header p { opacity: 0.9; font-size: 14px; }
         .payment-body { padding: 30px; }
@@ -55,24 +55,24 @@ if ($transactionId) {
         .method-title { font-weight: 600; margin-bottom: 15px; color: #1e293b; }
         .method-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .method-option { border: 2px solid #e2e8f0; padding: 15px; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; }
-        .method-option:hover { border-color: #667eea; background: #f8f9ff; }
-        .method-option.selected { border-color: #667eea; background: #f8f9ff; }
+        .method-option:hover { border-color: #0d9488; background: #f0fdfa; }
+        .method-option.selected { border-color: #0d9488; background: #f0fdfa; }
         .method-icon { font-size: 32px; margin-bottom: 8px; }
         .method-name { font-size: 14px; font-weight: 500; color: #475569; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #475569; }
         .form-group input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
-        .form-group input:focus { outline: none; border-color: #667eea; }
+        .form-group input:focus { outline: none; border-color: #0d9488; }
         .card-row { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; }
-        .btn-pay { width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-        .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+        .btn-pay { width: 100%; background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(13, 148, 136, 0.4); }
         .secure-badge { text-align: center; margin-top: 20px; color: #64748b; font-size: 13px; }
         .secure-badge svg { vertical-align: middle; margin-right: 5px; }
         .success-animation { display: none; text-align: center; padding: 40px; }
         .success-animation.active { display: block; }
         .success-icon { font-size: 64px; color: #10b981; animation: scaleIn 0.5s ease; }
         @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #0d9488; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -359,7 +359,7 @@ if ($transactionId) {
                         "contact": "<?php echo $_SESSION['phone'] ?? ''; ?>"
                     },
                     "theme": {
-                        "color": "#667eea"
+                        "color": "#0d9488"
                     },
                     "modal": {
                         "ondismiss": function() {

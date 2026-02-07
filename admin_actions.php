@@ -164,4 +164,3 @@ if ($action === 'update_status') {
 }
 
 $conn->close();
-?>

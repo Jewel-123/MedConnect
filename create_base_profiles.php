@@ -31,4 +31,3 @@ foreach ($tables as $sql) {
         echo "✗ Error creating table: " . $conn->error . "\n";
     }
 }
-?>

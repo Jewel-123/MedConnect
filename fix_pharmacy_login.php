@@ -120,4 +120,3 @@ echo "<h3>Login Credentials:</h3>";
 echo "<p><strong>Email:</strong> pharmacy@medconnect.com</p>";
 echo "<p><strong>Password:</strong> pharmacy123</p>";
 echo "<p><a href='login.php' style='color: #667eea; font-weight: bold;'>Go to Login Page</a></p>";
-?>

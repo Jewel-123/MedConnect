@@ -89,4 +89,3 @@ echo "Check browser console (F12) when signing up\n";
 echo "</pre>";
 
 $conn->close();
-?>

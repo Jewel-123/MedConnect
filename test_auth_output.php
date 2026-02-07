@@ -24,4 +24,3 @@ if (json_last_error() === JSON_ERROR_NONE) {
         echo "Found leading content before JSON: [" . substr($output, 0, 50) . "...]\n";
     }
 }
-?>

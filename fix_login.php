@@ -117,4 +117,3 @@ echo "3. If login still fails, check browser console for errors\n";
 echo "========================================\n\n";
 
 $conn->close();
-?>

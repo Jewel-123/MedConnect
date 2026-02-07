@@ -39,22 +39,25 @@ $current_view = $_GET['view'] ?? 'dashboard';
 
     <style>
         :root {
-            --primary: #0ea5e9;
-            --primary-dark: #0284c7;
-            --primary-light: #e0f2fe;
+            /* Unified Teal/Emerald Theme - Matching Home Page */
+            --primary: #0d9488;
+            --primary-dark: #0f766e;
+            --primary-light: #5eead4;
+            --primary-gradient: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%);
+            
             --secondary: #64748b;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
             --surface: #ffffff;
-            --bg: #f1f5f9;
+            --bg: #f3f4f6;
             --border: #e2e8f0;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --sidebar-w: 260px;
             --header-h: 64px;
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
             --radius-md: 0.75rem;
             --radius-lg: 1rem;
         }

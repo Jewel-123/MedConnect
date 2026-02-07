@@ -548,4 +548,3 @@ function analyzeSymptomsAI($symptoms, $context = []) {
     $engine = new MedicalAIEngine($conn);
     return $engine->analyze($symptoms, $context);
 }
-?>
