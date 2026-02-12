@@ -12,3 +12,4 @@ if ($conn->connect_error) {
         echo " Error querying users table: " . $conn->error;
     }
 }
+?>

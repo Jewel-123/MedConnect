@@ -12,3 +12,4 @@ if ($result) {
 } else {
     echo "✗ Messages table NOT found: " . $conn->error;
 }
+?>

@@ -4,9 +4,6 @@
  * Handle payments for consultations and medications
  */
 
-// Start output buffering FIRST to catch any stray output from included files
-ob_start();
-
 session_start();
 header('Content-Type: application/json');
 error_reporting(E_ALL);
@@ -18,7 +15,6 @@ require_once 'razorpay_config.php';
 
 // Authentication check
 if (!isset($_SESSION['user_id'])) {
-    ob_end_clean(); // Clear any buffered output
     http_response_code(401);
     echo json_encode(['success' => false, 'error' => 'Please login first']);
     exit;
@@ -56,21 +52,25 @@ try {
             $receiptId = 'RCPT' . time() . rand(100, 999);
             
             // Determine related type
-            $relatedType = null;
             if ($transactionType === 'consultation_fee') {
-                $relatedType = 'appointment';
-                
-                // Verify appointment exists and belongs to user, and get doctor_id
-                $stmt = $conn->prepare("SELECT id, doctor_id FROM appointments WHERE id = ? AND patient_id = ?");
+                // First check if it's an appointment (legacy behavior)
+                $stmt = $conn->prepare("SELECT id FROM appointments WHERE id = ? AND patient_id = ?");
                 $stmt->bind_param("ii", $relatedId, $userId);
                 $stmt->execute();
-                $apptResult = $stmt->get_result();
-                $appt = $apptResult->fetch_assoc();
                 
-                if (!$appt) {
-                    throw new Exception('Invalid appointment');
+                if ($stmt->get_result()->num_rows > 0) {
+                    $relatedType = 'appointment';
+                } else {
+                    // Check if it's a consultation
+                    $stmt = $conn->prepare("SELECT id FROM consultations WHERE id = ? AND patient_id = ?");
+                    $stmt->bind_param("ii", $relatedId, $userId);
+                    $stmt->execute();
+                    if ($stmt->get_result()->num_rows > 0) {
+                        $relatedType = 'consultation';
+                    } else {
+                        throw new Exception('Invalid appointment or consultation ID');
+                    }
                 }
-                $transactionDoctorId = $appt['doctor_id'];
                 
             } elseif ($transactionType === 'medication_payment') {
                 $relatedType = 'prescription_order';
@@ -82,7 +82,6 @@ try {
                 if ($stmt->get_result()->num_rows === 0) {
                     throw new Exception('Invalid prescription order');
                 }
-                $transactionDoctorId = null; // Pharmacy related
             }
             
             // Convert amount to paise for Razorpay
@@ -165,25 +164,16 @@ try {
             // Create payment transaction with Razorpay order ID
             $stmt = $conn->prepare("
                 INSERT INTO payment_transactions (
-                    transaction_number, user_id, doctor_id, transaction_type, related_id,
+                    transaction_number, user_id, transaction_type, related_id,
                     related_type, amount, currency, payment_method,
                     payment_gateway, razorpay_order_id, status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, 'INR', ?, ?, ?, 'pending')
+                ) VALUES (?, ?, ?, ?, ?, ?, 'INR', ?, 'razorpay', ?, 'pending')
             ");
             
-            $paymentGateway = 'Razorpay';
             $stmt->bind_param(
-                "siisdsdsss",
-                $transactionNumber,
-                $userId,
-                $transactionDoctorId,
-                $transactionType,
-                $relatedId,
-                $relatedType,
-                $amount,
-                $paymentMethod,
-                $paymentGateway,
-                $razorpayOrder['id']
+                "sisisdss",
+                $transactionNumber, $userId, $transactionType, $relatedId,
+                $relatedType, $amount, $paymentMethod, $razorpayOrder['id']
             );
             
             if (!$stmt->execute()) {
@@ -193,7 +183,6 @@ try {
             $transactionId = $stmt->insert_id;
             
             // Return order details for Razorpay checkout
-            ob_end_clean();
             echo json_encode([
                 'success' => true,
                 'transaction_id' => $transactionId,
@@ -287,80 +276,19 @@ try {
                 
                 // Update related records
                 if ($transaction['transaction_type'] === 'consultation_fee') {
-                    error_log("PAYMENT PROCESSING: Updating appointment/consultation payment status");
+                    error_log("PAYMENT PROCESSING: Updating related record payment status");
                     
-                    // CRITICAL FIX: Update CONSULTATIONS table (not just appointments)
-                    // Check if related_id refers to a consultation
-                    $checkConsult = $conn->query("SELECT id FROM consultations WHERE id = {$transaction['related_id']}");
-                    
-                    if ($checkConsult && $checkConsult->num_rows > 0) {
-                        // It's a consultation - update consultations table
-                        error_log("PAYMENT PROCESSING: Updating consultation ID {$transaction['related_id']}");
-                        $stmt = $conn->prepare("
-                            UPDATE consultations
-                            SET payment_status = 'paid',
-                                payment_transaction_id = ?
-                            WHERE id = ?
-                        ");
-                        $stmt->bind_param("ii", $transactionId, $transaction['related_id']);
-                        
-                        if (!$stmt->execute()) {
-                            error_log("PAYMENT PROCESSING ERROR: Failed to update consultation - " . $stmt->error);
-                            throw new Exception('Failed to update consultation status');
-                        }
-                        
-                        $consultationAffected = $stmt->affected_rows;
-                        error_log("PAYMENT PROCESSING: Consultation update affected $consultationAffected rows");
-                        
-                        // Get consultation details for notification
-                        $stmt = $conn->prepare("
-                            SELECT c.*, u.full_name as patient_name
-                            FROM consultations c
-                            JOIN users u ON c.patient_id = u.id
-                            WHERE c.id = ?
-                        ");
-                        $stmt->bind_param("i", $transaction['related_id']);
-                        $stmt->execute();
-                        $consultation = $stmt->get_result()->fetch_assoc();
-                        
-                        if ($consultation && $consultation['doctor_id']) {
-                            // Send notification to doctor
-                            $notifService = getNotificationService();
-                            $notifService->send(
-                                $consultation['doctor_id'],
-                                'all',
-                                'New Paid Consultation',
-                                "New consultation request from {$consultation['patient_name']}. Payment confirmed.",
-                                [
-                                    'role' => 'doctor',
-                                    'notification_type' => 'new_consultation',
-                                    'related_id' => $consultation['id']
-                                ]
-                            );
-                        }
-                        
-                    } else {
-                        // It's an appointment - update appointments table
-                        error_log("PAYMENT PROCESSING: Updating appointment payment status");
+                    if ($transaction['related_type'] === 'appointment') {
+                        // Update appointment payment status
                         $stmt = $conn->prepare("
                             UPDATE appointments
                             SET payment_status = 'paid',
                                 payment_transaction_id = ?,
-                                status = CASE 
-                                    WHEN status = 'booked' THEN 'pending'
-                                    ELSE status
-                                END
+                                status = CASE WHEN status = 'booked' THEN 'pending' ELSE status END
                             WHERE id = ?
                         ");
                         $stmt->bind_param("ii", $transactionId, $transaction['related_id']);
-                        
-                        if (!$stmt->execute()) {
-                            error_log("PAYMENT PROCESSING ERROR: Failed to update appointment - " . $stmt->error);
-                            throw new Exception('Failed to update appointment status');
-                        }
-                        
-                        $appointmentAffected = $stmt->affected_rows;
-                        error_log("PAYMENT PROCESSING: Appointment update affected $appointmentAffected rows for appointment ID " . $transaction['related_id']);
+                        $stmt->execute();
                         
                         // Get appointment details for notification
                         $stmt = $conn->prepare("
@@ -374,20 +302,28 @@ try {
                         $appointment = $stmt->get_result()->fetch_assoc();
                         
                         if ($appointment) {
-                            // NOW send notification to doctor (after payment is completed)
                             $notifService = getNotificationService();
                             $notifService->send(
                                 $appointment['doctor_id'],
                                 'all',
                                 'New Paid Appointment',
                                 "New appointment from {$appointment['patient_name']} on {$appointment['scheduled_date']} at {$appointment['scheduled_time']}. Payment confirmed.",
-                                [
-                                    'role' => 'doctor',
-                                    'notification_type' => 'new_consultation',
-                                    'related_id' => $appointment['id']
-                                ]
+                                ['role' => 'doctor', 'notification_type' => 'new_consultation', 'related_id' => $appointment['id']]
                             );
                         }
+                    } elseif ($transaction['related_type'] === 'consultation') {
+                        // Update consultation payment status
+                        $stmt = $conn->prepare("
+                            UPDATE consultations
+                            SET payment_status = 'paid',
+                                updated_at = NOW()
+                            WHERE id = ?
+                        ");
+                        $stmt->bind_param("i", $transaction['related_id']);
+                        $stmt->execute();
+                        
+                        // Notify doctor about new paid consultation (if auto-assigned or available)
+                        // Note: If doctor_id is NULL, it will show as available to all matching doctors
                     }
                     
                 } elseif ($transaction['transaction_type'] === 'medication_payment') {
@@ -406,7 +342,6 @@ try {
                     ['notification_type' => 'payment_success']
                 );
                 
-                ob_end_clean();
                 echo json_encode([
                     'success' => true,
                     'message' => 'Payment processed successfully'
@@ -425,7 +360,6 @@ try {
                 $stmt->bind_param("si", $failureReason, $transactionId);
                 $stmt->execute();
                 
-                ob_end_clean();
                 echo json_encode([
                     'success' => false,
                     'error' => 'Payment failed: ' . $failureReason
@@ -456,7 +390,6 @@ try {
                 $transactions[] = $row;
             }
             
-            ob_end_clean();
             echo json_encode([
                 'success' => true,
                 'transactions' => $transactions
@@ -468,7 +401,6 @@ try {
     }
     
 } catch (Exception $e) {
-    ob_end_clean(); // Clear buffer before error response
     http_response_code(500);
     echo json_encode([
         'success' => false,
@@ -508,52 +440,29 @@ function processRevenueSplit($conn, $transaction) {
     
     // Record earnings
     if ($type === 'consultation') {
-        // Get doctor_id - first try from payment_transactions record, then fallback to related table
-        $doctorId = $transaction['doctor_id'];
+        // Get doctor from consultation
+       $result = $conn->query("
+            SELECT doctor_id FROM consultations WHERE id = {$transaction['related_id']}
+        ");
+        $consultation = $result->fetch_assoc();
         
-        if (!$doctorId) {
-            // Determine table name based on related_type
-            $tableName = ($transaction['related_type'] === 'appointment') ? 'appointments' : 'consultations';
-            
-            error_log("REVENUE SPLIT: Fetching doctor_id from $tableName for related_id " . $transaction['related_id']);
-            
-            $result = $conn->query("
-                SELECT doctor_id FROM $tableName WHERE id = {$transaction['related_id']}
-            ");
-            $record = $result ? $result->fetch_assoc() : null;
-            $doctorId = $record ? $record['doctor_id'] : null;
-        }
-        
-        if ($doctorId && $transaction['related_id']) {
-            // CRITICAL: Verify consultation exists before inserting earnings
-            // This prevents foreign key constraint error
-            $consultationCheck = $conn->query("
-                SELECT id FROM consultations WHERE id = {$transaction['related_id']}
+        if ($consultation && $consultation['doctor_id']) {
+            $stmt = $conn->prepare("
+                INSERT INTO doctor_earnings (
+                    doctor_id, consultation_id, gross_amount,
+                    platform_commission_percent, platform_commission_amount,
+                    net_amount, payment_status
+                ) VALUES (?, ?, ?, ?, ?, ?, 'pending')
             ");
             
-            if ($consultationCheck && $consultationCheck->num_rows > 0) {
-                $stmt = $conn->prepare("
-                    INSERT INTO doctor_earnings (
-                        doctor_id, consultation_id, gross_amount,
-                        platform_commission_percent, platform_commission_amount,
-                        net_amount, payment_status
-                    ) VALUES (?, ?, ?, ?, ?, ?, 'pending')
-                ");
-                
-                $commissionPercent = $split['platform_commission_percent'] ?? 10.00;
-                $stmt->bind_param(
-                    "iidddd",
-                    $doctorId, $transaction['related_id'],
-                    $transaction['amount'], $commissionPercent,
-                    $platformCommission, $providerAmount
-                );
-                $stmt->execute();
-            } else {
-                // Consultation doesn't exist - log warning but don't fail
-                error_log("Payment verification warning: Consultation ID {$transaction['related_id']} not found, skipping earnings insert");
-            }
-        } else {
-            error_log("REVENUE SPLIT ERROR: Could not determine doctor_id for transaction " . $transaction['id']);
+            $commissionPercent = $split['platform_commission_percent'] ?? 10.00;
+            $stmt->bind_param(
+                "iidddd",
+                $consultation['doctor_id'], $transaction['related_id'],
+                $transaction['amount'], $commissionPercent,
+                $platformCommission, $providerAmount
+            );
+            $stmt->execute();
         }
         
     } else {

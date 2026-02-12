@@ -1,0 +1,29 @@
+=== Prescription Finalization Script ===
+
+Found 4 prescriptions to finalize.
+
+Processing Prescription ID: 2 (Current Status: , Items: 1)
+  ✓ SUCCESS: Finalized (Ready for patient order)
+
+Processing Prescription ID: 4 (Current Status: , Items: 0)
+  ⚠ SKIPPED: No prescription items found
+
+Processing Prescription ID: 5 (Current Status: , Items: 1)
+  ✓ SUCCESS: Finalized (Ready for patient order)
+
+Processing Prescription ID: 6 (Current Status: , Items: 1)
+  ✓ SUCCESS: Finalized (Ready for patient order)
+
+
+=== FINALIZATION SUMMARY ===
+Total Prescriptions Processed: 4
+Successfully Finalized: 3
+Skipped (No Items): 1
+Errors: 0
+
+=== FINAL STATUS DISTRIBUTION ===
+finalized: 3
+sent_to_pharmacy: 1
+: 1
+
+✓ Script completed successfully!

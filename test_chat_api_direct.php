@@ -40,3 +40,4 @@ try {
     ob_get_clean();
     echo "Error: " . $e->getMessage() . "\n";
 }
+?>

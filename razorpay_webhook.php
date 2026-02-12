@@ -171,18 +171,19 @@ function processPaymentSuccess($conn, $transaction, $razorpayPaymentId) {
         // Update prescription order payment status
         $conn->query("
             UPDATE prescription_orders
-            SET payment_status = 'paid',
-                order_status = 'completed',
-                completed_at = NOW()
+            SET payment_status = 'Paid',
+                paid_at = NOW()
             WHERE id = {$transaction['related_id']}
         ");
         
-        // Update prescription status to completed
+        // Update prescription status to Paid as per new workflow
         $conn->query("
             UPDATE prescriptions_v2 p
             JOIN prescription_orders po ON p.id = po.prescription_id
-            SET p.status = 'completed',
-                p.completed_at = NOW()
+            SET p.status = 'Paid',
+                p.payment_status = 'Paid',
+                p.paid_at = NOW(),
+                p.payment_id = '{$razorpayPaymentId}'
             WHERE po.id = {$transaction['related_id']}
         ");
         

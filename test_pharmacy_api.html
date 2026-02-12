@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>API Test</title>
+</head>
+
+<body>
+    <h1>Pharmacy API Test</h1>
+    <div id="output"></div>
+
+    <script>
+        async function testAPIs() {
+            const output = document.getElementById('output');
+
+            // Test 1: Stats
+            output.innerHTML += '<h2>Testing get_dashboard_stats:</h2>';
+            try {
+                const res1 = await fetch('pharmacy_api_enhanced.php?action=get_dashboard_stats');
+                const data1 = await res1.json();
+                output.innerHTML += '<pre>' + JSON.stringify(data1, null, 2) + '</pre>';
+            } catch (e) {
+                output.innerHTML += '<p style="color:red">Error: ' + e.message + '</p>';
+            }
+
+            // Test 2: Prescriptions
+            output.innerHTML += '<h2>Testing get_pending_prescriptions:</h2>';
+            try {
+                const res2 = await fetch('pharmacy_api_enhanced.php?action=get_pending_prescriptions');
+                const data2 = await res2.json();
+                output.innerHTML += '<pre>' + JSON.stringify(data2, null, 2) + '</pre>';
+            } catch (e) {
+                output.innerHTML += '<p style="color:red">Error: ' + e.message + '</p>';
+            }
+        }
+
+        testAPIs();
+    </script>
+</body>
+
+</html>

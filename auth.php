@@ -73,8 +73,33 @@ if ($action == 'signup') {
     $password = $_POST['password'] ?? '';
     $phone = trim($_POST['phone'] ?? '');
 
+    // Validate required fields
     if (empty($name) || empty($email) || empty($password)) {
         echo json_encode(["status" => "error", "message" => "Name, email and password are required"]);
+        exit;
+    }
+
+    // Validate name (at least 2 characters, letters and spaces only)
+    if (!preg_match('/^[a-zA-Z\s]{2,}$/', $name)) {
+        echo json_encode(["status" => "error", "message" => "Name must be at least 2 characters and contain only letters and spaces"]);
+        exit;
+    }
+
+    // Validate email format
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo json_encode(["status" => "error", "message" => "Please enter a valid email address"]);
+        exit;
+    }
+
+    // Validate phone number if provided (exactly 10 digits)
+    if (!empty($phone) && !preg_match('/^\d{10}$/', $phone)) {
+        echo json_encode(["status" => "error", "message" => "Phone number must be exactly 10 digits"]);
+        exit;
+    }
+
+    // Validate password strength (min 8 chars, uppercase, lowercase, number, special char)
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/', $password)) {
+        echo json_encode(["status" => "error", "message" => "Password must be at least 8 characters with uppercase, lowercase, number, and special character"]);
         exit;
     }
 
@@ -179,6 +204,19 @@ if ($action == 'signup') {
         $dob = $_POST['dob'] ?? null;
         $gender = $_POST['gender'] ?? null;
         $history = $_POST['medical_history'] ?? '';
+        
+        // Validate date of birth
+        if (empty($dob)) {
+            echo json_encode(["status" => "error", "message" => "Date of birth is required"]);
+            exit;
+        }
+        
+        // Validate gender
+        if (empty($gender) || !in_array($gender, ['male', 'female', 'other'])) {
+            echo json_encode(["status" => "error", "message" => "Please select a valid gender"]);
+            exit;
+        }
+        
         $stmt = $conn->prepare("INSERT INTO patient_profiles (user_id, date_of_birth, gender, medical_history_summary) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE date_of_birth=?, gender=?, medical_history_summary=?");
         $stmt->bind_param("issssss", $userId, $dob, $gender, $history, $dob, $gender, $history);
         if ($stmt->execute()) {
@@ -186,11 +224,34 @@ if ($action == 'signup') {
             $success = true;
         }
     } elseif ($role == 'doctor') {
-        $license = $_POST['license'] ?? '';
-        $specialization = $_POST['specialization'] ?? '';
+        $license = trim($_POST['license'] ?? '');
+        $specialization = trim($_POST['specialization'] ?? '');
         $experience = $_POST['experience'] ?? 0;
         $fees = $_POST['fees'] ?? 0;
-        $langs = $_POST['languages'] ?? '';
+        $langs = trim($_POST['languages'] ?? '');
+        
+        // Validate required fields
+        if (empty($license)) {
+            echo json_encode(["status" => "error", "message" => "Medical license number is required"]);
+            exit;
+        }
+        if (empty($specialization)) {
+            echo json_encode(["status" => "error", "message" => "Specialization is required"]);
+            exit;
+        }
+        if (!is_numeric($experience) || $experience < 0) {
+            echo json_encode(["status" => "error", "message" => "Experience must be a valid number (0 or greater)"]);
+            exit;
+        }
+        if (!is_numeric($fees) || $fees < 0) {
+            echo json_encode(["status" => "error", "message" => "Consultation fee must be a valid number (0 or greater)"]);
+            exit;
+        }
+        if (empty($langs)) {
+            echo json_encode(["status" => "error", "message" => "Languages spoken is required"]);
+            exit;
+        }
+        
         $stmt = $conn->prepare("INSERT INTO doctor_profiles (user_id, license_number, specialization, years_experience, consultation_fee, languages_spoken) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE license_number=?, specialization=?, years_experience=?, consultation_fee=?, languages_spoken=?");
         $stmt->bind_param("issidssssis", $userId, $license, $specialization, $experience, $fees, $langs, $license, $specialization, $experience, $fees, $langs);
         if ($stmt->execute()) {
@@ -198,10 +259,24 @@ if ($action == 'signup') {
             $success = true;
         }
     } elseif ($role == 'clinic' || $role == 'hospital') {
-        $name = $_POST['org_name'] ?? '';
-        $reg = $_POST['reg_number'] ?? '';
-        $depts = $_POST['departments'] ?? '';
-        $addr = $_POST['address'] ?? '';
+        $name = trim($_POST['org_name'] ?? '');
+        $reg = trim($_POST['reg_number'] ?? '');
+        $depts = trim($_POST['departments'] ?? '');
+        $addr = trim($_POST['address'] ?? '');
+        
+        // Validate required fields
+        if (empty($name)) {
+            echo json_encode(["status" => "error", "message" => ($role == 'hospital' ? "Hospital" : "Clinic") . " name is required"]);
+            exit;
+        }
+        if (empty($reg)) {
+            echo json_encode(["status" => "error", "message" => "Registration number is required"]);
+            exit;
+        }
+        if (empty($addr)) {
+            echo json_encode(["status" => "error", "message" => "Address is required"]);
+            exit;
+        }
         
         if ($role == 'hospital') {
             $stmt = $conn->prepare("INSERT INTO hospital_profiles (user_id, hospital_name, address, registration_number) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE hospital_name=?, address=?, registration_number=?");
@@ -211,6 +286,10 @@ if ($action == 'signup') {
             }
             $stmt->bind_param("issssss", $userId, $name, $addr, $reg, $name, $addr, $reg);
         } else {
+            if (empty($depts)) {
+                echo json_encode(["status" => "error", "message" => "Departments information is required"]);
+                exit;
+            }
             $stmt = $conn->prepare("INSERT INTO clinic_profiles (user_id, clinic_name, registration_number, departments, address) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE clinic_name=?, registration_number=?, departments=?, address=?");
             if (!$stmt) {
                 echo json_encode(["status" => "error", "message" => "Database error during clinic onboarding: " . $conn->error]);
@@ -223,11 +302,34 @@ if ($action == 'signup') {
             $success = true;
         }
     } elseif ($role == 'pharmacy') {
-        $name = $_POST['pharmacy_name'] ?? '';
-        $lic = $_POST['license'] ?? '';
-        $hours = $_POST['hours'] ?? '';
+        $name = trim($_POST['pharmacy_name'] ?? '');
+        $lic = trim($_POST['license'] ?? '');
+        $hours = trim($_POST['hours'] ?? '');
         $delivery = $_POST['delivery'] ?? '';
-        $addr = $_POST['address'] ?? '';
+        $addr = trim($_POST['address'] ?? '');
+        
+        // Validate required fields
+        if (empty($name)) {
+            echo json_encode(["status" => "error", "message" => "Pharmacy name is required"]);
+            exit;
+        }
+        if (empty($lic)) {
+            echo json_encode(["status" => "error", "message" => "License details are required"]);
+            exit;
+        }
+        if (empty($hours)) {
+            echo json_encode(["status" => "error", "message" => "Operating hours are required"]);
+            exit;
+        }
+        if (empty($delivery) || !in_array($delivery, ['pickup', 'delivery', 'both'])) {
+            echo json_encode(["status" => "error", "message" => "Please select a valid delivery option"]);
+            exit;
+        }
+        if (empty($addr)) {
+            echo json_encode(["status" => "error", "message" => "Address is required"]);
+            exit;
+        }
+        
         $stmt = $conn->prepare("INSERT INTO pharmacy_profiles (user_id, pharmacy_name, license_number, operating_hours, delivery_options, address) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE pharmacy_name=?, license_number=?, operating_hours=?, delivery_options=?, address=?");
         $stmt->bind_param("issssssssss", $userId, $name, $lic, $hours, $delivery, $addr, $name, $lic, $hours, $delivery, $addr);
         if ($stmt->execute()) {

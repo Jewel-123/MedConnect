@@ -54,49 +54,20 @@ try {
             $urgencyLevel = $analysis['urgency_level'];
             $matchedSpecialty = $analysis['primary_specialty'];
             
-            // CRITICAL FIX: Assign a doctor based on matched specialty
-            // This ensures consultations appear in doctor's incoming requests
-            $doctorId = null;
-            $consultationFee = 0;
-            
-            if ($matchedSpecialty) {
-                $stmt = $conn->prepare("
-                    SELECT u.id, dp.consultation_fee
-                    FROM users u
-                    JOIN doctor_profiles dp ON u.id = dp.user_id
-                    WHERE dp.specialization LIKE CONCAT('%', ?, '%')
-                      AND u.role = 'doctor'
-                      AND u.status = 'approved'
-                    ORDER BY RAND()
-                    LIMIT 1
-                ");
-                $stmt->bind_param("s", $matchedSpecialty);
-                $stmt->execute();
-                $doctor = $stmt->get_result()->fetch_assoc();
-                $stmt->close();
-                
-                if ($doctor) {
-                    $doctorId = $doctor['id'];
-                    $consultationFee = floatval($doctor['consultation_fee']);
-                }
-            }
-            
-            // Create consultation WITH doctor and fee assigned
+            // Create consultation
             $stmt = $conn->prepare("
                 INSERT INTO consultations (
-                    patient_id, doctor_id, symptoms, duration, severity, age, gender,
+                    patient_id, symptoms, duration, severity, age, gender,
                     existing_conditions, input_method, urgency_score, urgency_level,
-                    matched_specialty, consultation_mode, language_preference, 
-                    consultation_fee, payment_status, status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending')
+                    matched_specialty, consultation_mode, language_preference, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
             ");
             
             $stmt->bind_param(
-                "iisssissississd",
-                $userId, $doctorId, $symptoms, $duration, $severity, $age, $gender,
+                "issssississss",
+                $userId, $symptoms, $duration, $severity, $age, $gender,
                 $existingConditions, $inputMethod, $urgencyScore, $urgencyLevel,
-                $matchedSpecialty, $consultationMode, $languagePref,
-                $consultationFee
+                $matchedSpecialty, $consultationMode, $languagePref
             );
             
             if (!$stmt->execute()) {

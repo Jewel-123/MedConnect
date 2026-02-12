@@ -79,3 +79,5 @@ function sendSMS($to, $message) {
     $sms = new SimpleSMS();
     return $sms->sendSMS($to, $message);
 }
+
+?>

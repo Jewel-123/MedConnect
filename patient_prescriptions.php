@@ -19,59 +19,130 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; }
+        body { font-family: 'Outfit', 'Segoe UI', sans-serif; background: #f0fdfa; color: #111827; }
         
-        .header { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header h1 { font-size: 28px; margin-bottom: 5px; }
-        .header p { opacity: 0.9; font-size: 14px; }
+        .header { 
+            background: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%); 
+            color: white; 
+            padding: 30px 40px; 
+            box-shadow: 0 4px 20px rgba(13, 148, 136, 0.15); 
+        }
+        .header h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 16px; font-weight: 300; }
         
-        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
-        .back-btn { display: inline-flex; align-items: center; gap: 8px; background: white; color: #0d9488; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-bottom: 20px; transition: all 0.3s; }
-        .back-btn:hover { background: #f0fdfa; transform: translateX(-5px); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #0d9488; }
-        .stat-value { font-size: 32px; font-weight: 700; color: #1e293b; margin: 10px 0; }
-        .stat-label { color: #64748b; font-size: 14px; }
+        .back-btn { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: white; 
+            color: #0d9488; 
+            padding: 12px 24px; 
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-weight: 600; 
+            margin-bottom: 30px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .back-btn:hover { 
+            background: #f0fdfa; 
+            transform: translateX(-5px); 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
         
-        .prescription-card { background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #10b981; transition: all 0.3s; }
-        .prescription-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-2px); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
+        .stat-card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+            border: 1px solid rgba(13, 148, 136, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-value { font-size: 42px; font-weight: 800; color: #0f766e; margin: 10px 0; letter-spacing: -1px; }
+        .stat-label { color: #64748b; font-size: 15px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .prescription-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f1f5f9; }
-        .prescription-number { font-size: 18px; font-weight: 700; color: #1e293b; }
-        .prescription-date { color: #64748b; font-size: 14px; margin-top: 5px; }
+        .prescription-card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 20px; 
+            margin-bottom: 24px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+            border: 1px solid rgba(0,0,0,0.05);
+            border-left: 6px solid #0d9488; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .prescription-card:hover { 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+            transform: translateY(-4px); 
+        }
         
-        .badge { display: inline-block; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .prescription-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f0fdfa; }
+        .prescription-number { font-size: 20px; font-weight: 700; color: #111827; }
+        .prescription-date { color: #64748b; font-size: 14px; margin-top: 5px; display: flex; align-items: center; gap: 6px; }
+        
+        .badge { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 600; gap: 6px; }
         .badge-issued { background: #d1fae5; color: #065f46; }
-        .badge-sent { background: #dbeafe; color: #1e40af; }
-        .badge-filled { background: #fef3c7; color: #92400e; }
+        .badge-sent { background: #ccfbf1; color: #0f766e; }
+        .badge-filled { background: #ffedd5; color: #9a3412; }
         
-        .doctor-info { margin-bottom: 20px; }
-        .doctor-name { font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
-        .doctor-specialty { color: #64748b; font-size: 14px; }
+        .doctor-info { margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+        .doctor-avatar { width: 48px; height: 48px; background: #f0fdfa; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #0d9488; font-size: 24px; }
+        .doctor-details h3 { font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 2px; }
+        .doctor-details p { color: #64748b; font-size: 14px; }
         
-        .diagnosis-box { background: #fffbeb; padding: 15px; border-radius: 8px; border-left: 3px solid #f59e0b; margin-bottom: 20px; }
-        .diagnosis-box strong { color: #92400e; }
+        .diagnosis-box { 
+            background: #fff1f2; 
+            padding: 20px; 
+            border-radius: 16px; 
+            border-left: 4px solid #f43f5e; 
+            margin-bottom: 25px; 
+        }
+        .diagnosis-box strong { color: #be123c; display: block; margin-bottom: 5px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .diagnosis-content { color: #881337; font-weight: 500; font-size: 16px; }
         
-        .medications-list { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        .medication-item { padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
-        .medication-item:last-child { border-bottom: none; }
-        .medication-name { font-weight: 600; color: #1e293b; margin-bottom: 5px; }
-        .medication-details { color: #64748b; font-size: 14px; }
+        .medications-list { background: #f8fafc; padding: 25px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #e2e8f0; }
+        .medication-item { padding: 15px 0; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .medication-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .medication-item:first-child { padding-top: 0; }
+        .medication-name { font-weight: 700; color: #1e293b; font-size: 16px; }
+        .medication-details { color: #64748b; font-size: 14px; text-align: right; }
         
-        .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary { background: #0d9488; color: white; }
-        .btn-primary:hover { background: #0f766e; }
-        .btn-secondary { background: #10b981; color: white; }
+        .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 25px; }
+        .btn { 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: all 0.3s; 
+            text-decoration: none; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: 14px;
+        }
+        .btn-primary { 
+            background: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.3);
+        }
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(13, 148, 136, 0.4); 
+        }
+        .btn-secondary { background: #10b981; color: white; } /* Keep green for actions like Pay */
         .btn-secondary:hover { background: #059669; }
         .btn-outline { background: white; color: #0d9488; border: 2px solid #0d9488; }
         .btn-outline:hover { background: #f0fdfa; }
         
-        .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
-        .empty-state i { font-size: 64px; opacity: 0.3; margin-bottom: 20px; }
+        .empty-state { text-align: center; padding: 80px 20px; color: #64748b; }
+        .empty-state i { font-size: 80px; opacity: 0.2; margin-bottom: 20px; color: #0d9488; }
         
-        .loading { text-align: center; padding: 40px; color: #64748b; }
+        .loading { text-align: center; padding: 60px; color: #64748b; }
     </style>
 </head>
 <body>
@@ -211,31 +282,19 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
                                     <i class="ph ph-download"></i> Download
                                 </a>
                                 
-                                ${rx.status === 'finalized' || rx.status === 'issued' ? `
+                                ${rx.status === 'finalized' ? `
                                     <button class="btn btn-secondary" onclick="proceedWithPrescription(${rx.id})">
                                         <i class="ph ph-shopping-cart"></i> Order Medicine
                                     </button>
                                 ` : ''}
                                 
-                                ${rx.status === 'sent_to_pharmacy' ? `
-                                    <button class="btn btn-outline" disabled>
-                                        <i class="ph ph-clock"></i> Waiting for Pharmacy
-                                    </button>
-                                ` : ''}
-                                
-                                ${rx.status === 'in_progress' ? `
-                                    <button class="btn btn-outline" disabled>
-                                        <i class="ph ph-flask"></i> Being Prepared
-                                    </button>
-                                ` : ''}
-                                
-                                ${rx.status === 'ready' ? `
+                                ${rx.status === 'Awaiting Payment' ? `
                                     <a href="prescription_payment.php?prescription_id=${rx.id}" class="btn btn-secondary">
                                         <i class="ph ph-credit-card"></i> Pay Now
                                     </a>
                                 ` : ''}
                                 
-                                ${rx.status === 'completed' && !rx.review_submitted ? `
+                                ${rx.status === 'Completed' && !rx.review_submitted ? `
                                     <a href="prescription_review.php?prescription_id=${rx.id}" class="btn btn-secondary">
                                         <i class="ph ph-star"></i> Submit Review
                                     </a>
@@ -295,15 +354,13 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
         // View order details
         function viewOrderDetails(prescriptionId, orderNumber, orderStatus) {
             const statusText = {
-                'pending': 'Pending - Waiting for pharmacy acceptance',
-                'accepted': 'Accepted - Pharmacy is preparing your order',
-                'preparing': 'Preparing - Your medicines are being prepared',
-                'in_progress': 'In Progress - Your order is being processed',
-                'ready': 'Ready - Your order is ready for pickup/payment',
-                'out_for_delivery': 'Out for Delivery - Your order is on the way',
-                'delivered': 'Delivered - Your order has been delivered',
-                'completed': 'Completed - Order completed successfully',
-                'cancelled': 'Cancelled - Order was cancelled'
+                'Pending': 'Pending - Waiting for pharmacy verification',
+                'Verified': 'Verified - Pharmacy has priced your order',
+                'Awaiting Payment': 'Awaiting Payment - Please pay to continue',
+                'Paid': 'Paid - Payment confirmed, awaiting dispensing',
+                'Dispensed': 'Dispensed - Your medicine is ready for pickup/delivery',
+                'Completed': 'Completed - Order completed successfully',
+                'Cancelled': 'Cancelled - Order was cancelled'
             }[orderStatus] || orderStatus;
             
             alert(`Order #${orderNumber}\n\nStatus: ${statusText}`);

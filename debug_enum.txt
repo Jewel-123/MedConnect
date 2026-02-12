@@ -1,0 +1,1 @@
+enum('draft','issued','sent_to_pharmacy','filled','cancelled')

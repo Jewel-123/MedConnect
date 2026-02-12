@@ -1,46 +1,119 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Dashboard Diagnostic Test</title>
+    <title>Dashboard API Diagnostic</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Doctor Dashboard API Test</h1>
-    <button onclick="testAPI()">Test API Call</button>
-    <pre id="result"></pre>
+    <h1>Pharmacy Dashboard API Diagnostic</h1>
+
+    <div class="test-section">
+        <h2>Test 1: Dashboard Stats API</h2>
+        <div id="stats-result">Testing...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Pending Prescriptions API</h2>
+        <div id="prescriptions-result">Testing...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>JavaScript Console Errors</h2>
+        <div id="console-errors">No errors captured yet</div>
+    </div>
 
     <script>
-    async function testAPI() {
-        const resultDiv = document.getElementById('result');
-        resultDiv.textContent = 'Loading...';
-        
-        try {
-            // Test 1: Check if we can make the API call
-            const response = await fetch('doctor_api.php?action=get_consultation_requests');
-            resultDiv.textContent += '\n✓ API call successful';
-            resultDiv.textContent += '\nStatus: ' + response.status;
-            
-            // Test 2: Parse the JSON
-            const data = await response.json();
-            resultDiv.textContent += '\n✓ JSON parsed successfully';
-            resultDiv.textContent += '\n\nResponse:';
-            resultDiv.textContent += '\n' + JSON.stringify(data, null, 2);
-            
-            // Test 3: Check if we got data
-            if (data.status === 'success') {
-                resultDiv.textContent += '\n\n✓ Status: success';
-                resultDiv.textContent += '\nFound ' + data.data.length + ' consultation(s)';
-            } else {
-                resultDiv.textContent += '\n\n✗ Status: ' + data.status;
-                resultDiv.textContent += '\nMessage: ' + (data.message || 'No message');
+        // Capture console errors
+        const errors = [];
+        const originalError = console.error;
+        console.error = function (...args) {
+            errors.push(args.join(' '));
+            document.getElementById('console-errors').innerHTML = errors.map(e => '<div class="error">' + e + '</div>').join('');
+            originalError.apply(console, args);
+        };
+
+        async function testAPIs() {
+            // Test Stats API
+            try {
+                const res1 = await fetch('pharmacy_api_enhanced.php?action=get_dashboard_stats');
+                const text1 = await res1.text();
+
+                document.getElementById('stats-result').innerHTML =
+                    '<strong>HTTP Status:</strong> ' + res1.status + '<br>' +
+                    '<strong>Raw Response:</strong><pre>' + text1 + '</pre>';
+
+                try {
+                    const json1 = JSON.parse(text1);
+                    document.getElementById('stats-result').innerHTML +=
+                        '<strong class="success">✅ Valid JSON</strong><br>' +
+                        '<strong>Parsed Data:</strong><pre>' + JSON.stringify(json1, null, 2) + '</pre>';
+                } catch (e) {
+                    document.getElementById('stats-result').innerHTML +=
+                        '<strong class="error">❌ JSON Parse Error:</strong> ' + e.message;
+                }
+            } catch (e) {
+                document.getElementById('stats-result').innerHTML =
+                    '<strong class="error">❌ Fetch Error:</strong> ' + e.message;
             }
-        } catch (error) {
-            resultDiv.textContent += '\n\n✗ ERROR: ' + error.message;
-            console.error('Full error:', error);
+
+            // Test Prescriptions API
+            try {
+                const res2 = await fetch('pharmacy_api_enhanced.php?action=get_pending_prescriptions');
+                const text2 = await res2.text();
+
+                document.getElementById('prescriptions-result').innerHTML =
+                    '<strong>HTTP Status:</strong> ' + res2.status + '<br>' +
+                    '<strong>Raw Response Length:</strong> ' + text2.length + ' bytes<br>' +
+                    '<strong>First 500 chars:</strong><pre>' + text2.substring(0, 500) + '</pre>';
+
+                try {
+                    const json2 = JSON.parse(text2);
+                    document.getElementById('prescriptions-result').innerHTML +=
+                        '<strong class="success">✅ Valid JSON</strong><br>' +
+                        '<strong>Success:</strong> ' + json2.success + '<br>' +
+                        '<strong>Prescription Count:</strong> ' + (json2.prescriptions ? json2.prescriptions.length : 0) + '<br>' +
+                        '<strong>Full Response:</strong><pre>' + JSON.stringify(json2, null, 2) + '</pre>';
+                } catch (e) {
+                    document.getElementById('prescriptions-result').innerHTML +=
+                        '<strong class="error">❌ JSON Parse Error:</strong> ' + e.message;
+                }
+            } catch (e) {
+                document.getElementById('prescriptions-result').innerHTML =
+                    '<strong class="error">❌ Fetch Error:</strong> ' + e.message;
+            }
         }
-    }
-    
-    // Auto-run on load
-    window.addEventListener('load', testAPI);
+
+        testAPIs();
     </script>
 </body>
+
 </html>

@@ -16,7 +16,9 @@
             --bg-light: #f8fafc;
             --text-dark: #1e293b;
             --text-muted: #64748b;
+            --error: #ef4444;
         }
+        * { box-sizing: border-box; font-family: 'Outfit', sans-serif; }
         .step-container { display: none; }
         .step-active { display: block; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -36,14 +38,16 @@
         
         .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; color: var(--text-dark); }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem 1rem; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit; font-size: 1rem; transition: border-color 0.2s; }
-        .form-group input:focus { outline: none; border-color: var(--primary); ring: 2px var(--primary); }
+        .form-group input:focus { outline: none; border-color: var(--primary); }
         
         .btn { padding: 0.75rem 1.5rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-size: 1rem; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); }
         .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; }
-        .btn-outline { background: transparent; border: 1px solid #e2e8f0; color: var(--text-muted); }
-        .btn-outline:hover { background: #f8fafc; }
+        
+        .error-message { color: var(--error); font-size: 0.8rem; margin-top: 0.25rem; display: none; font-weight: 500; }
+        .form-group.error input { border-color: var(--error); background: #fffafb; }
+        .form-group.error .error-message { display: block; }
     </style>
 </head>
 <body>
@@ -62,22 +66,26 @@
 
         <!-- Step 1: Account Creation -->
         <div id="step1" class="step-container step-active">
-            <form id="signupForm" onsubmit="handleSignup(event)">
+            <form id="signupForm" novalidate onsubmit="handleSignup(event)">
                 <div class="form-group" style="margin-bottom: 1.25rem;">
                     <label>Full Name</label>
                     <input type="text" id="signupName" placeholder="John Doe" required>
+                    <div class="error-message" id="nameError">Name must be at least 3 characters and contain only letters.</div>
                 </div>
                 <div class="form-group" style="margin-bottom: 1.25rem;">
                     <label>Email Address</label>
                     <input type="email" id="signupEmail" placeholder="user@example.com" required>
+                    <div class="error-message" id="emailError">Please enter a valid email address.</div>
                 </div>
                 <div class="form-group" style="margin-bottom: 1.25rem;">
                     <label>Phone Number</label>
-                    <input type="tel" id="signupPhone" placeholder="+1 234 567 890">
+                    <input type="tel" id="signupPhone" placeholder="+1 234 567 890" required>
+                    <div class="error-message" id="phoneError">Please enter a valid phone number (at least 10 digits).</div>
                 </div>
                 <div class="form-group" style="margin-bottom: 1.5rem;">
                     <label>Password</label>
-                    <input type="password" id="signupPassword" placeholder="Create a password" minlength="6" required>
+                    <input type="password" id="signupPassword" placeholder="Create a password" required>
+                    <div class="error-message" id="passwordError">Password must be at least 8 characters, include uppercase, lowercase, and numeric characters.</div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%">Continue</button>
             </form>
@@ -85,8 +93,6 @@
                 Already have an account? <a href="login.php" style="color: var(--primary); font-weight: 600; text-decoration: none;">Login</a>
             </p>
         </div>
-
-
 
         <!-- Step 2: Role Selection -->
         <div id="step2" class="step-container">
@@ -178,20 +184,94 @@
             };
             document.getElementById('stepTitle').innerText = titles[step][0];
             document.getElementById('stepSub').innerText = titles[step][1];
+            window.scrollTo(0, 0);
         }
+
+        function validateForm() {
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const phone = document.getElementById('signupPhone').value.trim();
+            const password = document.getElementById('signupPassword').value;
+
+            // Name validation (3+ letters)
+            const nameGroup = document.getElementById('signupName').parentElement;
+            if (name && !/^[a-zA-Z\s]{3,}$/.test(name)) {
+                nameGroup.classList.add('error');
+            } else {
+                nameGroup.classList.remove('error');
+            }
+
+            // Email validation
+            const emailGroup = document.getElementById('signupEmail').parentElement;
+            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailGroup.classList.add('error');
+            } else {
+                emailGroup.classList.remove('error');
+            }
+
+            // Phone validation (10+ digits)
+            const phoneGroup = document.getElementById('signupPhone').parentElement;
+            if (phone && !/^\+?[\d\s-]{10,}$/.test(phone.replace(/\s/g, ''))) {
+                phoneGroup.classList.add('error');
+            } else {
+                phoneGroup.classList.remove('error');
+            }
+
+            // Password validation (8+ chars, 1 upper, 1 lower, 1 digit)
+            const passGroup = document.getElementById('signupPassword').parentElement;
+            if (password && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
+                passGroup.classList.add('error');
+            } else {
+                passGroup.classList.remove('error');
+            }
+        }
+
+        // Real-time validation listeners
+        document.querySelectorAll('#signupForm input').forEach(input => {
+            input.addEventListener('blur', validateForm);
+            input.addEventListener('input', () => {
+                if (input.parentElement.classList.contains('error')) {
+                    validateForm();
+                }
+            });
+        });
 
         function handleSignup(event) {
             event.preventDefault();
             const btn = event.submitter;
+            
+            // Force validation on all fields
+            validateForm();
+            
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const phone = document.getElementById('signupPhone').value.trim();
+            const password = document.getElementById('signupPassword').value;
+
+            // Check if any errors are visible
+            if (document.querySelectorAll('.form-group.error').length > 0) {
+                document.querySelector('.form-group.error input').focus();
+                return;
+            }
+
+            // Final empty check
+            if (!name || !email || !phone || !password) {
+                if (!name) document.getElementById('signupName').parentElement.classList.add('error');
+                if (!email) document.getElementById('signupEmail').parentElement.classList.add('error');
+                if (!phone) document.getElementById('signupPhone').parentElement.classList.add('error');
+                if (!password) document.getElementById('signupPassword').parentElement.classList.add('error');
+                return;
+            }
+
             btn.disabled = true;
             btn.innerText = 'Creating account...';
 
             const formData = new FormData();
             formData.append('action', 'signup');
-            formData.append('name', document.getElementById('signupName').value);
-            formData.append('email', document.getElementById('signupEmail').value);
-            formData.append('phone', document.getElementById('signupPhone').value);
-            formData.append('password', document.getElementById('signupPassword').value);
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('phone', phone);
+            formData.append('password', password);
 
             fetch('auth.php', { method: 'POST', body: formData })
                 .then(res => res.json())
@@ -328,10 +408,61 @@
         function handleOnboarding(event) {
             event.preventDefault();
             const btn = event.target.querySelector('button[type="submit"]');
+            
+            // Clear errors
+            document.querySelectorAll('.form-group').forEach(el => el.classList.remove('error'));
+            
+            const formData = new FormData(event.target);
+            const role = userData.role;
+            let isValid = true;
+
+            // Generic empty check for required fields (already handled by 'required' attribute, but let's be thorough)
+            event.target.querySelectorAll('[required]').forEach(input => {
+                if (!input.value.trim()) {
+                    input.parentElement.classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            // Role-specific validations
+            if (role === 'patient') {
+                const dob = formData.get('dob');
+                if (new Date(dob) > new Date()) {
+                    const dobInput = event.target.querySelector('[name="dob"]');
+                    dobInput.parentElement.classList.add('error');
+                    alert("Date of birth cannot be in the future.");
+                    isValid = false;
+                }
+            } else if (role === 'doctor') {
+                const license = formData.get('license');
+                if (!/^MED-[\d]{6}$/.test(license)) {
+                    const licInput = event.target.querySelector('[name="license"]');
+                    licInput.parentElement.classList.add('error');
+                    alert("License number must be in format MED-123456.");
+                    isValid = false;
+                }
+                const exp = parseInt(formData.get('experience'));
+                const fees = parseInt(formData.get('fees'));
+                if (exp < 0 || fees < 0) {
+                    alert("Experience and fees cannot be negative.");
+                    isValid = false;
+                }
+            } else if (role === 'pharmacy') {
+                const hours = formData.get('hours');
+                // Basic format check for hours (e.g., 9 AM - 9 PM)
+                if (!/.+\s+-\s+.+/.test(hours)) {
+                    const hoursInput = event.target.querySelector('[name="hours"]');
+                    hoursInput.parentElement.classList.add('error');
+                    alert("Operating hours must be in format '9 AM - 9 PM'.");
+                    isValid = false;
+                }
+            }
+
+            if (!isValid) return;
+
             btn.disabled = true;
             btn.innerText = 'Saving profile...';
 
-            const formData = new FormData(event.target);
             formData.append('action', 'complete_onboarding');
             formData.append('user_id', userData.id);
             formData.append('role', userData.role);
@@ -351,6 +482,11 @@
                         btn.disabled = false;
                         btn.innerText = 'Complete Registration';
                     }
+                })
+                .catch(err => {
+                    alert("Error saving profile: " + err.message);
+                    btn.disabled = false;
+                    btn.innerText = 'Complete Registration';
                 });
         }
     </script>

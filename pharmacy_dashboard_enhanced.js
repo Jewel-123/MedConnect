@@ -1,699 +1,556 @@
 /**
- * Enhanced Pharmacy Dashboard JavaScript
- * Handles all interactive functionality, real-time updates, and API calls
+ * Redesigned Pharmacy Dashboard JavaScript
+ * Handles real-time updates for the new City Pharmacy UI
  */
 
 let currentPrescriptionId = null;
 let currentOrderId = null;
-let refreshInterval = null;
+let prescriptionsData = [];
 
-// Initialize dashboard on load
-document.addEventListener('DOMContentLoaded', function () {
-    loadDashboard();
-    startAutoRefresh();
+document.addEventListener('DOMContentLoaded', () => {
+    initDashboard();
 });
 
-// Auto-refresh every 30 seconds
-function startAutoRefresh() {
-    refreshInterval = setInterval(() => {
-        const activeSection = document.querySelector('.content-section.active').id;
-        if (activeSection === 'dashboard') {
-            loadDashboard();
-        } else if (activeSection === 'pending') {
-            loadPendingPrescriptions();
-        } else if (activeSection === 'orders') {
-            loadOrders();
-        }
-        loadNotifications();
-    }, 30000);
+async function initDashboard() {
+    await fetchStats();
+    await fetchQueue();
+    await fetchHistory();
+    await fetchMedicinesInventory();
+
+    // Set up medicine inventory search/filter event listeners
+    document.getElementById('medicineSearchInput')?.addEventListener('input', handleMedicineFilter);
+    document.getElementById('categoryFilter')?.addEventListener('change', handleMedicineFilter);
+    document.getElementById('lowStockFilter')?.addEventListener('change', handleMedicineFilter);
+
+    // Auto refresh every 60s
+    setInterval(() => {
+        fetchStats();
+        fetchQueue();
+        fetchHistory();
+    }, 60000);
+
+    // Refresh medicine inventory every 5 minutes
+    setInterval(() => {
+        fetchMedicinesInventory();
+    }, 300000);
 }
 
-// Show toast notification
-function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    const toastMessage = document.getElementById('toastMessage');
-
-    toast.className = `toast ${type} show`;
-    toastMessage.textContent = message;
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-}
-
-// Load dashboard stats
-async function loadDashboard() {
+async function fetchHistory() {
     try {
-        // Fetch pending prescriptions
-        const pendingRes = await fetch('pharmacy_api.php?action=get_pending_prescriptions');
-        const pending = await pendingRes.json();
+        const response = await fetch('pharmacy_api_enhanced.php?action=get_history');
+        const data = await response.json();
+        const historyBody = document.getElementById('historyQueueBody');
+        if (!data.success || !data.history || data.history.length === 0) {
+            historyBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">No completed records.</td></tr>';
+            return;
+        }
+        historyBody.innerHTML = data.history.map(item => `
+            <tr>
+                <td>#${item.id.toString().padStart(4, '0')}</td>
+                <td>${item.patient_name}</td>
+                <td>Dr. ${item.doctor_name}</td>
+                <td>${formatDate(item.completed_at)}</td>
+                <td>₹${item.total_amount || '0.00'}</td>
+                <td><span class="badge-status" style="background:#059669">Completed</span></td>
+            </tr>
+        `).join('');
+    } catch (e) { console.error('History fetch failed:', e); }
+}
 
-        // Fetch orders
-        const ordersRes = await fetch('pharmacy_api.php?action=get_orders&status=all');
-        const orders = await ordersRes.json();
+async function fetchStats() {
+    try {
+        const response = await fetch('pharmacy_api_enhanced.php?action=get_dashboard_stats');
+        const data = await response.json();
 
-        // Fetch earnings
-        const earningsRes = await fetch('pharmacy_api.php?action=get_earnings&period=month');
-        const earnings = await earningsRes.json();
+        if (data.success) {
+            const s = data.stats;
+            document.getElementById('newPrescriptionsCount').textContent = s.pending_prescriptions || 0;
+            document.getElementById('inProcessCount').textContent = s.active_orders || 0;
+            document.getElementById('completedTodayCount').textContent = s.completed_today || 0;
+            document.getElementById('lowStockCount').textContent = s.low_stock_alerts || 0;
+        }
+    } catch (e) {
+        console.error('Stats fetch failed:', e);
+    }
+}
 
-        if (pending.success && orders.success && earnings.success) {
-            const pendingCount = pending.prescriptions?.length || 0;
-            const activeOrders = orders.orders?.filter(o => !['completed', 'cancelled', 'delivered'].includes(o.order_status)) || [];
-            const totalOrders = orders.orders?.length || 0;
+async function fetchQueue() {
+    try {
+        const response = await fetch('pharmacy_api_enhanced.php?action=get_pending_prescriptions');
+        const data = await response.json();
 
-            document.getElementById('pendingCount').textContent = pendingCount;
-            document.getElementById('activeCount').textContent = activeOrders.length;
-            document.getElementById('monthEarnings').textContent = '₹' + (earnings.earnings?.total_net || 0).toFixed(2);
+        const queueBody = document.getElementById('prescriptionQueueBody');
+        queueBody.innerHTML = '';
 
-            // Calculate fulfillment rate
-            const fulfillmentRate = totalOrders > 0
-                ? Math.round((totalOrders - activeOrders.length) / totalOrders * 100)
-                : 0;
-            document.getElementById('fulfillmentRate').textContent = fulfillmentRate + '%';
+        if (!data.success || !data.prescriptions) {
+            queueBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px; color:#64748b;">No active entries in queue</td></tr>`;
+            return;
+        }
 
-            // Update notification badge
-            if (pendingCount > 0) {
-                const badge = document.getElementById('notificationBadge');
-                badge.textContent = pendingCount;
-                badge.style.display = 'flex';
+        const items = data.prescriptions;
+        prescriptionsData = items.map(p => ({
+            id: p.id,
+            display_id: '#' + p.id.toString().padStart(4, '0'),
+            patient_name: p.patient_name,
+            doctor_name: 'Dr. ' + (p.doctor_name || 'Medical Team'),
+            date: p.ordered_at || p.created_at,
+            priority: p.urgency_level || 'Normal',
+            status: p.status,
+            type: 'prescription',
+            raw: p
+        }));
+
+        if (prescriptionsData.length === 0) {
+            queueBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px; color:#64748b;">No active entries in queue</td></tr>`;
+            return;
+        }
+
+        prescriptionsData.forEach(item => {
+            const row = document.createElement('tr');
+            const statusColor = getStatusBadgeColor(item.status);
+            const priorityClass = item.priority.toLowerCase() === 'urgent' || item.priority.toLowerCase() === 'emergency' ? 'priority-urgent' : 'priority-normal';
+
+            let buttonsHtml = `<button class="btn-view" onclick="viewDetails(${item.id}, 'prescription')">View</button>`;
+
+            if (item.status === 'Pending' || item.status === 'sent_to_pharmacy') {
+                buttonsHtml += `<button class="btn-verify" onclick="verifyPrescription(${item.id})">Verify</button>`;
+            } else if (item.status === 'Verified') {
+                buttonsHtml += `<button class="btn-verify" style="background-color:#0d9488;" onclick="generateBill(${item.id})">Generate Bill</button>`;
+            } else if (item.status === 'Paid') {
+                buttonsHtml += `<button class="btn-dispense" onclick="dispensePrescription(${item.id})">Dispense</button>`;
+            } else if (item.status === 'Dispensed') {
+                buttonsHtml += `<button class="btn-complete" onclick="completePrescription(${item.id})">Complete</button>`;
+            } else if (item.status === 'Awaiting Payment') {
+                buttonsHtml += `<span style="font-size: 0.8rem; color: #64748b; margin-left: 5px;">Waiting for Pay</span>`;
+            } else if (item.status === 'Completed') {
+                buttonsHtml += `<span style="font-size: 0.8rem; color: #059669; margin-left: 5px;">Completed ✅</span>`;
             }
 
-            // Load recent activity
-            loadRecentActivity();
-        }
-    } catch (error) {
-        console.error('Error loading dashboard:', error);
-    }
-}
-
-// Load recent activity
-async function loadRecentActivity() {
-    try {
-        const response = await fetch('pharmacy_api_enhanced.php?action=get_orders&status=all');
-        const data = await response.json();
-
-        if (data.success && data.orders) {
-            const container = document.getElementById('recentActivity');
-            const recentOrders = data.orders.slice(0, 5);
-
-            if (recentOrders.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>No recent activity</p></div>';
-                return;
-            }
-
-            container.innerHTML = recentOrders.map(order => `
-                <div class="prescription-card">
-                    <div class="prescription-header">
-                        <div class="patient-info">
-                            <h3>Order #${order.order_number}</h3>
-                            <p>${order.patient_name} • ₹${order.total_amount}</p>
-                        </div>
-                        <span class="badge badge-${getStatusClass(order.order_status)}">${order.order_status.replace('_', ' ')}</span>
+            row.innerHTML = `
+                <td style="font-weight:700; color:#1e56a0;">${item.display_id}</td>
+                <td style="font-weight:600;">${item.patient_name}</td>
+                <td>${item.doctor_name}</td>
+                <td style="color:#64748b; font-size:0.85rem;">${formatDate(item.date)}</td>
+                <td class="${priorityClass}">${item.priority}</td>
+                <td><span class="badge-status" style="background-color:${statusColor}">${item.status}</span></td>
+                <td>
+                    <div style="display:flex; gap:5px; align-items:center;">
+                        ${buttonsHtml}
                     </div>
-                    <p style="color: #64748b; font-size: 0.875rem;">
-                        <i class="fas fa-clock"></i> ${formatDate(order.created_at)}
-                    </p>
-                </div>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Error loading recent activity:', error);
-    }
-}
-
-// Load pending prescriptions
-async function loadPendingPrescriptions() {
-    try {
-        const response = await fetch('pharmacy_api.php?action=get_pending_prescriptions');
-        const data = await response.json();
-
-        const container = document.getElementById('pendingList');
-
-        if (!data.success || !data.prescriptions || data.prescriptions.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-file-prescription"></i><p>No pending prescriptions</p></div>';
-            return;
-        }
-
-        container.innerHTML = data.prescriptions.map(rx => `
-            <div class="prescription-card ${rx.urgency_level === 'emergency' ? 'urgent' : ''}">
-                <div class="prescription-header">
-                    <div class="patient-info">
-                        <h3>${rx.patient_name}</h3>
-                        <p>Prescribed by Dr. ${rx.doctor_name} (${rx.specialization || 'General'})</p>
-                        <p style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">
-                            <i class="fas fa-clock"></i> ${formatDate(rx.sent_at)}
-                        </p>
-                    </div>
-                    <span class="badge ${rx.urgency_level === 'emergency' ? 'badge-urgent' : 'badge-pending'}">
-                        ${rx.urgency_level || 'Pending'}
-                    </span>
-                </div>
-                
-                <div style="background: #fffbeb; padding: 0.75rem; border-radius: 8px; margin: 0.75rem 0;">
-                    <strong>Diagnosis:</strong> ${rx.diagnosis}
-                </div>
-                
-                <div class="prescription-items">
-                    <strong style="display: block; margin-bottom: 0.75rem;">Medications:</strong>
-                    ${rx.items.map(item => `
-                        <div class="item">
-                            <div>
-                                <div class="item-name">${item.medicine_name}</div>
-                                <div class="item-dosage">${item.dosage} • ${item.frequency} • ${item.duration}</div>
-                                ${item.instructions ? `<div class="item-dosage"><i class="fas fa-info-circle"></i> ${item.instructions}</div>` : ''}
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                
-                <div class="actions">
-                    <button class="btn btn-success" onclick="openAcceptModal(${rx.id})">
-                        <i class="fas fa-check"></i> Accept & Create Order
-                    </button>
-                    <button class="btn btn-danger" onclick="openRejectModal(${rx.id})">
-                        <i class="fas fa-times"></i> Reject
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading pending prescriptions:', error);
-        showToast('Error loading prescriptions', 'error');
-    }
-}
-
-// Load orders
-async function loadOrders() {
-    try {
-        const response = await fetch('pharmacy_api_enhanced.php?action=get_orders&status=all');
-        const data = await response.json();
-
-        const container = document.getElementById('ordersList');
-
-        if (!data.success || !data.orders || data.orders.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-box"></i><p>No orders yet</p></div>';
-            return;
-        }
-
-        // Filter active orders
-        const activeOrders = data.orders.filter(o => !['completed', 'cancelled', 'delivered'].includes(o.order_status));
-
-        if (activeOrders.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-box"></i><p>No active orders</p></div>';
-            return;
-        }
-
-        container.innerHTML = activeOrders.map(order => `
-            <div class="prescription-card">
-                <div class="prescription-header">
-                    <div class="patient-info">
-                        <h3>Order #${order.order_number}</h3>
-                        <p>${order.patient_name} • ${order.patient_phone || 'No phone'}</p>
-                        <p style="margin-top: 0.5rem; font-weight: 600; color: var(--success);">₹${order.total_amount}</p>
-                    </div>
-                    <span class="badge badge-${getStatusClass(order.order_status)}">${order.order_status.replace('_', ' ')}</span>
-                </div>
-                
-                <div style="color: #64748b; font-size: 0.875rem; margin: 0.75rem 0;">
-                    <i class="fas fa-${order.fulfillment_type === 'delivery' ? 'truck' : 'store'}"></i>
-                    ${order.fulfillment_type === 'delivery' ? 'Home Delivery' : 'Pickup'}
-                </div>
-                
-                ${order.payment_status === 'pending' ? `
-                    <div style="background: #fef3c7; padding: 0.75rem; border-radius: 8px; margin: 0.75rem 0;">
-                        <i class="fas fa-exclamation-triangle"></i> Payment Pending
-                    </div>
-                ` : ''}
-                
-                <div class="actions">
-                    ${order.payment_status === 'pending' ? `
-                        <button class="btn btn-primary" onclick="confirmPayment(${order.id})">
-                            <i class="fas fa-money-bill"></i> Confirm Payment
-                        </button>
-                    ` : ''}
-                    <button class="btn btn-primary" onclick="openStatusModal(${order.id})">
-                        <i class="fas fa-sync"></i> Update Status
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading orders:', error);
-        showToast('Error loading orders', 'error');
-    }
-}
-
-// Load prescription history
-async function loadHistory() {
-    try {
-        const response = await fetch('pharmacy_api.php?action=get_orders&status=all');
-        const data = await response.json();
-
-        const container = document.getElementById('historyList');
-
-        if (!data.success || !data.prescriptions || data.prescriptions.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><p>No prescription history</p></div>';
-            return;
-        }
-
-        container.innerHTML = data.prescriptions.map(rx => `
-            <div class="prescription-card">
-                <div class="prescription-header">
-                    <div class="patient-info">
-                        <h3>${rx.patient_name}</h3>
-                        <p>Dr. ${rx.doctor_name} • ${formatDate(rx.created_at)}</p>
-                        ${rx.order_number ? `<p style="margin-top: 0.25rem;">Order #${rx.order_number}</p>` : ''}
-                    </div>
-                    <div>
-                        <span class="badge badge-${getStatusClass(rx.order_status || rx.status)}">${rx.order_status || rx.status}</span>
-                        ${rx.total_amount ? `<p style="margin-top: 0.5rem; font-weight: 600;">₹${rx.total_amount}</p>` : ''}
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading history:', error);
-        showToast('Error loading history', 'error');
-    }
-}
-
-// Load analytics
-async function loadAnalytics() {
-    try {
-        // Get total earnings
-        const response = await fetch('pharmacy_api.php?action=get_earnings&period=all');
-        const data = await response.json();
-
-        const container = document.getElementById('analyticsData');
-
-        if (data.success && data.earnings) {
-            const e = data.earnings;
-
-            container.innerHTML = `
-                <div class="stats-grid">
-                    <div class="stat-card success">
-                        <div class="stat-icon success">
-                            <i class="fas fa-rupee-sign"></i>
-                        </div>
-                        <div class="stat-value">₹${(e.total_gross || 0).toFixed(2)}</div>
-                        <div class="stat-label">Gross Earnings</div>
-                    </div>
-                    
-                    <div class="stat-card danger">
-                        <div class="stat-icon danger">
-                            <i class="fas fa-percentage"></i>
-                        </div>
-                        <div class="stat-value">-₹${(e.total_commission || 0).toFixed(2)}</div>
-                        <div class="stat-label">Platform Commission</div>
-                    </div>
-                    
-                    <div class="stat-card info">
-                        <div class="stat-icon info">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                        <div class="stat-value">₹${(e.total_net || 0).toFixed(2)}</div>
-                        <div class="stat-label">Net Earnings</div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon primary">
-                            <i class="fas fa-box"></i>
-                        </div>
-                        <div class="stat-value">${e.order_count || 0}</div>
-                        <div class="stat-label">Total Orders</div>
-                    </div>
-                </div>
-                
-                <div class="card" style="margin-top: 2rem;">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <i class="fas fa-history"></i>
-                            Payment History
-                        </h2>
-                    </div>
-                    <div id="paymentHistoryList"></div>
-                </div>
+                </td>
             `;
-
-            // Load payment history
-            loadPaymentHistory();
-        }
-    } catch (error) {
-        console.error('Error loading analytics:', error);
-        showToast('Error loading analytics', 'error');
-    }
-}
-
-// Load payment history
-async function loadPaymentHistory() {
-    try {
-        const response = await fetch('pharmacy_api.php?action=get_orders&status=all');
-        const data = await response.json();
-
-        const container = document.getElementById('paymentHistoryList');
-
-        if (!data.success || !data.payments || data.payments.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-receipt"></i><p>No payment history</p></div>';
-            return;
-        }
-
-        container.innerHTML = data.payments.map(payment => `
-            <div class="prescription-card">
-                <div class="prescription-header">
-                    <div class="patient-info">
-                        <h3>Order #${payment.order_number}</h3>
-                        <p>${payment.patient_name} • ${payment.patient_email}</p>
-                        <p style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">
-                            <i class="fas fa-clock"></i> ${formatDate(payment.created_at)}
-                        </p>
-                    </div>
-                    <div>
-                        <span class="badge badge-${payment.status === 'completed' ? 'ready' : 'pending'}">${payment.status}</span>
-                        <p style="margin-top: 0.5rem; font-weight: 600; color: var(--success);">₹${payment.amount.toFixed(2)}</p>
-                    </div>
-                </div>
-                <div style="color: #64748b; font-size: 0.875rem; margin-top: 0.75rem;">
-                    <i class="fas fa-credit-card"></i> ${payment.payment_method.toUpperCase()}
-                    ${payment.razorpay_payment_id ? ` • ID: ${payment.razorpay_payment_id}` : ''}
-                </div>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading payment history:', error);
-    }
-}
-
-// Load notifications
-async function loadNotifications() {
-    try {
-        // Notifications not yet implemented in pharmacy_api.php
-        const data = { success: true, unread_count: 0, notifications: [] };
-
-        if (data.success) {
-            // Update badge
-            const badge = document.getElementById('notificationBadge');
-            if (data.unread_count > 0) {
-                badge.textContent = data.unread_count;
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
-            }
-
-            // Update notifications list
-            const container = document.getElementById('notificationsList');
-
-            if (!data.notifications || data.notifications.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-bell"></i><p>No notifications</p></div>';
-                return;
-            }
-
-            container.innerHTML = data.notifications.map(notif => `
-                <div class="prescription-card" style="opacity: ${notif.is_read ? '0.6' : '1'}; border-left-color: ${notif.is_read ? '#e2e8f0' : 'var(--primary)'};">
-                    <div class="prescription-header">
-                        <div class="patient-info">
-                            <h3>${notif.title}</h3>
-                            <p>${notif.message}</p>
-                            <p style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">
-                                <i class="fas fa-clock"></i> ${formatDate(notif.created_at)}
-                            </p>
-                        </div>
-                        ${!notif.is_read ? `
-                            <button class="btn btn-secondary" onclick="markNotificationRead(${notif.id})">
-                                <i class="fas fa-check"></i> Mark Read
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Error loading notifications:', error);
-    }
-}
-
-// Mark notification as read
-async function markNotificationRead(notificationId) {
-    try {
-        // Notifications not yet implemented
-        const data = { success: true };
-
-        if (data.success) {
-            loadNotifications();
-        }
-    } catch (error) {
-        console.error('Error marking notification as read:', error);
-    }
-}
-
-// Mark all notifications as read
-async function markAllRead() {
-    try {
-        // Notifications not yet implemented
-        const data = { success: true };
-
-        if (data.success) {
-            showToast('All notifications marked as read');
-            loadNotifications();
-        }
-    } catch (error) {
-        console.error('Error marking all as read:', error);
-    }
-}
-
-// Show section
-function showSection(section) {
-    // Update nav
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-
-    // Show section
-    document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(section).classList.add('active');
-
-    // Load data
-    if (section === 'pending') loadPendingPrescriptions();
-    else if (section === 'orders') loadOrders();
-    else if (section === 'history') loadHistory();
-    else if (section === 'analytics') loadAnalytics();
-    else if (section === 'notifications') loadNotifications();
-    else if (section === 'dashboard') loadDashboard();
-}
-
-// Toggle notifications panel
-function toggleNotifications() {
-    showSection('notifications');
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    document.querySelectorAll('.nav-item')[5].classList.add('active');
-}
-
-// Open accept modal
-function openAcceptModal(prescriptionId) {
-    currentPrescriptionId = prescriptionId;
-    document.getElementById('acceptModal').classList.add('active');
-}
-
-// Close modal
-function closeModal() {
-    document.getElementById('acceptModal').classList.remove('active');
-    currentPrescriptionId = null;
-}
-
-// Confirm accept
-async function confirmAccept() {
-    const amount = parseFloat(document.getElementById('totalAmount').value);
-    const delivery = document.getElementById('deliveryAvailable').value === 'true';
-
-    if (!amount || amount <= 0) {
-        showToast('Please enter a valid amount', 'error');
-        return;
-    }
-
-    try {
-        const response = await fetch('pharmacy_api.php?action=accept_prescription', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                prescription_id: currentPrescriptionId,
-                total_amount: amount,
-                delivery_available: delivery
-            })
+            queueBody.appendChild(row);
         });
 
-        const data = await response.json();
-
-        if (data.success) {
-            showToast('Prescription accepted successfully!');
-            closeModal();
-            loadPendingPrescriptions();
-            loadDashboard();
-        } else {
-            showToast(data.error || 'Failed to accept prescription', 'error');
-        }
-    } catch (error) {
-        console.error('Error accepting prescription:', error);
-        showToast('Error accepting prescription', 'error');
+    } catch (e) {
+        console.error('Queue fetch failed:', e);
     }
 }
 
-// Open reject modal
-function openRejectModal(prescriptionId) {
-    currentPrescriptionId = prescriptionId;
-    document.getElementById('rejectModal').classList.add('active');
-}
-
-// Close reject modal
-function closeRejectModal() {
-    document.getElementById('rejectModal').classList.remove('active');
-    currentPrescriptionId = null;
-}
-
-// Confirm reject
-async function confirmReject() {
-    const reason = document.getElementById('rejectionReason').value.trim();
-
-    if (!reason) {
-        showToast('Please enter a rejection reason', 'error');
-        return;
-    }
-
-    try {
-        // Reject not yet implemented in pharmacy_api.php
-        const response = await fetch('pharmacy_api.php?action=accept_prescription', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                prescription_id: currentPrescriptionId,
-                reason: reason
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            showToast('Prescription rejected');
-            closeRejectModal();
-            loadPendingPrescriptions();
-            loadDashboard();
-        } else {
-            showToast(data.error || 'Failed to reject prescription', 'error');
-        }
-    } catch (error) {
-        console.error('Error rejecting prescription:', error);
-        showToast('Error rejecting prescription', 'error');
-    }
-}
-
-// Open status modal
-function openStatusModal(orderId) {
-    currentOrderId = orderId;
-    document.getElementById('statusModal').classList.add('active');
-}
-
-// Close status modal
-function closeStatusModal() {
-    document.getElementById('statusModal').classList.remove('active');
-    currentOrderId = null;
-}
-
-// Confirm status update
-async function confirmStatusUpdate() {
-    const status = document.getElementById('newStatus').value;
-    const notes = document.getElementById('statusNotes').value;
-
-    try {
-        const formData = new FormData();
-        formData.append('order_id', currentOrderId);
-        formData.append('status', status);
-        formData.append('notes', notes);
-
-        const response = await fetch('pharmacy_api.php?action=update_order_status', {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            showToast('Order status updated!');
-            closeStatusModal();
-            loadOrders();
-            loadDashboard();
-        } else {
-            showToast(data.error || 'Failed to update status', 'error');
-        }
-    } catch (error) {
-        console.error('Error updating status:', error);
-        showToast('Error updating status', 'error');
-    }
-}
-
-// Confirm payment
-async function confirmPayment(orderId) {
-    if (!confirm('Confirm that payment has been received for this order?')) {
-        return;
-    }
-
-    try {
-        // Payment confirmation not yet implemented
-        const response = await fetch('pharmacy_api.php?action=update_order_status', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                order_id: orderId,
-                payment_method: 'cash'
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            showToast('Payment confirmed!');
-            loadOrders();
-            loadDashboard();
-        } else {
-            showToast(data.error || 'Failed to confirm payment', 'error');
-        }
-    } catch (error) {
-        console.error('Error confirming payment:', error);
-        showToast('Error confirming payment', 'error');
-    }
-}
-
-// Helper: Get status class
-function getStatusClass(status) {
-    const statusMap = {
-        'pending': 'pending',
-        'accepted': 'preparing',
-        'preparing': 'preparing',
-        'ready': 'ready',
-        'out_for_delivery': 'ready',
-        'delivered': 'delivered',
-        'completed': 'delivered',
-        'sent_to_pharmacy': 'pending',
-        'filled': 'ready'
+function getStatusBadgeColor(status) {
+    const map = {
+        'Pending': '#f68338',        // Orange
+        'sent_to_pharmacy': '#f68338',
+        'Verified': '#0d9488',       // Teal
+        'Awaiting Payment': '#0f766e', // Dark Teal
+        'Paid': '#10b981',           // Emerald
+        'Dispensed': '#2dd4bf',      // Cyan/Teal
+        'Completed': '#059669',      // Green
+        'Cancelled': '#f43f5e'       // Rose
     };
-    return statusMap[status] || 'pending';
+    return map[status] || '#64748b';
 }
 
-// Helper: Format date
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
+function formatDate(dateStr) {
+    if (!dateStr) return '--';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
 
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
+function viewDetails(id, type) {
+    const item = prescriptionsData.find(i => i.id === id && i.type === type);
+    if (!item) return;
 
-    return date.toLocaleDateString('en-IN', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+    // Fill E-Prescription Form
+    document.getElementById('form-patient-name').textContent = item.patient_name;
+    document.getElementById('form-patient-id').textContent = '#' + (item.raw.patient_id || '----');
+    document.getElementById('form-diagnosis').textContent = item.raw.diagnosis || item.raw.consultation_diagnosis || 'No diagnosis provided';
+
+    // Attempt to parse age/gender if available (mocking if not in raw)
+    document.getElementById('form-patient-age').textContent = item.raw.age || '45';
+    document.getElementById('form-patient-gender').textContent = item.raw.gender || 'Male';
+
+    const medBody = document.getElementById('form-medications-body');
+    medBody.innerHTML = '';
+
+    const meds = item.raw.items || [];
+    if (meds.length === 0) {
+        medBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">No medications found</td></tr>`;
+    } else {
+        let grandTotal = 0;
+
+        meds.forEach((m, index) => {
+            const tr = document.createElement('tr');
+
+            // Extract pricing info
+            const price = parseFloat(m.price || 0);
+            const quantity = parseInt(m.quantity || 1);
+            const lineTotal = price * quantity;
+            grandTotal += lineTotal;
+
+            // Display medicine category and generic name if available
+            const medInfo = m.medicine_name || 'Unknown Medicine';
+            const genericInfo = m.generic_name ? `<br/><small style="color:#64748b;">(${m.generic_name})</small>` : '';
+
+            tr.innerHTML = `
+                <td><strong>${medInfo}</strong>${genericInfo}</td>
+                <td>${m.dosage || '--'}</td>
+                <td>${m.frequency || '--'}</td>
+                <td>${m.duration || '--'}</td>
+                <td style="text-align:right;">₹${price.toFixed(2)}</td>
+                <td style="text-align:center;">${quantity}</td>
+                <td style="text-align:right; font-weight:600;">₹${lineTotal.toFixed(2)}</td>
+            `;
+            medBody.appendChild(tr);
+        });
+
+        // Add grand total row
+        const totalRow = document.createElement('tr');
+        totalRow.style.backgroundColor = '#f1f5f9';
+        totalRow.style.borderTop = '2px solid #1e56a0';
+        totalRow.innerHTML = `
+            <td colspan="6" style="text-align:right; padding:12px; font-weight:700; font-size:1.05rem;">Grand Total:</td>
+            <td style="text-align:right; font-weight:700; font-size:1.1rem; color:#1e56a0;">₹${grandTotal.toFixed(2)}</td>
+        `;
+        medBody.appendChild(totalRow);
+
+        // Display total amount if available from prescription
+        if (item.raw.total_amount) {
+            const billRow = document.createElement('tr');
+            billRow.style.backgroundColor = '#ecfdf5';
+            billRow.innerHTML = `
+                <td colspan="7" style="text-align:center; padding:10px; color:#059669;">
+                    <strong>Official Bill Total: ₹${parseFloat(item.raw.total_amount).toFixed(2)}</strong>
+                </td>
+            `;
+            medBody.appendChild(billRow);
+        }
+    }
+
+    // Scroll to form
+    document.querySelector('.form-header').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function verifyPrescription(id) {
+    if (!confirm('Verify this prescription and lock for processing?')) return;
+    try {
+        const res = await fetch('pharmacy_api_enhanced.php?action=verify_prescription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prescription_id: id })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('✅ Prescription Verified. Now click "Generate Bill".');
+            fetchStats();
+            fetchQueue();
+        } else alert(data.error || 'Failed to verify');
+    } catch (e) {
+        console.error(e);
+        alert('Connection error');
+    }
+}
+
+async function generateBill(id) {
+    if (!confirm('Calculate total and send bill to patient?')) return;
+    try {
+        const res = await fetch('pharmacy_api_enhanced.php?action=generate_bill', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prescription_id: id })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('💵 Bill Generated! Status: Awaiting Payment.');
+            fetchStats();
+            fetchQueue();
+        } else alert(data.error || 'Failed to generate bill');
+    } catch (e) {
+        console.error(e);
+        alert('Connection error');
+    }
+}
+
+async function dispensePrescription(id) {
+    if (!confirm('Release medications and deduct stock from inventory?')) return;
+    try {
+        const res = await fetch('pharmacy_api_enhanced.php?action=dispense_prescription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prescription_id: id })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('📦 Items dispensed. Stock updated.');
+            fetchStats();
+            fetchQueue();
+        } else alert(data.error || 'Failed to dispense');
+    } catch (e) {
+        console.error(e);
+        alert('Connection error');
+    }
+}
+
+async function completePrescription(id) {
+    if (!confirm('Finalize order and move to history?')) return;
+    try {
+        const res = await fetch('pharmacy_api_enhanced.php?action=complete_prescription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prescription_id: id })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('✅ Order completed successfully.');
+            fetchStats();
+            fetchQueue();
+        } else alert(data.error || 'Failed to complete');
+    } catch (e) {
+        console.error(e);
+        alert('Connection error');
+    }
+}
+
+// ==================================================
+// Medicine Inventory Functions
+// ==================================================
+
+let allMedicines = [];
+let filteredMedicines = [];
+
+async function fetchMedicinesInventory() {
+    try {
+        const search = document.getElementById('medicineSearchInput')?.value || '';
+        const category = document.getElementById('categoryFilter')?.value || '';
+        const lowStockOnly = document.getElementById('lowStockFilter')?.checked || false;
+
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (category) params.append('category', category);
+        if (lowStockOnly) params.append('low_stock_only', 'true');
+
+        const response = await fetch(`pharmacy_api_enhanced.php?action=get_medicines_inventory&${params.toString()}`);
+        const data = await response.json();
+
+        if (data.success) {
+            allMedicines = data.medicines;
+            filteredMedicines = data.medicines;
+
+            // Populate category filter dropdown
+            if (data.categories && data.categories.length > 0) {
+                const categoryFilter = document.getElementById('categoryFilter');
+                const currentValue = categoryFilter.value;
+                categoryFilter.innerHTML = '<option value="">All Categories</option>';
+                data.categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    if (cat === currentValue) option.selected = true;
+                    categoryFilter.appendChild(option);
+                });
+            }
+
+            renderMedicinesTable(filteredMedicines);
+        } else {
+            console.error('Failed to fetch medicines:', data.error);
+        }
+    } catch (e) {
+        console.error('Medicine fetch error:', e);
+    }
+}
+
+function renderMedicinesTable(medicines) {
+    const tbody = document.getElementById('medicineInventoryBody');
+
+    if (!medicines || medicines.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#64748b;">No medicines found</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = '';
+
+    medicines.forEach(med => {
+        const row = document.createElement('tr');
+
+        // Determine stock status
+        const isLowStock = med.stock <= (med.low_stock_threshold || 10);
+        const stockBadgeColor = isLowStock ? '#f43f5e' : '#10b981';
+        const stockBadgeText = isLowStock ? 'Low Stock' : 'In Stock';
+
+        row.innerHTML = `
+            <td style="font-weight:600;">${med.name}</td>
+            <td style="color:#64748b; font-size:0.9rem;">${med.generic_name || '--'}</td>
+            <td><span style="background:#f1f5f9; padding:4px 10px; border-radius:4px; font-size:0.85rem;">${med.category || '--'}</span></td>
+            <td style="font-weight:600;">₹${parseFloat(med.price).toFixed(2)}</td>
+            <td>
+                <input type="number" 
+                       id="stock-${med.id}" 
+                       value="${med.stock}" 
+                       min="0" 
+                       style="width:80px; padding:6px; border:1px solid #ddd; border-radius:4px; text-align:center;"
+                       onchange="updateStockValue(${med.id})">
+            </td>
+            <td><span class="badge-status" style="background-color:${stockBadgeColor}">${stockBadgeText}</span></td>
+            <td>
+                <button class="btn" style="background:#0d9488; color:white; padding:6px 15px; font-size:0.85rem;" onclick="updateMedicineStock(${med.id})">
+                    <i class="fas fa-save"></i> Update
+                </button>
+            </td>
+        `;
+
+        tbody.appendChild(row);
     });
 }
+
+async function updateMedicineStock(medicineId) {
+    const stockInput = document.getElementById(`stock-${medicineId}`);
+    const newStock = parseInt(stockInput.value);
+
+    if (newStock < 0) {
+        alert('Stock cannot be negative');
+        return;
+    }
+
+    if (!confirm(`Update stock for this medicine to ${newStock} units?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch('pharmacy_api_enhanced.php?action=update_medicine_stock', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                medicine_id: medicineId,
+                new_stock: newStock
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('✅ Stock updated successfully!');
+            // Refresh inventory and stats
+            await fetchMedicinesInventory();
+            await fetchStats();
+        } else {
+            alert('Error: ' + (data.error || 'Failed to update stock'));
+            // Reset input to original value
+            const originalMed = allMedicines.find(m => m.id === medicineId);
+            if (originalMed) stockInput.value = originalMed.stock;
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Connection error. Please try again.');
+    }
+}
+
+function updateStockValue(medicineId) {
+    // This is called when the input value changes
+    // We don't auto-save, user must click Update button
+}
+
+function handleMedicineFilter() {
+    fetchMedicinesInventory();
+}
+
+// ==================================================
+// Add New Medicine Functions
+// ==================================================
+
+function openAddMedicineModal() {
+    document.getElementById('addMedicineModal').style.display = 'flex';
+    // Clear all form fields
+    document.getElementById('newMedicineName').value = '';
+    document.getElementById('newMedicineGeneric').value = '';
+    document.getElementById('newMedicineCategory').value = '';
+    document.getElementById('newMedicineUnit').value = 'tablet';
+    document.getElementById('newMedicinePrice').value = '';
+    document.getElementById('newMedicineStock').value = '';
+    document.getElementById('newMedicineLowStock').value = '10';
+    document.getElementById('newMedicineManufacturer').value = '';
+    document.getElementById('newMedicineDescription').value = '';
+}
+
+function closeAddMedicineModal() {
+    document.getElementById('addMedicineModal').style.display = 'none';
+}
+
+async function submitNewMedicine() {
+    // Get form values
+    const name = document.getElementById('newMedicineName').value.trim();
+    const genericName = document.getElementById('newMedicineGeneric').value.trim();
+    const category = document.getElementById('newMedicineCategory').value.trim();
+    const unit = document.getElementById('newMedicineUnit').value;
+    const price = parseFloat(document.getElementById('newMedicinePrice').value);
+    const stock = parseInt(document.getElementById('newMedicineStock').value);
+    const lowStockThreshold = parseInt(document.getElementById('newMedicineLowStock').value);
+    const manufacturer = document.getElementById('newMedicineManufacturer').value.trim();
+    const description = document.getElementById('newMedicineDescription').value.trim();
+
+    // Validate required fields
+    if (!name) {
+        alert('Medicine name is required');
+        return;
+    }
+
+    if (isNaN(price) || price < 0) {
+        alert('Please enter a valid price (must be 0 or greater)');
+        return;
+    }
+
+    if (isNaN(stock) || stock < 0) {
+        alert('Please enter a valid stock quantity (must be 0 or greater)');
+        return;
+    }
+
+    try {
+        const response = await fetch('pharmacy_api_enhanced.php?action=add_new_medicine', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name,
+                generic_name: genericName,
+                category: category,
+                unit: unit,
+                price: price,
+                stock: stock,
+                low_stock_threshold: lowStockThreshold,
+                manufacturer: manufacturer,
+                description: description
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('✅ Medicine added successfully!');
+            closeAddMedicineModal();
+            // Refresh the medicine inventory and stats
+            await fetchMedicinesInventory();
+            await fetchStats();
+        } else {
+            alert('Error: ' + (data.error || 'Failed to add medicine'));
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Connection error. Please try again.');
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function (event) {
+    const modal = document.getElementById('addMedicineModal');
+    if (modal && event.target === modal) {
+        closeAddMedicineModal();
+    }
+});

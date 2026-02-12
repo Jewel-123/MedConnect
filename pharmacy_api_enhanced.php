@@ -4,16 +4,26 @@
  * Comprehensive pharmacy management with inventory, notifications, and analytics
  */
 
+// Start output buffering to catch any stray output
+ob_start();
+
 session_start();
+
+// Clean the buffer and start fresh to ensure only JSON is output
+ob_end_clean();
+ob_start();
+
 header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
 require_once 'db.php';
 require_once 'notification_service.php';
 
 // Authentication check
 if (!isset($_SESSION['user_id'])) {
+    ob_end_clean(); // Clean buffer before output
     http_response_code(401);
     echo json_encode(['success' => false, 'error' => 'Please login first']);
     exit;
@@ -47,17 +57,19 @@ try {
             // Get prescriptions routed to this pharmacy
             $stmt = $conn->prepare("
                 SELECT p.*, 
-                       c.symptoms, c.diagnosis as consultation_diagnosis, c.urgency_level,
+                       c.symptoms, c.urgency_level,
                        pat.full_name as patient_name, pat.email as patient_email, pat.phone as patient_phone,
                        doc.full_name as doctor_name,
                        dp.specialization, dp.license_number as doctor_license
                 FROM prescriptions_v2 p
-                JOIN consultations c ON p.consultation_id = c.id
+                LEFT JOIN consultations c ON p.consultation_id = c.id
                 JOIN users pat ON p.patient_id = pat.id
                 JOIN users doc ON p.doctor_id = doc.id
                 LEFT JOIN doctor_profiles dp ON doc.id = dp.user_id
-                WHERE p.pharmacy_id = ? AND p.status = 'sent_to_pharmacy'
-                ORDER BY p.sent_at DESC
+                WHERE p.pharmacy_id = ? 
+                AND p.status IN ('Pending', 'Verified', 'Awaiting Payment', 'Paid', 'Dispensed')
+                AND p.ordered_at IS NOT NULL
+                ORDER BY p.ordered_at DESC
             ");
             
             $stmt->bind_param("i", $userId);
@@ -66,16 +78,31 @@ try {
             
             $prescriptions = [];
             while ($row = $result->fetch_assoc()) {
-                // Get prescription items
+                // Get prescription items with medicine details and pricing
                 $items = $conn->query("
-                    SELECT * FROM prescription_items_v2
-                    WHERE prescription_id = {$row['id']}
+                    SELECT pi.*, 
+                           m.id as medicine_id, m.name as medicine_name, 
+                           m.price, m.stock, m.generic_name, m.category, m.unit
+                    FROM prescription_items_v2 pi
+                    LEFT JOIN medicines m ON pi.medicine_id = m.id OR pi.medicine_name = m.name
+                    WHERE pi.prescription_id = {$row['id']}
                 ")->fetch_all(MYSQLI_ASSOC);
                 
+                // Calculate total for display
+                $total = 0;
+                foreach ($items as &$item) {
+                    $item['price'] = $item['price'] ?? 0;
+                    $item['quantity'] = intval($item['quantity'] ?? 1);
+                    $item['line_total'] = $item['price'] * $item['quantity'];
+                    $total += $item['line_total'];
+                }
+                
                 $row['items'] = $items;
+                $row['calculated_total'] = $total;
                 $prescriptions[] = $row;
             }
             
+            ob_end_clean(); // Clean buffer before JSON output
             echo json_encode([
                 'success' => true,
                 'prescriptions' => $prescriptions,
@@ -123,96 +150,238 @@ try {
         // ==================================================
         // Accept prescription and create order
         // ==================================================
-        case 'accept_prescription':
+        // ==================================================
+        // Stage 1: Verify Prescription (Pending -> Verified)
+        // ==================================================
+        case 'verify_prescription':
             if ($userRole !== 'pharmacy') {
-                throw new Exception('Only pharmacies can accept prescriptions');
+                throw new Exception('Unauthorized');
             }
             
             $input = json_decode(file_get_contents('php://input'), true);
-            
             $prescriptionId = $input['prescription_id'] ?? 0;
-            $totalAmount = floatval($input['total_amount'] ?? 0);
-            $deliveryAvailable = $input['delivery_available'] ?? false;
             
-            if (!$prescriptionId || $totalAmount <= 0) {
-                throw new Exception('Invalid input');
+            if (!$prescriptionId) {
+                throw new Exception('Invalid prescription ID');
             }
             
-            // Get prescription details
+            // Validate current status (Pending or sent_to_pharmacy)
             $stmt = $conn->prepare("
-                SELECT * FROM prescriptions_v2
-                WHERE id = ? AND pharmacy_id = ? AND status = 'sent_to_pharmacy'
+                SELECT status FROM prescriptions_v2
+                WHERE id = ? AND pharmacy_id = ?
             ");
             $stmt->bind_param("ii", $prescriptionId, $userId);
             $stmt->execute();
-            $prescription = $stmt->get_result()->fetch_assoc();
+            $presc = $stmt->get_result()->fetch_assoc();
             
-            if (!$prescription) {
-                throw new Exception('Prescription not found');
+            if (!$presc) throw new Exception('Prescription not found');
+            
+            $allowed = ['Pending', 'sent_to_pharmacy'];
+            if (!in_array($presc['status'], $allowed)) {
+                throw new Exception('Invalid transition. Current status: ' . $presc['status']);
             }
             
-            // Generate order number
-            $orderNumber = 'ORD' . time() . rand(100, 999);
-            
-            // Create prescription order
-            $fulfillmentType = $deliveryAvailable ? 'delivery' : 'pickup';
-            
+            // Transition to Verified
             $stmt = $conn->prepare("
-                INSERT INTO prescription_orders (
-                    order_number, prescription_id, pharmacy_id, patient_id,
-                    total_amount, fulfillment_type, order_status, accepted_at
-                ) VALUES (?, ?, ?, ?, ?, ?, 'accepted', NOW())
-            ");
-            
-            $stmt->bind_param(
-                "siiids",
-                $orderNumber, $prescriptionId, $userId,
-                $prescription['patient_id'], $totalAmount, $fulfillmentType
-            );
-            
-            if (!$stmt->execute()) {
-                throw new Exception('Failed to create order');
-            }
-            
-            $orderId = $stmt->insert_id;
-            
-            // Update prescription status
-            $conn->query("
                 UPDATE prescriptions_v2
-                SET status = 'filled', filled_at = NOW()
-                WHERE id = $prescriptionId
+                SET status = 'Verified',
+                    verified_at = NOW(),
+                    pharmacist_id = ?
+                WHERE id = ?
             ");
+            $stmt->bind_param("ii", $userId, $prescriptionId);
             
-            // Create pharmacy earnings record
-            $platformCommission = 5.00; // 5% commission
-            $commissionAmount = ($totalAmount * $platformCommission) / 100;
-            $netAmount = $totalAmount - $commissionAmount;
+            if (!$stmt->execute()) throw new Exception('Failed to verify prescription');
             
+            echo json_encode(['success' => true, 'message' => 'Prescription verified. Next: Generate Bill.']);
+            break;
+
+        // ==================================================
+        // Stage 2: Generate Bill (Verified -> Awaiting Payment)
+        // ==================================================
+        case 'generate_bill':
+            if ($userRole !== 'pharmacy') {
+                throw new Exception('Unauthorized');
+            }
+            
+            $input = json_decode(file_get_contents('php://input'), true);
+            $prescriptionId = $input['prescription_id'] ?? 0;
+            
+            if (!$prescriptionId) throw new Exception('Invalid prescription ID');
+            
+            // Validate current status
             $stmt = $conn->prepare("
-                INSERT INTO pharmacy_earnings (pharmacy_id, prescription_order_id, gross_amount, platform_commission_percent, platform_commission_amount, net_amount)
-                VALUES (?, ?, ?, ?, ?, ?)
+                SELECT status, patient_id FROM prescriptions_v2
+                WHERE id = ? AND pharmacy_id = ?
             ");
-            $stmt->bind_param("iidddd", $userId, $orderId, $totalAmount, $platformCommission, $commissionAmount, $netAmount);
+            $stmt->bind_param("ii", $prescriptionId, $userId);
+            $stmt->execute();
+            $presc = $stmt->get_result()->fetch_assoc();
+            
+            if (!$presc) throw new Exception('Prescription not found');
+            if ($presc['status'] !== 'Verified') {
+                throw new Exception('Prescription must be Verified before generating bill. Current status: ' . $presc['status']);
+            }
+            
+            // Calculate total from medicines table using medicine_id FK
+            $items = $conn->query("
+                SELECT pi.*, m.price, m.stock, m.name as med_name
+                FROM prescription_items_v2 pi
+                LEFT JOIN medicines m ON pi.medicine_id = m.id OR pi.medicine_name = m.name
+                WHERE pi.prescription_id = $prescriptionId
+            ")->fetch_all(MYSQLI_ASSOC);
+            
+            if (empty($items)) {
+                throw new Exception('No prescription items found');
+            }
+            
+            $totalAmount = 0;
+            $missingPrices = [];
+            
+            foreach ($items as $item) {
+                if (!$item['price']) {
+                    $missingPrices[] = $item['medicine_name'] ?? 'Unknown';
+                    continue;
+                }
+                $price = floatval($item['price']);
+                $quantity = intval($item['quantity'] ?? 1);
+                $totalAmount += ($price * $quantity);
+            }
+            
+            if (!empty($missingPrices)) {
+                throw new Exception('Price not found for medicines: ' . implode(', ', $missingPrices));
+            }
+            
+            // Update prescription
+            $stmt = $conn->prepare("
+                UPDATE prescriptions_v2
+                SET status = 'Awaiting Payment',
+                    total_amount = ?,
+                    bill_generated_at = NOW()
+                WHERE id = ?
+            ");
+            $stmt->bind_param("di", $totalAmount, $prescriptionId);
+            
+            if (!$stmt->execute()) throw new Exception('Failed to generate bill');
+            
+            // Update legacy order record if exists
+            $stmt = $conn->prepare("UPDATE prescription_orders SET order_status = 'awaiting_payment', total_amount = ? WHERE prescription_id = ?");
+            $stmt->bind_param("di", $totalAmount, $prescriptionId);
             $stmt->execute();
             
-            // Notify patient
-            $notifService = getNotificationService();
-            $notifService->send($prescription['patient_id'], 'all',
-                'Prescription Accepted',
-                "Your prescription has been accepted by the pharmacy. Order #: $orderNumber. Total: ₹$totalAmount",
-                ['notification_type' => 'prescription_accepted', 'related_id' => $orderId]
-            );
+            echo json_encode(['success' => true, 'message' => 'Bill generated: ₹' . number_format($totalAmount, 2), 'total' => $totalAmount]);
+            break;
+
+        // ==================================================
+        // Dispense prescription (Only if Paid)
+        // ==================================================
+        // ==================================================
+        // Stage 3: Dispense Prescription (Paid -> Dispensed)
+        // ==================================================
+        case 'dispense_prescription':
+            if ($userRole !== 'pharmacy') {
+                throw new Exception('Unauthorized');
+            }
             
-            // Create pharmacy notification
-            createPharmacyNotification($conn, $userId, 'order_update', 'Order Created', 
-                "New order #$orderNumber created for ₹$totalAmount", $orderId, 'order', 'medium');
+            $input = json_decode(file_get_contents('php://input'), true);
+            $prescriptionId = $input['prescription_id'] ?? 0;
             
-            echo json_encode([
-                'success' => true,
-                'order_id' => $orderId,
-                'order_number' => $orderNumber,
-                'message' => 'Prescription accepted and order created'
-            ]);
+            if (!$prescriptionId) throw new Exception('Invalid prescription ID');
+            
+            // Check status
+            $stmt = $conn->prepare("SELECT status FROM prescriptions_v2 WHERE id = ? AND pharmacy_id = ?");
+            $stmt->bind_param("ii", $prescriptionId, $userId);
+            $stmt->execute();
+            $rx = $stmt->get_result()->fetch_assoc();
+            
+            if (!$rx) throw new Exception('Prescription not found');
+            if ($rx['status'] !== 'Paid') {
+                throw new Exception('Cannot dispense: Prescription not paid yet. Status: ' . $rx['status']);
+            }
+            
+            $conn->begin_transaction();
+            try {
+                // Get medications for this prescription with medicine_id
+                $stmt = $conn->prepare("
+                    SELECT pi.medicine_id, pi.medicine_name, pi.quantity, m.stock, m.name as med_name
+                    FROM prescription_items_v2 pi
+                    LEFT JOIN medicines m ON pi.medicine_id = m.id OR pi.medicine_name = m.name
+                    WHERE pi.prescription_id = ?
+                ");
+                $stmt->bind_param("i", $prescriptionId);
+                $stmt->execute();
+                $items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                
+                foreach ($items as $item) {
+                    $medicineId = $item['medicine_id'];
+                    $medName = $item['med_name'] ?? $item['medicine_name'];
+                    $qty = intval($item['quantity']);
+                    
+                    if (!$medicineId) {
+                        throw new Exception("Medicine not found in inventory: $medName");
+                    }
+                    
+                    // Check stock using medicine_id
+                    $stmt = $conn->prepare("SELECT id, stock, name FROM medicines WHERE id = ? FOR UPDATE");
+                    $stmt->bind_param("i", $medicineId);
+                    $stmt->execute();
+                    $med = $stmt->get_result()->fetch_assoc();
+                    
+                    if (!$med || $med['stock'] < $qty) {
+                        throw new Exception("Insufficient stock for {$med['name']}. Available: " . ($med['stock'] ?? 0) . ", Required: $qty");
+                    }
+                    
+                    // Deduct stock using medicine_id
+                    $stmt = $conn->prepare("UPDATE medicines SET stock = stock - ? WHERE id = ?");
+                    $stmt->bind_param("ii", $qty, $medicineId);
+                    $stmt->execute();
+                }
+                
+                // Update prescription status
+                $stmt = $conn->prepare("UPDATE prescriptions_v2 SET status = 'Dispensed', dispensed_at = NOW() WHERE id = ?");
+                $stmt->bind_param("i", $prescriptionId);
+                $stmt->execute();
+                
+                $conn->commit();
+                echo json_encode(['success' => true, 'message' => 'Items dispensed and stock updated.']);
+            } catch (Exception $e) {
+                $conn->rollback();
+                throw $e;
+            }
+            break;
+
+        // ==================================================
+        // Stage 4: Complete Prescription (Dispensed -> Completed)
+        // ==================================================
+        case 'complete_prescription':
+            if ($userRole !== 'pharmacy') {
+                throw new Exception('Unauthorized');
+            }
+            
+            $input = json_decode(file_get_contents('php://input'), true);
+            $prescriptionId = $input['prescription_id'] ?? 0;
+            
+            if (!$prescriptionId) throw new Exception('Invalid prescription ID');
+            
+            // Validate status
+            $stmt = $conn->prepare("SELECT status FROM prescriptions_v2 WHERE id = ? AND pharmacy_id = ?");
+            $stmt->bind_param("ii", $prescriptionId, $userId);
+            $stmt->execute();
+            $rx = $stmt->get_result()->fetch_assoc();
+            
+            if (!$rx || $rx['status'] !== 'Dispensed') {
+                throw new Exception('Invalid transition. Current status: ' . ($rx['status'] ?? 'None'));
+            }
+            
+            // Finalize
+            $stmt = $conn->prepare("UPDATE prescriptions_v2 SET status = 'Completed', completed_at = NOW() WHERE id = ?");
+            $stmt->bind_param("i", $prescriptionId);
+            
+            if ($stmt->execute()) {
+                echo json_encode(['success' => true, 'message' => 'Prescription completed and moved to history.']);
+            } else {
+                throw new Exception('Failed to update prescription status');
+            }
             break;
         
         // ==================================================
@@ -492,6 +661,28 @@ try {
             break;
         
         // ==================================================
+        // Get completed prescriptions (History)
+        // ==================================================
+        case 'get_history':
+            if ($userRole !== 'pharmacy') throw new Exception('Unauthorized');
+            
+            $stmt = $conn->prepare("
+                SELECT p.*, pat.full_name as patient_name, doc.full_name as doctor_name
+                FROM prescriptions_v2 p
+                JOIN users pat ON p.patient_id = pat.id
+                JOIN users doc ON p.doctor_id = doc.id
+                WHERE p.pharmacy_id = ? AND p.status = 'Completed'
+                ORDER BY p.completed_at DESC
+                LIMIT 50
+            ");
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+            
+            echo json_encode(['success' => true, 'history' => $result]);
+            break;
+
+        // ==================================================
         // Get dashboard statistics
         // ==================================================
         case 'get_dashboard_stats':
@@ -499,60 +690,64 @@ try {
                 throw new Exception('Only pharmacies can access this');
             }
             
-            // Pending prescriptions
+            // New Prescriptions (Pending or sent_to_pharmacy)
             $pendingCount = $conn->query("
-                SELECT COUNT(*) as count FROM prescriptions_v2
-                WHERE pharmacy_id = $userId AND status = 'sent_to_pharmacy'
+                SELECT COUNT(*) as count FROM prescriptions_v2 
+                WHERE pharmacy_id = $userId 
+                AND status = 'Pending'
+                AND ordered_at IS NOT NULL
             ")->fetch_assoc()['count'];
             
-            // Active orders
+            // In Process (Verified, Awaiting Payment, Paid, Dispensed)
             $activeCount = $conn->query("
-                SELECT COUNT(*) as count FROM prescription_orders
-                WHERE pharmacy_id = $userId AND order_status NOT IN ('completed', 'cancelled', 'delivered')
+                SELECT COUNT(*) as count FROM prescriptions_v2 
+                WHERE pharmacy_id = $userId 
+                AND status IN ('Verified', 'Awaiting Payment', 'Paid', 'Dispensed')
+                AND ordered_at IS NOT NULL
             ")->fetch_assoc()['count'];
             
-            // Today's earnings
-            $todayEarnings = $conn->query("
-                SELECT COALESCE(SUM(net_amount), 0) as total FROM pharmacy_earnings
-                WHERE pharmacy_id = $userId AND DATE(created_at) = CURDATE()
-            ")->fetch_assoc()['total'];
-            
-            // Monthly earnings
-            $monthEarnings = $conn->query("
-                SELECT COALESCE(SUM(net_amount), 0) as total FROM pharmacy_earnings
-                WHERE pharmacy_id = $userId AND DATE_FORMAT(created_at, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
-            ")->fetch_assoc()['total'];
-            
-            // Total orders
-            $totalOrders = $conn->query("
-                SELECT COUNT(*) as count FROM prescription_orders
-                WHERE pharmacy_id = $userId
+            // Completed today
+            $completedToday = $conn->query("
+                SELECT COUNT(*) as count FROM prescriptions_v2 
+                WHERE pharmacy_id = $userId 
+                AND status = 'Completed' 
+                AND DATE(completed_at) = CURDATE()
             ")->fetch_assoc()['count'];
             
-            // Fulfillment rate
-            $completedOrders = $conn->query("
-                SELECT COUNT(*) as count FROM prescription_orders
-                WHERE pharmacy_id = $userId AND order_status IN ('completed', 'delivered')
-            ")->fetch_assoc()['count'];
-            
-            $fulfillmentRate = $totalOrders > 0 ? ($completedOrders / $totalOrders) * 100 : 0;
-            
-            // Low stock alerts
+            // Low stock alerts (using 5 as a default threshold from medicines table)
             $lowStockCount = $conn->query("
-                SELECT COUNT(*) as count FROM pharmacy_inventory
-                WHERE pharmacy_id = $userId AND stock_quantity <= low_stock_threshold AND is_available = TRUE
+                SELECT COUNT(*) as count FROM medicines 
+                WHERE stock <= low_stock_threshold
             ")->fetch_assoc()['count'];
             
+            // Earnings (Today and Month)
+            $todayEarnings = $conn->query("
+                SELECT SUM(net_amount) as total FROM pharmacy_earnings 
+                WHERE pharmacy_id = $userId AND DATE(created_at) = CURDATE()
+            ")->fetch_assoc()['total'] ?? 0;
+            
+            $monthEarnings = $conn->query("
+                SELECT SUM(net_amount) as total FROM pharmacy_earnings 
+                WHERE pharmacy_id = $userId AND DATE_FORMAT(created_at, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+            ")->fetch_assoc()['total'] ?? 0;
+            
+            // Total orders and rate
+            $totalOrders = $conn->query("SELECT COUNT(*) as count FROM prescriptions_v2 WHERE pharmacy_id = $userId")->fetch_assoc()['count'];
+            $fulfilledOrders = $conn->query("SELECT COUNT(*) as count FROM prescriptions_v2 WHERE pharmacy_id = $userId AND status = 'Completed'")->fetch_assoc()['count'];
+            $fulfillmentRate = $totalOrders > 0 ? ($fulfilledOrders / $totalOrders) * 100 : 0;
+            
+            ob_end_clean(); // Clean buffer before JSON output
             echo json_encode([
                 'success' => true,
                 'stats' => [
-                    'pending_prescriptions' => $pendingCount,
-                    'active_orders' => $activeCount,
+                    'pending_prescriptions' => intval($pendingCount),
+                    'active_orders' => intval($activeCount),
+                    'completed_today' => intval($completedToday),
+                    'low_stock_alerts' => intval($lowStockCount),
                     'today_earnings' => floatval($todayEarnings),
                     'month_earnings' => floatval($monthEarnings),
-                    'total_orders' => $totalOrders,
-                    'fulfillment_rate' => round($fulfillmentRate, 2),
-                    'low_stock_alerts' => $lowStockCount
+                    'total_orders' => intval($totalOrders),
+                    'fulfillment_rate' => round($fulfillmentRate, 2)
                 ]
             ]);
             break;
@@ -703,6 +898,179 @@ try {
             ]);
             break;
         
+        // ==================================================
+        // Get medicines inventory
+        // ==================================================
+        case 'get_medicines_inventory':
+            if ($userRole !== 'pharmacy') {
+                throw new Exception('Only pharmacies can access inventory');
+            }
+            
+            $search = $_GET['search'] ?? '';
+            $category = $_GET['category'] ?? '';
+            $lowStockOnly = ($_GET['low_stock_only'] ?? 'false') === 'true';
+            
+            $query = "SELECT * FROM medicines WHERE 1=1";
+            $params = [];
+            $types = '';
+            
+            if (!empty($search)) {
+                $query .= " AND (name LIKE ? OR generic_name LIKE ?)";
+                $searchTerm = "%$search%";
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $types .= 'ss';
+            }
+            
+            if (!empty($category)) {
+                $query .= " AND category = ?";
+                $params[] = $category;
+                $types .= 's';
+            }
+            
+            if ($lowStockOnly) {
+                $query .= " AND stock <= low_stock_threshold";
+            }
+            
+            $query .= " ORDER BY name ASC";
+            
+            if (!empty($params)) {
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param($types, ...$params);
+                $stmt->execute();
+                $result = $stmt->get_result();
+            } else {
+                $result = $conn->query($query);
+            }
+            
+            $medicines = [];
+            while ($row = $result->fetch_assoc()) {
+                $medicines[] = $row;
+            }
+            
+            // Get distinct categories for filter dropdown
+            $categories = $conn->query("SELECT DISTINCT category FROM medicines WHERE category IS NOT NULL ORDER BY category")->fetch_all(MYSQLI_ASSOC);
+            
+            ob_end_clean();
+            echo json_encode([
+                'success' => true,
+                'medicines' => $medicines,
+                'categories' => array_column($categories, 'category'),
+                'count' => count($medicines)
+            ]);
+            break;
+        
+        // ==================================================
+        // Update medicine stock
+        // ==================================================
+        case 'update_medicine_stock':
+            if ($userRole !== 'pharmacy') {
+                throw new Exception('Only pharmacies can update stock');
+            }
+            
+            $input = json_decode(file_get_contents('php://input'), true);
+            $medicineId = $input['medicine_id'] ?? 0;
+            $newStock = $input['new_stock'] ?? null;
+            
+            if (!$medicineId || $newStock === null) {
+                throw new Exception('Medicine ID and new stock level required');
+            }
+            
+            if ($newStock < 0) {
+                throw new Exception('Stock cannot be negative');
+            }
+            
+            $stmt = $conn->prepare("UPDATE medicines SET stock = ? WHERE id = ?");
+            $stmt->bind_param("ii", $newStock, $medicineId);
+            
+            if ($stmt->execute()) {
+                // Get updated medicine details
+                $stmt = $conn->prepare("SELECT * FROM medicines WHERE id = ?");
+                $stmt->bind_param("i", $medicineId);
+                $stmt->execute();
+                $medicine = $stmt->get_result()->fetch_assoc();
+                
+                ob_end_clean();
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Stock updated successfully',
+                    'medicine' => $medicine
+                ]);
+            } else {
+                throw new Exception('Failed to update stock');
+            }
+            break;
+        
+        // ==================================================
+        // Add new medicine
+        // ==================================================
+        case 'add_new_medicine':
+            if ($userRole !== 'pharmacy') {
+                throw new Exception('Only pharmacies can add medicines');
+            }
+            
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            $name = trim($input['name'] ?? '');
+            $genericName = trim($input['generic_name'] ?? '');
+            $category = trim($input['category'] ?? '');
+            $price = floatval($input['price'] ?? 0);
+            $stock = intval($input['stock'] ?? 0);
+            $unit = trim($input['unit'] ?? 'tablet');
+            $manufacturer = trim($input['manufacturer'] ?? '');
+            $description = trim($input['description'] ?? '');
+            $lowStockThreshold = intval($input['low_stock_threshold'] ?? 10);
+            
+            // Validate required fields
+            if (empty($name)) {
+                throw new Exception('Medicine name is required');
+            }
+            
+            if ($price < 0) {
+                throw new Exception('Price cannot be negative');
+            }
+            
+            if ($stock < 0) {
+                throw new Exception('Stock cannot be negative');
+            }
+            
+            // Check if medicine already exists
+            $stmt = $conn->prepare("SELECT id FROM medicines WHERE name = ? LIMIT 1");
+            $stmt->bind_param("s", $name);
+            $stmt->execute();
+            $existing = $stmt->get_result()->fetch_assoc();
+            
+            if ($existing) {
+                throw new Exception('A medicine with this name already exists');
+            }
+            
+            // Insert new medicine
+            $stmt = $conn->prepare("
+                INSERT INTO medicines (name, generic_name, category, price, stock, unit, manufacturer, description, low_stock_threshold, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            ");
+            $stmt->bind_param("sssdiissi", $name, $genericName, $category, $price, $stock, $unit, $manufacturer, $description, $lowStockThreshold);
+            
+            if ($stmt->execute()) {
+                $newMedicineId = $conn->insert_id;
+                
+                // Get the newly created medicine
+                $stmt = $conn->prepare("SELECT * FROM medicines WHERE id = ?");
+                $stmt->bind_param("i", $newMedicineId);
+                $stmt->execute();
+                $medicine = $stmt->get_result()->fetch_assoc();
+                
+                ob_end_clean();
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Medicine added successfully',
+                    'medicine' => $medicine
+                ]);
+            } else {
+                throw new Exception('Failed to add medicine');
+            }
+            break;
+        
         default:
             throw new Exception('Invalid action');
     }
@@ -714,3 +1082,4 @@ try {
         'error' => $e->getMessage()
     ]);
 }
+?>

@@ -34,9 +34,9 @@ try {
                 throw new Exception('Prescription ID is required');
             }
             
-            // Verify prescription belongs to patient and is finalized
+            // Verify prescription belongs to patient
             $stmt = $conn->prepare("
-                SELECT id, status, pharmacy_id 
+                SELECT id, status 
                 FROM prescriptions_v2 
                 WHERE id = ? AND patient_id = ?
             ");
@@ -50,30 +50,31 @@ try {
             
             $prescription = $result->fetch_assoc();
             
-            if ($prescription['status'] !== 'finalized' && $prescription['status'] !== 'issued') {
-                throw new Exception('Prescription must be finalized or issued before sending to pharmacy');
+            // Allow 'Created' (new prompt) or 'finalized' (existing system)
+            $allowedStart = ['Created', 'finalized'];
+            if (!in_array($prescription['status'], $allowedStart)) {
+                throw new Exception('Prescription must be in Created state before ordering. Current status: ' . $prescription['status']);
             }
             
-            // Get City Pharmacy ID (HARDCODED to 4 as per user request)
-            $pharmacyId = 4;
+            // Get City Pharmacy ID
+            $centralPharmacy = $conn->query("
+                SELECT id FROM users 
+                WHERE email = 'pharmacy@medconnect.com' 
+                LIMIT 1
+            ")->fetch_assoc();
             
-            // Check if City Pharmacy exists
-            $checkPharmacy = $conn->query("SELECT id FROM users WHERE id = $pharmacyId AND role = 'pharmacy'");
-            if ($checkPharmacy->num_rows === 0) {
-                // Fallback to central pharmacy if city pharmacy doesn't exist for some reason
-                $centralPharmacy = $conn->query("SELECT id FROM users WHERE email = 'central.pharmacy@medconnect.com' LIMIT 1")->fetch_assoc();
-                if ($centralPharmacy) {
-                    $pharmacyId = $centralPharmacy['id'];
-                } else {
-                    throw new Exception('Pharmacy not found. Please contact support.');
-                }
+            if (!$centralPharmacy) {
+                throw new Exception('City Pharmacy not found.');
             }
             
+            $pharmacyId = $centralPharmacy['id'];
+            
+            // Update prescription status to 'Pending'
             $stmt = $conn->prepare("
                 UPDATE prescriptions_v2 
-                SET status = 'sent_to_pharmacy',
+                SET status = 'Pending',
                     pharmacy_id = ?,
-                    sent_at = NOW()
+                    ordered_at = NOW()
                 WHERE id = ?
             ");
             $stmt->bind_param("ii", $pharmacyId, $prescriptionId);
@@ -82,41 +83,22 @@ try {
                 throw new Exception('Failed to send prescription to pharmacy');
             }
             
-            // Create prescription order record
+            // Create prescription order record for backward compatibility
             $orderNumber = 'ORD' . time() . rand(1000, 9999);
-            
             $stmt = $conn->prepare("
                 INSERT INTO prescription_orders (
                     order_number, prescription_id, patient_id, pharmacy_id,
                     order_status, payment_status, created_at
-                ) VALUES (?, ?, ?, ?, 'pending', 'pending', NOW())
+                ) VALUES (?, ?, ?, ?, 'pending', 'Unpaid', NOW())
+                ON DUPLICATE KEY UPDATE order_status = 'pending'
             ");
             $stmt->bind_param("siii", $orderNumber, $prescriptionId, $patientId, $pharmacyId);
-            
-            if (!$stmt->execute()) {
-                // Rollback prescription status if order creation fails
-                $conn->query("UPDATE prescriptions_v2 SET status = 'finalized', pharmacy_id = NULL WHERE id = $prescriptionId");
-                throw new Exception('Failed to create prescription order');
-            }
-            
-            // Get updated prescription
-            $updated = $conn->query("
-                SELECT p.*, u.full_name as pharmacy_name
-                FROM prescriptions_v2 p
-                LEFT JOIN users u ON p.pharmacy_id = u.id
-                WHERE p.id = $prescriptionId
-            ")->fetch_assoc();
+            $stmt->execute();
             
             echo json_encode([
                 'success' => true,
-                'message' => 'Order sent to pharmacy successfully! The pharmacy will review and prepare your medicines.',
-                'prescription' => [
-                    'id' => $updated['id'],
-                    'status' => $updated['status'],
-                    'pharmacy_name' => $updated['pharmacy_name'],
-                    'sent_at' => $updated['sent_at'],
-                    'order_number' => $orderNumber
-                ]
+                'message' => 'Prescription ordered successfully! Status: Pending',
+                'status' => 'Pending'
             ]);
             break;
         
@@ -134,10 +116,14 @@ try {
             $stmt = $conn->prepare("
                 SELECT po.*, p.prescription_number, p.diagnosis,
                        u.full_name as pharmacy_name,
-                       pp.pharmacy_name as pharmacy_business_name
+                       pp.pharmacy_name as pharmacy_business_name,
+                       pat.full_name as patient_name,
+                       pat.email as patient_email,
+                       pat.phone as patient_phone
                 FROM prescription_orders po
                 JOIN prescriptions_v2 p ON po.prescription_id = p.id
                 JOIN users u ON po.pharmacy_id = u.id
+                JOIN users pat ON po.patient_id = pat.id
                 LEFT JOIN pharmacy_profiles pp ON u.id = pp.user_id
                 WHERE po.prescription_id = ? AND po.patient_id = ?
             ");
@@ -202,3 +188,4 @@ try {
         'error' => $e->getMessage()
     ]);
 }
+?>

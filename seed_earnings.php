@@ -17,3 +17,4 @@ $conn->query("
 ");
 
 echo "Seeded earnings for Doctor ID: $doctor_id";
+?>

@@ -42,9 +42,9 @@ if ($transactionId) {
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        body { font-family: 'Outfit', sans-serif; background: #f3f4f6; background-image: radial-gradient(at 0% 0%, rgba(45, 212, 191, 0.15) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(244, 63, 94, 0.1) 0px, transparent 50%); background-attachment: fixed; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .payment-container { background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 500px; width: 100%; overflow: hidden; }
-        .payment-header { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; padding: 30px; text-align: center; }
+        .payment-header { background: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%); color: white; padding: 30px; text-align: center; }
         .payment-header h1 { font-size: 24px; margin-bottom: 10px; }
         .payment-header p { opacity: 0.9; font-size: 14px; }
         .payment-body { padding: 30px; }
@@ -64,7 +64,7 @@ if ($transactionId) {
         .form-group input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
         .form-group input:focus { outline: none; border-color: #0d9488; }
         .card-row { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; }
-        .btn-pay { width: 100%; background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-pay { width: 100%; background: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(13, 148, 136, 0.4); }
         .secure-badge { text-align: center; margin-top: 20px; color: #64748b; font-size: 13px; }
         .secure-badge svg { vertical-align: middle; margin-right: 5px; }

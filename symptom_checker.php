@@ -16,56 +16,69 @@ $patientId = $_SESSION['user_id'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Symptom Checker - MedConnect</title>
     <style>
+        :root {
+            --primary: #0d9488;
+            --primary-dark: #0f766e;
+            --primary-light: #5eead4;
+            --primary-gradient: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%);
+            --secondary: #f0fdfa;
+            --accent: #f43f5e;
+            --bg-body: #f3f4f6;
+            --surface: #ffffff;
+            --text-dark: #111827;
+            --text-muted: #4b5563;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); min-height: 100vh; padding: 20px; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-body); min-height: 100vh; padding: 20px; color: var(--text-dark); }
         .container { max-width: 800px; margin: 0 auto; }
-        .card { background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); overflow: hidden; margin-bottom: 20px; }
-        .header { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; padding: 30px; text-align: center; }
-        .header h1 { font-size: 28px; margin-bottom: 10px; }
-        .header p { opacity: 0.9; }
-        .content { padding: 30px; }
+        .card { background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.05); }
+        .header { background: var(--primary-gradient); color: white; padding: 40px 30px; text-align: center; }
+        .header h1 { font-size: 32px; margin-bottom: 10px; font-weight: 700; letter-spacing: -0.02em; }
+        .header p { opacity: 0.9; font-weight: 500; }
+        .content { padding: 40px; }
         .step { display: none; }
         .step.active { display: block; }
-        .step-indicator { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        .step-indicator { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; }
         .step-dot { width: 12px; height: 12px; border-radius: 50%; background: #e2e8f0; transition: all 0.3s; }
-        .step-dot.active { background: #0d9488; transform: scale(1.5); }
-        .form-group { margin-bottom: 25px; }
-        .form-group label { display: block; margin-bottom: 10px; font-weight: 600; color: #1e293b; font-size: 16px; }
-        .form-group textarea { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 15px; resize: vertical; min-height: 120px; }
-        .form-group textarea:focus { outline: none; border-color: #0d9488; }
-        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: #0d9488; }
-        .voice-input { display: flex; gap: 15px; align-items: center; }
-        .voice-input textarea { flex: 1; }
-        .voice-btn { background: #ef4444; color: white; border: none; padding: 15px 25px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: 600; transition: all 0.3s; white-space: nowrap; }
-        .voice-btn:hover { background: #dc2626; }
+        .step-dot.active { background: var(--primary); transform: scale(1.5); }
+        .form-group { margin-bottom: 30px; }
+        .form-group label { display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-dark); font-size: 16px; }
+        .form-group textarea { width: 100%; padding: 18px; border: 2px solid #e5e7eb; border-radius: 16px; font-family: inherit; font-size: 15px; resize: vertical; min-height: 140px; transition: border-color 0.2s; background: #f9fafb; }
+        .form-group textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
+        .form-group input, .form-group select { width: 100%; padding: 15px; border: 2px solid #e5e7eb; border-radius: 16px; font-size: 15px; background: #f9fafb; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); background: #fff; }
+        .voice-input { display: flex; gap: 15px; align-items: flex-start; }
+        .voice-input textarea { flex: 1; margin-bottom: 0; }
+        .voice-btn { background: var(--accent); color: white; border: none; padding: 15px 25px; border-radius: 16px; cursor: pointer; font-size: 16px; font-weight: 600; transition: all 0.3s; white-space: nowrap; box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2); }
+        .voice-btn:hover { background: #e11d48; transform: translateY(-2px); }
         .voice-btn.recording { background: #10b981; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        .severity-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .severity-option { border: 2px solid #e2e8f0; padding: 20px; border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .severity-option:hover { border-color: #0d9488; background: #f0fdfa; }
-        .severity-option.selected { border-color: #0d9488; background: #f0fdfa; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } }
+        .severity-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .severity-option { border: 2px solid #e5e7eb; padding: 25px 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.3s; background: white; }
+        .severity-option:hover { border-color: var(--primary-light); background: var(--secondary); transform: translateY(-3px); }
+        .severity-option.selected { border-color: var(--primary); background: var(--secondary); box-shadow: 0 8px 20px rgba(13, 148, 136, 0.1); }
         .severity-icon { font-size: 32px; margin-bottom: 8px; }
         .severity-label { font-weight: 600; color: #1e293b; }
-        .file-upload { border: 2px dashed #cbd5e1; padding: 30px; border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .file-upload:hover { border-color: #0d9488; background: #f0fdfa; }
+        .file-upload { border: 2px dashed #cbd5e1; padding: 30px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.3s; background: #fff; }
+        .file-upload:hover { border-color: var(--primary); background: var(--secondary); }
         .file-upload input { display: none; }
         .file-list { margin-top: 15px; }
-        .file-item { background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .btn { padding: 14px 30px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-        .btn-primary { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4); }
-        .btn-secondary { background: #e2e8f0; color: #475569; }
-        .actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 25px; }
+        .file-item { background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e5e7eb; }
+        .btn { padding: 14px 30px; border: none; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary-gradient); color: white; box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13, 148, 136, 0.3); }
+        .btn-secondary { background: var(--secondary); color: var(--primary-dark); }
+        .btn-secondary:hover { background: #ccfbf1; }
+        .actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; }
         .suggestions { margin-top: 10px; }
-        .suggestion-item { padding: 10px 15px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; border-left: 3px solid #94a3b8; }
-        .suggestion-item:hover { background: #e2e8f0; border-left-color: #0d9488; }
-        .analysis-result { background: #f0fdfa; border: 2px solid #10b981; padding: 20px; border-radius: 12px; margin-top: 20px; }
-        .urgency-badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; }
-        .urgency-emergency { background: #fee2e2; color: #991b1b; }
-        .urgency-urgent { background: #fed7aa; color: #92400e; }
-        .urgency-priority { background: #fef3c7; color: #78350f; }
-        .urgency-routine { background: #d1fae5; color: #065f46; }
+        .suggestion-item { padding: 12px 18px; background: #fff; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid #e5e7eb; border-left: 4px solid var(--primary-light); }
+        .suggestion-item:hover { background: var(--secondary); border-left-color: var(--primary); }
+        .analysis-result { background: #fff; border: 2px solid var(--primary); padding: 30px; border-radius: 20px; margin-top: 30px; box-shadow: var(--shadow-lg); }
+        .urgency-badge { display: inline-block; padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .urgency-emergency { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .urgency-urgent { background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; }
+        .urgency-priority { background: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+        .urgency-routine { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
     </style>
 </head>
 <body>
@@ -448,10 +461,10 @@ $patientId = $_SESSION['user_id'];
         }
         
         function showAIAnalysis(analysis) {
-            let html = '<div class="analysis-result" style="background: #f8fafc; border: 2px solid #0d9488; max-width: 900px;">';
+            let html = '<div class="analysis-result" style="background: #f8fafc; border: 2px solid #667eea; max-width: 900px;">';
             
             // Title
-            html += '<h2 style="color: #0d9488; margin-bottom: 20px; text-align: center;">🤖 Advanced AI Medical Analysis</h2>';
+            html += '<h2 style="color: #667eea; margin-bottom: 20px; text-align: center;">🤖 Advanced AI Medical Analysis</h2>';
             
             // Extracted Symptoms
             html += '<div style="margin-bottom: 25px;">';
