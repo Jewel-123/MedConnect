@@ -78,20 +78,26 @@ try {
             
             $prescriptions = [];
             while ($row = $result->fetch_assoc()) {
-                // Get prescription items with medicine details and pricing
+                // Get prescription items with medicine details and pricing using robust matching
                 $items = $conn->query("
                     SELECT pi.*, 
-                           m.id as medicine_id, m.name as medicine_name, 
-                           m.price, m.stock, m.generic_name, m.category, m.unit
+                           m.id as inventory_id, m.name as inventory_name, 
+                           m.price as inventory_price, m.stock, m.generic_name, m.category, m.unit
                     FROM prescription_items_v2 pi
-                    LEFT JOIN medicines m ON pi.medicine_id = m.id OR pi.medicine_name = m.name
+                    LEFT JOIN medicines m ON 
+                        pi.medicine_id = m.id OR 
+                        pi.medicine_name = m.name OR 
+                        pi.medicine_name = m.generic_name OR
+                        m.name LIKE CONCAT('%', pi.medicine_name, '%') OR
+                        m.generic_name LIKE CONCAT('%', pi.medicine_name, '%')
                     WHERE pi.prescription_id = {$row['id']}
+                    GROUP BY pi.id
                 ")->fetch_all(MYSQLI_ASSOC);
                 
-                // Calculate total for display
+                // Calculate total for display and ensure prices are set
                 $total = 0;
                 foreach ($items as &$item) {
-                    $item['price'] = $item['price'] ?? 0;
+                    $item['price'] = $item['inventory_price'] ?? $item['price'] ?? 0;
                     $item['quantity'] = intval($item['quantity'] ?? 1);
                     $item['line_total'] = $item['price'] * $item['quantity'];
                     $total += $item['line_total'];
@@ -223,12 +229,18 @@ try {
                 throw new Exception('Prescription must be Verified before generating bill. Current status: ' . $presc['status']);
             }
             
-            // Calculate total from medicines table using medicine_id FK
+            // Calculate total from medicines table using medicine_id FK or flexible name matching
             $items = $conn->query("
                 SELECT pi.*, m.price, m.stock, m.name as med_name
                 FROM prescription_items_v2 pi
-                LEFT JOIN medicines m ON pi.medicine_id = m.id OR pi.medicine_name = m.name
+                LEFT JOIN medicines m ON 
+                    pi.medicine_id = m.id OR 
+                    pi.medicine_name = m.name OR 
+                    pi.medicine_name = m.generic_name OR
+                    m.name LIKE CONCAT('%', pi.medicine_name, '%') OR
+                    m.generic_name LIKE CONCAT('%', pi.medicine_name, '%')
                 WHERE pi.prescription_id = $prescriptionId
+                GROUP BY pi.id
             ")->fetch_all(MYSQLI_ASSOC);
             
             if (empty($items)) {
@@ -301,19 +313,25 @@ try {
             
             $conn->begin_transaction();
             try {
-                // Get medications for this prescription with medicine_id
+                // Get medications for this prescription with medicine_id or flexible name matching
                 $stmt = $conn->prepare("
-                    SELECT pi.medicine_id, pi.medicine_name, pi.quantity, m.stock, m.name as med_name
+                    SELECT pi.medicine_id, pi.medicine_name, pi.quantity, m.stock, m.name as med_name, m.id as actual_medicine_id
                     FROM prescription_items_v2 pi
-                    LEFT JOIN medicines m ON pi.medicine_id = m.id OR pi.medicine_name = m.name
+                    LEFT JOIN medicines m ON 
+                        pi.medicine_id = m.id OR 
+                        pi.medicine_name = m.name OR 
+                        pi.medicine_name = m.generic_name OR
+                        m.name LIKE CONCAT('%', pi.medicine_name, '%') OR
+                        m.generic_name LIKE CONCAT('%', pi.medicine_name, '%')
                     WHERE pi.prescription_id = ?
+                    GROUP BY pi.id
                 ");
                 $stmt->bind_param("i", $prescriptionId);
                 $stmt->execute();
                 $items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                 
                 foreach ($items as $item) {
-                    $medicineId = $item['medicine_id'];
+                    $medicineId = $item['actual_medicine_id'];
                     $medName = $item['med_name'] ?? $item['medicine_name'];
                     $qty = intval($item['quantity']);
                     
@@ -321,7 +339,7 @@ try {
                         throw new Exception("Medicine not found in inventory: $medName");
                     }
                     
-                    // Check stock using medicine_id
+                    // Check stock using actual_medicine_id
                     $stmt = $conn->prepare("SELECT id, stock, name FROM medicines WHERE id = ? FOR UPDATE");
                     $stmt->bind_param("i", $medicineId);
                     $stmt->execute();

@@ -1,0 +1,12 @@
+--- prescriptions_v2 ---
+ID: 7 | Status: Verified | Amount: 0.00 | Pharmacy: 4
+ID: 6 | Status: Awaiting Payment | Amount: 20.00 | Pharmacy: 4
+ID: 5 | Status: Awaiting Payment | Amount: 20.00 | Pharmacy: 4
+ID: 4 | Status:  | Amount: 0.00 | Pharmacy: 
+ID: 3 | Status: Pending | Amount: 0.00 | Pharmacy: 4
+
+--- prescription_orders ---
+ID: 4 | RX_ID: 7 | Status: pending | Amount: 0.00 | PayStatus: 
+ID: 3 | RX_ID: 5 | Status:  | Amount: 20.00 | PayStatus: 
+ID: 2 | RX_ID: 2 | Status: pending | Amount: 0.00 | PayStatus: pending
+ID: 1 | RX_ID: 3 | Status: pending | Amount: 0.00 | PayStatus: pending

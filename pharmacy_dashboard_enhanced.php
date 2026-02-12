@@ -542,10 +542,6 @@
                     </div>
                 </div>
 
-                <div class="form-footer">
-                    <button class="btn-draft" onclick="alert('Draft saved')">Save Draft</button>
-                    <button class="btn-send" id="sendToPharmacyBtn">Send to Pharmacy <i class="fas fa-caret-right"></i></button>
-                </div>
             </div>
         </div>
     </div>

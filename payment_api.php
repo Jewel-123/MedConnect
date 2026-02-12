@@ -76,12 +76,18 @@ try {
                 $relatedType = 'prescription_order';
                 
                 // Verify prescription order exists and belongs to user
-                $stmt = $conn->prepare("SELECT id FROM prescription_orders WHERE id = ? AND patient_id = ?");
-                $stmt->bind_param("ii", $relatedId, $userId);
+                // Check against both id and prescription_id for robustness
+                $stmt = $conn->prepare("SELECT id FROM prescription_orders WHERE (id = ? OR prescription_id = ?) AND patient_id = ? ORDER BY created_at DESC LIMIT 1");
+                $stmt->bind_param("iii", $relatedId, $relatedId, $userId);
                 $stmt->execute();
-                if ($stmt->get_result()->num_rows === 0) {
+                $res = $stmt->get_result()->fetch_assoc();
+                
+                if (!$res) {
                     throw new Exception('Invalid prescription order');
                 }
+                
+                // Use the actual prescription_orders.id for the transaction record
+                $relatedId = $res['id'];
             }
             
             // Convert amount to paise for Razorpay
@@ -326,11 +332,24 @@ try {
                         // Note: If doctor_id is NULL, it will show as available to all matching doctors
                     }
                     
-                } elseif ($transaction['transaction_type'] === 'medication_payment') {
+                } elseif ($transaction['transaction_type'] === 'medication_payment' || $transaction['transaction_type'] === 'prescription_payment') {
+                    // Update prescription order payment status
                     $conn->query("
                         UPDATE prescription_orders
-                        SET payment_status = 'paid'
+                        SET payment_status = 'Paid',
+                            paid_at = NOW()
                         WHERE id = {$transaction['related_id']}
+                    ");
+                    
+                    // Update prescription status to Paid
+                    $conn->query("
+                        UPDATE prescriptions_v2 p
+                        JOIN prescription_orders po ON p.id = po.prescription_id
+                        SET p.status = 'Paid',
+                            p.payment_status = 'Paid',
+                            p.paid_at = NOW(),
+                            p.payment_id = '{$razorpayPaymentId}'
+                        WHERE po.id = {$transaction['related_id']}
                     ");
                 }
                 

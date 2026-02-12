@@ -256,3 +256,9 @@ Stack trace:
 [08-Feb-2026 06:01:23 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1191
 [08-Feb-2026 06:04:24 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
 [08-Feb-2026 06:04:24 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[12-Feb-2026 12:37:02 Europe/Berlin] Prescription save input: {"consultation_id":53,"patient_id":21,"diagnosis":"Blood test","medicines":[{"name":"Albendazol","dosage":"400","frequency":"Once Daily","duration":"5","instructions":"","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"","notes_for_pharmacy":""}
+[12-Feb-2026 12:37:02 Europe/Berlin] Prescription created with ID: 7
+[12-Feb-2026 12:37:02 Europe/Berlin] Prescription saved successfully: ID 7
+[12-Feb-2026 13:03:48 Europe/Berlin] Prescription save input: {"consultation_id":53,"patient_id":21,"diagnosis":"Need care","medicines":[{"name":"Fluconazole 150mg","dosage":"150","frequency":"Three Times Daily","duration":"5","instructions":"","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"","notes_for_pharmacy":""}
+[12-Feb-2026 13:03:48 Europe/Berlin] Prescription created with ID: 8
+[12-Feb-2026 13:03:48 Europe/Berlin] Prescription saved successfully: ID 8

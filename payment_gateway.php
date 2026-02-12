@@ -13,6 +13,38 @@ $paymentType = $_GET['type'] ?? 'consultation'; // 'consultation' or 'medication
 $relatedId = $_GET['related_id'] ?? 0;
 $amount = $_GET['amount'] ?? 0;
 
+// Fetch amount from database if missing from URL but related ID is present
+if ($relatedId && (!$amount || floatval($amount) <= 0)) {
+    if ($paymentType === 'medication') {
+        // Find prescription order amount
+        $stmt = $conn->prepare("
+            SELECT total_amount FROM prescription_orders 
+            WHERE (prescription_id = ? OR id = ?) AND patient_id = ? 
+            ORDER BY created_at DESC LIMIT 1
+        ");
+        $stmt->bind_param("iii", $relatedId, $relatedId, $userId);
+        $stmt->execute();
+        $res = $stmt->get_result()->fetch_assoc();
+        if ($res) {
+            $amount = $res['total_amount'];
+        }
+    } elseif ($paymentType === 'consultation') {
+        // Find consultation fee
+        $stmt = $conn->prepare("
+            SELECT dp.consultation_fee 
+            FROM doctor_profiles dp 
+            JOIN consultations c ON dp.user_id = c.doctor_id 
+            WHERE c.id = ? AND c.patient_id = ?
+        ");
+        $stmt->bind_param("ii", $relatedId, $userId);
+        $stmt->execute();
+        $res = $stmt->get_result()->fetch_assoc();
+        if ($res) {
+            $amount = $res['consultation_fee'];
+        }
+    }
+}
+
 // Get transaction details if ID provided
 $transaction = null;
 if ($transactionId) {
@@ -20,8 +52,8 @@ if ($transactionId) {
     $stmt->bind_param("ii", $transactionId, $userId);
     $stmt->execute();
     $transaction = $stmt->get_result()->fetch_assoc();
-} elseif ($relatedId && $amount) {
-    // Create transaction for consultation fee from URL parameters
+} elseif ($relatedId) {
+    // Create virtual transaction from parameters
     $transaction = [
         'id' => 0,
         'user_id' => $userId,
@@ -79,16 +111,16 @@ if ($transactionId) {
 <body>
     <div class="payment-container">
         <div class="payment-header">
-            <h1>💳 Secure Payment</h1>
-            <p>Complete your payment securely</p>
+            <h1>💳 <?php echo $paymentType === 'medication' ? 'Medication Payment' : 'Secure Payment'; ?></h1>
+            <p><?php echo $paymentType === 'medication' ? 'Complete your pharmacy order payment' : 'Complete your payment securely'; ?></p>
         </div>
         
         <div class="payment-body">
             <div id="paymentForm">
                 <div class="payment-summary">
                     <div class="summary-row">
-                        <span>Payment Type:</span>
-                        <span><?php echo ucfirst($paymentType); ?></span>
+                        <span>Payment For:</span>
+                        <span><?php echo $paymentType === 'medication' ? 'Prescription Medicines' : 'Doctor Consultation'; ?></span>
                     </div>
                     <?php if ($transaction): ?>
                     <?php if (isset($transaction['transaction_number'])): ?>

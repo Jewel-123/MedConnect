@@ -208,23 +208,32 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
                 }
                 
                 container.innerHTML = prescriptions.map(rx => {
+                    const status = (rx.status || '').toLowerCase();
                     const statusBadge = {
                         'finalized': 'badge-issued',
+                        'verified': 'badge-issued',
                         'sent_to_pharmacy': 'badge-sent',
                         'in_progress': 'badge-filled',
                         'ready': 'badge-filled',
+                        'awaiting payment': 'badge-filled',
+                        'paid': 'badge-issued',
+                        'dispensed': 'badge-issued',
                         'completed': 'badge-issued',
                         'cancelled': 'badge-sent'
-                    }[rx.status] || 'badge-issued';
+                    }[status] || 'badge-issued';
                     
                     const statusText = {
-                        'finalized': '✅ Finalized',
+                        'finalized': '✅ Issued',
+                        'verified': '✔️ Verified',
                         'sent_to_pharmacy': '📤 Sent to Pharmacy',
                         'in_progress': '⚗️ Being Prepared',
-                        'ready': '✨ Ready for Pickup',
+                        'ready': '✨ Ready',
+                        'awaiting payment': '💳 Awaiting Payment',
+                        'paid': '💰 Paid',
+                        'dispensed': '💊 Dispensed',
                         'completed': '🎉 Completed',
                         'cancelled': '❌ Cancelled'
-                    }[rx.status] || rx.status;
+                    }[status] || rx.status;
                     
                     return `
                         <div class="prescription-card">
@@ -288,8 +297,8 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
                                     </button>
                                 ` : ''}
                                 
-                                ${rx.status === 'Awaiting Payment' ? `
-                                    <a href="prescription_payment.php?prescription_id=${rx.id}" class="btn btn-secondary">
+                                ${status === 'awaiting payment' ? `
+                                    <a href="payment_gateway.php?type=medication&related_id=${rx.order_id || rx.id}&amount=${rx.order_amount || rx.total_amount || 0}" class="btn btn-secondary">
                                         <i class="ph ph-credit-card"></i> Pay Now
                                     </a>
                                 ` : ''}

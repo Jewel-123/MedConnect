@@ -1,8 +1,16 @@
 <?php
-include 'db.php';
-$result = $conn->query("DESCRIBE users");
-$columns = [];
-while($row = $result->fetch_assoc()) {
-    $columns[] = $row;
+require_once 'db.php';
+$tables = ['prescription_orders', 'prescriptions_v2'];
+foreach ($tables as $table) {
+    echo "[$table columns]\n";
+    $res = $conn->query("DESCRIBE $table");
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            echo $row['Field'] . "\n";
+        }
+    } else {
+        echo "Error describing $table: " . $conn->error . "\n";
+    }
+    echo "\n";
 }
-echo json_encode($columns, JSON_PRETTY_PRINT);
+?>

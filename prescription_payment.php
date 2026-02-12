@@ -202,65 +202,8 @@ $items = $conn->query("
         
         document.getElementById('payButton').addEventListener('click', initiatePayment);
         
-        async function initiatePayment() {
-            const payButton = document.getElementById('payButton');
-            payButton.disabled = true;
-            payButton.innerHTML = '<i class="ph ph-spinner"></i> Processing...';
-            
-            try {
-                // Create Razorpay order
-                const response = await fetch('razorpay_order_api.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'create_prescription_order',
-                        prescription_id: prescriptionId,
-                        amount: orderData.total_amount
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (!data.success) {
-                    throw new Error(data.error || 'Failed to create payment order');
-                }
-                
-                // Open Razorpay checkout
-                const options = {
-                    key: '<?php echo RAZORPAY_KEY_ID; ?>',
-                    amount: data.order.amount,
-                    currency: 'INR',
-                    name: 'MedConnect',
-                    description: 'Prescription Order #' + orderData.order_number,
-                    order_id: data.order.id,
-                    prefill: {
-                        name: '<?php echo htmlspecialchars($order['patient_name']); ?>',
-                        email: '<?php echo htmlspecialchars($order['patient_email']); ?>',
-                        contact: '<?php echo htmlspecialchars($order['patient_phone']); ?>'
-                    },
-                    theme: {
-                        color: '#667eea'
-                    },
-                    handler: function(response) {
-                        verifyPayment(response);
-                    },
-                    modal: {
-                        ondismiss: function() {
-                            payButton.disabled = false;
-                            payButton.innerHTML = '<i class="ph ph-lock"></i> Pay ₹<?php echo number_format($order['total_amount'], 2); ?>';
-                        }
-                    }
-                };
-                
-                const rzp = new Razorpay(options);
-                rzp.open();
-                
-            } catch (error) {
-                console.error('Payment error:', error);
-                showError(error.message);
-                payButton.disabled = false;
-                payButton.innerHTML = '<i class="ph ph-lock"></i> Pay ₹<?php echo number_format($order['total_amount'], 2); ?>';
-            }
+        function initiatePayment() {
+            window.location.href = `payment_gateway.php?type=medication&related_id=${prescriptionId}&amount=${orderData.total_amount}`;
         }
         
         async function verifyPayment(response) {

@@ -38,6 +38,7 @@ try {
                        u.full_name as doctor_name,
                        dp.specialization,
                        po.order_number,
+                       po.id as order_id,
                        po.order_status,
                        po.total_amount as order_amount,
                        pharm.full_name as pharmacy_name

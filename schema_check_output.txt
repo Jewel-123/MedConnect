@@ -1,0 +1,4 @@
+prescription_orders has paid_at: NO
+prescription_orders has payment_status: YES
+prescriptions_v2 has paid_at: YES
+prescriptions_v2 has payment_status: YES
