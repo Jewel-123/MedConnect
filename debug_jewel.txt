@@ -1,0 +1,1720 @@
+=== All Consultations for JEWEL BIJU ===
+Array
+(
+    [id] => 70
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => heart attack
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 100
+    [urgency_level] => emergency
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => Cardiologist
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-13 18:46:44
+    [updated_at] => 2026-02-13 18:46:44
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 69
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-13 18:41:12
+    [updated_at] => 2026-02-13 18:41:12
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 62
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => skin irritation
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 40
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => Dermatologist
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-13 18:31:49
+    [updated_at] => 2026-02-13 18:31:49
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 58
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-13 18:19:11
+    [updated_at] => 2026-02-13 18:19:11
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 56
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-13 18:14:41
+    [updated_at] => 2026-02-13 18:14:41
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 55
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => heart attack
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 100
+    [urgency_level] => emergency
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => Cardiologist
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-10 12:01:55
+    [updated_at] => 2026-02-10 12:01:55
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 54
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => heart pain
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 50
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-10 12:01:33
+    [updated_at] => 2026-02-10 12:01:33
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 53
+    [patient_id] => 21
+    [doctor_id] => 26
+    [consultation_fee] => 200.00
+    [symptoms] => severe chest pain
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 98
+    [urgency_level] => emergency
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => in_progress
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-08 10:32:44
+    [updated_at] => 2026-02-09 10:08:38
+    [assigned_at] => 2026-02-08 10:34:22
+    [start_time] => 2026-02-09 10:08:38
+    [completed_at] => 
+)
+Array
+(
+    [id] => 52
+    [patient_id] => 21
+    [doctor_id] => 33
+    [consultation_fee] => 300.00
+    [symptoms] => ear pain
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 58
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-08 10:29:18
+    [updated_at] => 2026-02-08 10:31:21
+    [assigned_at] => 2026-02-08 10:30:13
+    [start_time] => 2026-02-08 10:30:23
+    [completed_at] => 2026-02-08 10:31:21
+)
+Array
+(
+    [id] => 51
+    [patient_id] => 21
+    [doctor_id] => 33
+    [consultation_fee] => 300.00
+    [symptoms] => ear pain
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 58
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 18:55:34
+    [updated_at] => 2026-02-07 18:58:42
+    [assigned_at] => 2026-02-07 18:56:36
+    [start_time] => 2026-02-07 18:56:43
+    [completed_at] => 2026-02-07 18:58:42
+)
+Array
+(
+    [id] => 50
+    [patient_id] => 21
+    [doctor_id] => 32
+    [consultation_fee] => 550.00
+    [symptoms] => sudden vision loss
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 90
+    [urgency_level] => emergency
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 18:50:07
+    [updated_at] => 2026-02-07 18:54:32
+    [assigned_at] => 2026-02-07 18:51:28
+    [start_time] => 2026-02-07 18:51:38
+    [completed_at] => 2026-02-07 18:54:32
+)
+Array
+(
+    [id] => 49
+    [patient_id] => 21
+    [doctor_id] => 28
+    [consultation_fee] => 500.00
+    [symptoms] => urinary infection
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 62
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 18:49:32
+    [updated_at] => 2026-02-07 18:49:32
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 48
+    [patient_id] => 21
+    [doctor_id] => 28
+    [consultation_fee] => 500.00
+    [symptoms] => stroke
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 100
+    [urgency_level] => emergency
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 18:38:52
+    [updated_at] => 2026-02-07 18:41:05
+    [assigned_at] => 2026-02-07 18:39:56
+    [start_time] => 2026-02-07 18:40:04
+    [completed_at] => 2026-02-07 18:41:05
+)
+Array
+(
+    [id] => 47
+    [patient_id] => 21
+    [doctor_id] => 25
+    [consultation_fee] => 200.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 15:38:20
+    [updated_at] => 2026-02-07 15:43:32
+    [assigned_at] => 2026-02-07 15:39:30
+    [start_time] => 2026-02-07 15:42:29
+    [completed_at] => 2026-02-07 15:43:32
+)
+Array
+(
+    [id] => 46
+    [patient_id] => 21
+    [doctor_id] => 26
+    [consultation_fee] => 200.00
+    [symptoms] => chest pain
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 95
+    [urgency_level] => emergency
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 15:33:26
+    [updated_at] => 2026-02-07 15:37:40
+    [assigned_at] => 2026-02-07 15:34:32
+    [start_time] => 2026-02-07 15:34:40
+    [completed_at] => 2026-02-07 15:37:40
+)
+Array
+(
+    [id] => 45
+    [patient_id] => 21
+    [doctor_id] => 26
+    [consultation_fee] => 200.00
+    [symptoms] => chest pain
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 95
+    [urgency_level] => emergency
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 15:18:13
+    [updated_at] => 2026-02-07 15:24:00
+    [assigned_at] => 2026-02-07 15:19:19
+    [start_time] => 2026-02-07 15:19:26
+    [completed_at] => 2026-02-07 15:24:00
+)
+Array
+(
+    [id] => 44
+    [patient_id] => 21
+    [doctor_id] => 32
+    [consultation_fee] => 550.00
+    [symptoms] => sudden vision loss
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 90
+    [urgency_level] => emergency
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 15:09:48
+    [updated_at] => 2026-02-07 15:15:46
+    [assigned_at] => 2026-02-07 15:13:21
+    [start_time] => 2026-02-07 15:13:29
+    [completed_at] => 2026-02-07 15:15:46
+)
+Array
+(
+    [id] => 43
+    [patient_id] => 21
+    [doctor_id] => 29
+    [consultation_fee] => 300.00
+    [symptoms] => skin rash
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 55
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 14:53:01
+    [updated_at] => 2026-02-07 15:07:58
+    [assigned_at] => 2026-02-07 15:03:18
+    [start_time] => 2026-02-07 15:03:34
+    [completed_at] => 2026-02-07 15:07:58
+)
+Array
+(
+    [id] => 42
+    [patient_id] => 21
+    [doctor_id] => 29
+    [consultation_fee] => 300.00
+    [symptoms] => skin irritation
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 40
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 14:49:23
+    [updated_at] => 2026-02-07 15:08:15
+    [assigned_at] => 2026-02-07 15:03:26
+    [start_time] => 
+    [completed_at] => 2026-02-07 15:08:15
+)
+Array
+(
+    [id] => 41
+    [patient_id] => 21
+    [doctor_id] => 25
+    [consultation_fee] => 200.00
+    [symptoms] => high fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 75
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 12:57:11
+    [updated_at] => 2026-02-07 15:41:14
+    [assigned_at] => 2026-02-07 15:39:23
+    [start_time] => 2026-02-07 15:39:38
+    [completed_at] => 2026-02-07 15:41:14
+)
+Array
+(
+    [id] => 40
+    [patient_id] => 21
+    [doctor_id] => 25
+    [consultation_fee] => 200.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => 
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 0
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 12:50:31
+    [updated_at] => 2026-02-07 14:31:06
+    [assigned_at] => 2026-02-07 12:59:54
+    [start_time] => 2026-02-07 13:00:04
+    [completed_at] => 2026-02-07 14:31:06
+)
+Array
+(
+    [id] => 39
+    [patient_id] => 21
+    [doctor_id] => 25
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => accepted
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 12:32:35
+    [updated_at] => 2026-02-13 18:37:11
+    [assigned_at] => 2026-02-13 18:37:11
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 38
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 12:32:35
+    [updated_at] => 2026-02-07 15:02:15
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 37
+    [patient_id] => 21
+    [doctor_id] => 29
+    [consultation_fee] => 0.00
+    [symptoms] => skin irritation
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 40
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => in_progress
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => Dermatologist
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 12:16:41
+    [updated_at] => 2026-02-13 18:33:36
+    [assigned_at] => 2026-02-13 18:33:30
+    [start_time] => 2026-02-13 18:33:36
+    [completed_at] => 
+)
+Array
+(
+    [id] => 36
+    [patient_id] => 21
+    [doctor_id] => 29
+    [consultation_fee] => 0.00
+    [symptoms] => skin irritation
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 40
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => accepted
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => Dermatologist
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 11:55:36
+    [updated_at] => 2026-02-13 18:33:22
+    [assigned_at] => 2026-02-13 18:33:22
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 35
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 11:45:21
+    [updated_at] => 2026-02-07 15:02:15
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 33
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 47
+    [created_at] => 2026-02-07 11:19:57
+    [updated_at] => 2026-02-08 10:33:24
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 32
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 46
+    [created_at] => 2026-02-07 11:19:57
+    [updated_at] => 2026-02-08 10:29:56
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 31
+    [patient_id] => 21
+    [doctor_id] => 25
+    [consultation_fee] => 0.00
+    [symptoms] => high fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 75
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => in_progress
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 45
+    [created_at] => 2026-02-07 11:17:10
+    [updated_at] => 2026-02-13 18:51:11
+    [assigned_at] => 2026-02-13 18:42:24
+    [start_time] => 2026-02-13 18:51:11
+    [completed_at] => 
+)
+Array
+(
+    [id] => 30
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 44
+    [created_at] => 2026-02-07 10:59:24
+    [updated_at] => 2026-02-07 18:50:53
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 18
+    [patient_id] => 21
+    [doctor_id] => 29
+    [consultation_fee] => 300.00
+    [symptoms] => Skin irritation and rash
+    [duration] => 
+    [severity] => medium
+    [urgency_score] => 60
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => completed
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => 
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 29
+    [created_at] => 2026-02-07 12:00:53
+    [updated_at] => 2026-02-07 14:50:53
+    [assigned_at] => 2026-02-07 12:31:34
+    [start_time] => 2026-02-07 12:31:43
+    [completed_at] => 2026-02-07 14:50:53
+)
+Array
+(
+    [id] => 17
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 10:17:39
+    [updated_at] => 2026-02-07 10:29:26
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 16
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 10:09:08
+    [updated_at] => 2026-02-07 10:29:26
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 15
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 10:09:08
+    [updated_at] => 2026-02-07 10:29:26
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+)
+Array
+(
+    [id] => 14
+    [patient_id] => 21
+    [doctor_id] => 25
+    [consultation_fee] => 0.00
+    [symptoms] => headache
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 45
+    [urgency_level] => routine
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => 
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => paid
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-07 08:59:50
+    [updated_at] => 2026-02-07 15:02:15
+    [assigned_at] => 2026-02-07 09:00:53
+    [start_time] => 
+    [completed_at] => 
+)
+
+=== All Appointments for JEWEL BIJU ===
+Array
+(
+    [id] => 39
+    [patient_id] => 21
+    [doctor_id] => 26
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-13 18:46:52
+    [scheduled_date] => 2026-02-17
+    [scheduled_time] => 11:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 60
+)
+Array
+(
+    [id] => 38
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-13 18:41:23
+    [scheduled_date] => 2026-02-25
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 59
+)
+Array
+(
+    [id] => 37
+    [patient_id] => 21
+    [doctor_id] => 29
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-13 18:31:59
+    [scheduled_date] => 2026-02-24
+    [scheduled_time] => 13:00:00
+    [payment_status] => paid
+    [consultation_fee] => 300.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 57
+)
+Array
+(
+    [id] => 36
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-13 18:19:24
+    [scheduled_date] => 2026-02-18
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 56
+)
+Array
+(
+    [id] => 35
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-13 18:15:06
+    [scheduled_date] => 2026-02-17
+    [scheduled_time] => 16:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 55
+)
+Array
+(
+    [id] => 34
+    [patient_id] => 21
+    [doctor_id] => 26
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-10 12:02:06
+    [scheduled_date] => 2026-02-25
+    [scheduled_time] => 11:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 48
+)
+Array
+(
+    [id] => 33
+    [patient_id] => 21
+    [doctor_id] => 26
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => booked
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-08 10:32:55
+    [scheduled_date] => 2026-02-17
+    [scheduled_time] => 12:00:00
+    [payment_status] => pending
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 
+)
+Array
+(
+    [id] => 32
+    [patient_id] => 21
+    [doctor_id] => 33
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => booked
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-08 10:29:27
+    [scheduled_date] => 2026-02-24
+    [scheduled_time] => 16:30:00
+    [payment_status] => pending
+    [consultation_fee] => 300.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 
+)
+Array
+(
+    [id] => 31
+    [patient_id] => 21
+    [doctor_id] => 33
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => booked
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 18:55:43
+    [scheduled_date] => 2026-02-26
+    [scheduled_time] => 13:00:00
+    [payment_status] => pending
+    [consultation_fee] => 300.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 
+)
+Array
+(
+    [id] => 30
+    [patient_id] => 21
+    [doctor_id] => 32
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => booked
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 18:50:21
+    [scheduled_date] => 2026-02-25
+    [scheduled_time] => 12:30:00
+    [payment_status] => pending
+    [consultation_fee] => 550.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 
+)
+Array
+(
+    [id] => 29
+    [patient_id] => 21
+    [doctor_id] => 28
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 18:39:02
+    [scheduled_date] => 2026-02-25
+    [scheduled_time] => 13:00:00
+    [payment_status] => paid
+    [consultation_fee] => 500.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 43
+)
+Array
+(
+    [id] => 28
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 15:38:32
+    [scheduled_date] => 2026-02-11
+    [scheduled_time] => 13:00:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 42
+)
+Array
+(
+    [id] => 27
+    [patient_id] => 21
+    [doctor_id] => 26
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 15:33:35
+    [scheduled_date] => 2026-02-11
+    [scheduled_time] => 12:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 41
+)
+Array
+(
+    [id] => 26
+    [patient_id] => 21
+    [doctor_id] => 26
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 15:18:26
+    [scheduled_date] => 2026-02-18
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 40
+)
+Array
+(
+    [id] => 25
+    [patient_id] => 21
+    [doctor_id] => 32
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 15:09:58
+    [scheduled_date] => 2026-02-18
+    [scheduled_time] => 13:00:00
+    [payment_status] => paid
+    [consultation_fee] => 550.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 39
+)
+Array
+(
+    [id] => 24
+    [patient_id] => 21
+    [doctor_id] => 29
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 14:53:10
+    [scheduled_date] => 2026-02-11
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 300.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 38
+)
+Array
+(
+    [id] => 23
+    [patient_id] => 21
+    [doctor_id] => 29
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 14:49:32
+    [scheduled_date] => 2026-02-25
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 300.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 37
+)
+Array
+(
+    [id] => 22
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 12:57:26
+    [scheduled_date] => 2026-02-19
+    [scheduled_time] => 12:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 36
+)
+Array
+(
+    [id] => 21
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 12:50:46
+    [scheduled_date] => 2026-02-19
+    [scheduled_time] => 12:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 35
+)
+Array
+(
+    [id] => 20
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 12:32:49
+    [scheduled_date] => 2026-02-19
+    [scheduled_time] => 13:00:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 34
+)
+Array
+(
+    [id] => 19
+    [patient_id] => 21
+    [doctor_id] => 29
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 12:16:53
+    [scheduled_date] => 2026-02-18
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 300.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 33
+)
+Array
+(
+    [id] => 18
+    [patient_id] => 21
+    [doctor_id] => 29
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 11:55:46
+    [scheduled_date] => 2026-02-19
+    [scheduled_time] => 12:30:00
+    [payment_status] => paid
+    [consultation_fee] => 300.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 29
+)
+Array
+(
+    [id] => 17
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 11:45:32
+    [scheduled_date] => 2026-02-24
+    [scheduled_time] => 16:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 28
+)
+Array
+(
+    [id] => 16
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 11:20:07
+    [scheduled_date] => 2026-02-10
+    [scheduled_time] => 16:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 27
+)
+Array
+(
+    [id] => 15
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => booked
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 11:17:23
+    [scheduled_date] => 2026-02-17
+    [scheduled_time] => 16:30:00
+    [payment_status] => pending
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 
+)
+Array
+(
+    [id] => 14
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => booked
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 10:59:39
+    [scheduled_date] => 2026-02-17
+    [scheduled_time] => 16:30:00
+    [payment_status] => pending
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 
+)
+Array
+(
+    [id] => 13
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 10:17:52
+    [scheduled_date] => 2026-02-25
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 14
+)
+Array
+(
+    [id] => 12
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 10:09:19
+    [scheduled_date] => 2026-02-11
+    [scheduled_time] => 16:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 13
+)
+Array
+(
+    [id] => 11
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 09:00:02
+    [scheduled_date] => 2026-02-12
+    [scheduled_time] => 12:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 12
+)
+Array
+(
+    [id] => 10
+    [patient_id] => 21
+    [doctor_id] => 28
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 08:56:08
+    [scheduled_date] => 2026-02-17
+    [scheduled_time] => 16:30:00
+    [payment_status] => paid
+    [consultation_fee] => 500.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 11
+)
+Array
+(
+    [id] => 9
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-07 08:40:37
+    [scheduled_date] => 2026-02-24
+    [scheduled_time] => 16:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 10
+)
+Array
+(
+    [id] => 8
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => cancelled
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-06 23:20:02
+    [scheduled_date] => 2026-02-18
+    [scheduled_time] => 12:00:00
+    [payment_status] => pending
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 
+)
+Array
+(
+    [id] => 7
+    [patient_id] => 21
+    [doctor_id] => 28
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => cancelled
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-06 23:10:31
+    [scheduled_date] => 2026-02-10
+    [scheduled_time] => 16:30:00
+    [payment_status] => pending
+    [consultation_fee] => 500.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 
+)
+Array
+(
+    [id] => 6
+    [patient_id] => 21
+    [doctor_id] => 26
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-06 22:51:04
+    [scheduled_date] => 2026-02-18
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 7
+)
+Array
+(
+    [id] => 5
+    [patient_id] => 21
+    [doctor_id] => 26
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-06 22:39:22
+    [scheduled_date] => 2026-02-18
+    [scheduled_time] => 12:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 6
+)
+Array
+(
+    [id] => 4
+    [patient_id] => 21
+    [doctor_id] => 26
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-06 22:18:57
+    [scheduled_date] => 2026-02-25
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 5
+)
+Array
+(
+    [id] => 3
+    [patient_id] => 21
+    [doctor_id] => 28
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-06 22:08:41
+    [scheduled_date] => 2026-02-25
+    [scheduled_time] => 12:30:00
+    [payment_status] => paid
+    [consultation_fee] => 500.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 4
+)
+Array
+(
+    [id] => 2
+    [patient_id] => 21
+    [doctor_id] => 28
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-06 22:00:12
+    [scheduled_date] => 2026-02-18
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 500.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 3
+)
+Array
+(
+    [id] => 1
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => cancelled
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-06 20:12:26
+    [scheduled_date] => 2026-02-19
+    [scheduled_time] => 12:30:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 2
+)

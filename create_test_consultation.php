@@ -1,58 +1,39 @@
 <?php
-// Create a test paid consultation for doctor to demonstrate incoming requests
 require_once 'db.php';
 
-echo "=== Creating Test Paid Consultation ===\n\n";
-
-// Find a patient
-$patient = $conn->query("SELECT id, full_name FROM users WHERE role='patient' LIMIT 1")->fetch_assoc();
+// Find Jewel Biju
+$patient = $conn->query("SELECT id, full_name FROM users WHERE full_name LIKE '%Jewel%' OR full_name LIKE '%Biju%' LIMIT 1")->fetch_assoc();
 if (!$patient) {
-    die("No patients found in database!\n");
-}
-
-echo "Patient: {$patient['full_name']} (ID: {$patient['id']})\n";
-
-// Doctor ID
-$doctor_id = 25;
-echo "Doctor ID: $doctor_id\n\n";
-
-// Create consultation
-$stmt = $conn->prepare("
-    INSERT INTO consultations (
-        patient_id, doctor_id, consultation_mode, consultation_fee,
-        symptoms, severity, urgency_score,
-        language_preference, status, payment_status, created_at
-    ) VALUES (?, ?, 'video', 200.00, ?, 'medium', 60, 'English', 'pending', 'paid', NOW())
-");
-
-$symptoms = "Test patient with headache and fever for 2 days. Needs consultation.";
-$stmt->bind_param("iis", $patient['id'], $doctor_id, $symptoms);
-
-if ($stmt->execute()) {
-    $consultation_id = $stmt->insert_id;
-    echo "✅ Created consultation ID: $consultation_id\n";
-    echo "   Status: pending\n";
-    echo "   Payment: paid\n";
-    echo "   Fee: $200.00\n\n";
-    
-    // Verify it shows in the query
-    echo "Verifying it appears in incoming requests query:\n";
-    $check = $conn->query("
-        SELECT id, patient_id, status, payment_status 
-        FROM consultations 
-        WHERE id = $consultation_id
-    ")->fetch_assoc();
-    
-    echo "  - ID: {$check['id']}\n";
-    echo "  - Status: {$check['status']}\n";
-    echo "  - Payment: {$check['payment_status']}\n";
-    
-    if ($check['status'] === 'pending' && $check['payment_status'] === 'paid') {
-        echo "\n✅ SUCCESS! This consultation should now appear in incoming requests.\n";
-    } else {
-        echo "\n❌ ERROR: Status or payment_status not correct!\n";
-    }
-    
+    echo "Patient Jewel Biju not found. Creating...\n";
+    $conn->query("INSERT INTO users (full_name, email, password, role) VALUES ('Jewel Biju', 'jewel.biju@test.com', 'hashed_password', 'patient')");
+    $patient_id = $conn->insert_id;
 } else {
-    echo "❌ Failed to create consultation: " . $stmt->error . "\n";
+    $patient_id = $patient['id'];
+    echo "Found patient: {$patient['full_name']} (ID: $patient_id)\n";
 }
+
+// Find Dr. Emily Smith
+$doctor = $conn->query("SELECT id FROM users WHERE full_name LIKE '%Emily%Smith%' AND role = 'doctor'")->fetch_assoc();
+if (!$doctor) {
+    die("Dr. Emily Smith not found!\n");
+}
+$doctor_id = $doctor['id'];
+echo "Found doctor: Dr. Emily Smith (ID: $doctor_id)\n";
+
+// Create a realistic consultation
+$symptoms = $conn->real_escape_string("Fever, headache, and body aches for 3 days");
+$txn_id = "TXN_" . time();
+
+$sql = "INSERT INTO consultations 
+    (patient_id, consultation_fee, payment_status, status, symptoms, consultation_mode, payment_transaction_id, created_at, updated_at) 
+    VALUES 
+    ($patient_id, 100.00, 'paid', 'pending', '$symptoms', 'chat', '$txn_id', NOW(), NOW())";
+
+if ($conn->query($sql)) {
+    $consultation_id = $conn->insert_id;
+    echo "Created consultation #$consultation_id with symptoms: $symptoms\n";
+    echo "\nNow the doctor can see this in Incoming Requests and accept it.\n";
+} else {
+    echo "Error creating consultation: " . $conn->error . "\n";
+}
+?>

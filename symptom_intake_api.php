@@ -54,34 +54,30 @@ try {
             $urgencyLevel = $analysis['urgency_level'];
             $matchedSpecialty = $analysis['primary_specialty'];
             
-            // Create consultation
-            $stmt = $conn->prepare("
-                INSERT INTO consultations (
-                    patient_id, symptoms, duration, severity, age, gender,
-                    existing_conditions, input_method, urgency_score, urgency_level,
-                    matched_specialty, consultation_mode, language_preference, status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
-            ");
-            
-            $stmt->bind_param(
-                "issssississss",
-                $userId, $symptoms, $duration, $severity, $age, $gender,
-                $existingConditions, $inputMethod, $urgencyScore, $urgencyLevel,
-                $matchedSpecialty, $consultationMode, $languagePref
-            );
-            
-            if (!$stmt->execute()) {
-                throw new Exception('Failed to create consultation');
-            }
-            
-            $consultationId = $stmt->insert_id;
-            $stmt->close();
+            // IMPORTANT: Store symptom data in SESSION instead of creating consultation
+            // Consultation will be created ONLY after doctor selection and payment
+            $_SESSION['pending_consultation'] = [
+                'patient_id' => $userId,
+                'symptoms' => $symptoms,
+                'duration' => $duration,
+                'severity' => $severity,
+                'age' => $age,
+                'gender' => $gender,
+                'existing_conditions' => $existingConditions,
+                'input_method' => $inputMethod,
+                'urgency_score' => $urgencyScore,
+                'urgency_level' => $urgencyLevel,
+                'matched_specialty' => $matchedSpecialty,
+                'consultation_mode' => $consultationMode,
+                'language_preference' => $languagePref,
+                'timestamp' => time()
+            ];
             
             echo json_encode([
                 'success' => true,
-                'consultation_id' => $consultationId,
+                'session_id' => session_id(),
                 'analysis' => $analysis,
-                'message' => 'Symptoms submitted successfully'
+                'message' => 'Symptoms analyzed successfully. Please proceed to book appointment.'
             ]);
             break;
         
@@ -250,6 +246,64 @@ try {
             echo json_encode([
                 'success' => true,
                 'suggestions' => $suggestions
+            ]);
+            break;
+        
+        // ==================================================
+        // Assign doctor to existing consultation
+        // ==================================================
+        case 'assign_doctor':
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            $consultation_id = intval($input['consultation_id'] ?? 0);
+            $doctor_id = intval($input['doctor_id'] ?? 0);
+            $consultation_fee = floatval($input['consultation_fee'] ?? 0);
+            
+            if (!$consultation_id || !$doctor_id || $consultation_fee <= 0) {
+                throw new Exception('Consultation ID, doctor ID, and consultation fee are required');
+            }
+            
+            // Verify consultation belongs to current user
+            $stmt = $conn->prepare("SELECT id FROM consultations WHERE id = ? AND patient_id = ?");
+            $stmt->bind_param("ii", $consultation_id, $userId);
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows === 0) {
+                throw new Exception('Invalid consultation');
+            }
+            $stmt->close();
+            
+            // Verify doctor exists and is approved
+            $stmt = $conn->prepare("
+                SELECT u.id FROM users u
+                INNER JOIN doctor_profiles dp ON u.id = dp.user_id
+                WHERE u.id = ? AND u.role = 'doctor' AND u.status = 'approved'
+            ");
+            $stmt->bind_param("i", $doctor_id);
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows === 0) {
+                throw new Exception('Invalid or unavailable doctor');
+            }
+            $stmt->close();
+            
+            // Update consultation with doctor_id and consultation_fee
+            $stmt = $conn->prepare("
+                UPDATE consultations 
+                SET doctor_id = ?, 
+                    consultation_fee = ?,
+                    payment_status = 'unpaid',
+                    status = 'pending',
+                    updated_at = NOW()
+                WHERE id = ? AND patient_id = ?
+            ");
+            $stmt->bind_param("idii", $doctor_id, $consultation_fee, $consultation_id, $userId);
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Failed to assign doctor');
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Doctor assigned successfully'
             ]);
             break;
         

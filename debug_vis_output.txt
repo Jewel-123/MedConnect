@@ -1,0 +1,69 @@
+=== DOCTORS ===
+ID: 25, Name: Emily Smith, Spec: General Physician
+ID: 26, Name: James Wilson, Spec: Cardiologist
+ID: 27, Name: Sarah Lee, Spec: Pediatrician
+ID: 28, Name: Michael Brown, Spec: Neurologist
+ID: 29, Name: Sophia Martinez, Spec: Dermatologist
+ID: 30, Name: David Chen, Spec: Orthopedic Surgeon
+ID: 31, Name: Elena Rodriguez, Spec: Psychiatrist
+ID: 32, Name: Robert Taylor, Spec: Ophthalmologist
+ID: 33, Name: Lisa Wong, Spec: ENT Specialist
+ID: 34, Name: Jennifer Adams, Spec: Gynecologist
+ID: 35, Name: Kevin Park, Spec: Gastroenterologist
+ID: 36, Name: Amanda White, Spec: Endocrinologist
+
+=== PENDING CONSULTATIONS ===
+ID: 103, Spec: General Physician, DocID: 25
+ID: 102, Spec: General Physician, DocID: 25
+ID: 100, Spec: General Physician, DocID: NULL
+ID: 98, Spec: General Physician, DocID: NULL
+ID: 97, Spec: General Physician, DocID: NULL
+ID: 96, Spec: General Physician, DocID: NULL
+ID: 93, Spec: General Physician, DocID: NULL
+ID: 92, Spec: General Physician, DocID: NULL
+ID: 91, Spec: General Physician, DocID: NULL
+ID: 76, Spec: General Physician, DocID: NULL
+
+=== VISIBILITY CHECK ===
+Checking for Dr. Emily Smith (Spec: General Physician)...
+  -> Visible Consultations: 17
+     - ID: 56
+     - ID: 58
+     - ID: 69
+     - ID: 71
+     - ID: 72
+     - ID: 73
+     - ID: 74
+     - ID: 76
+     - ID: 91
+     - ID: 92
+     - ID: 93
+     - ID: 96
+     - ID: 97
+     - ID: 98
+     - ID: 100
+     - ID: 102
+     - ID: 103
+Checking for Dr. James Wilson (Spec: Cardiologist)...
+  -> Visible Consultations: 0
+Checking for Dr. Sarah Lee (Spec: Pediatrician)...
+  -> Visible Consultations: 0
+Checking for Dr. Michael Brown (Spec: Neurologist)...
+  -> Visible Consultations: 0
+Checking for Dr. Sophia Martinez (Spec: Dermatologist)...
+  -> Visible Consultations: 1
+     - ID: 62
+Checking for Dr. David Chen (Spec: Orthopedic Surgeon)...
+  -> Visible Consultations: 0
+Checking for Dr. Elena Rodriguez (Spec: Psychiatrist)...
+  -> Visible Consultations: 0
+Checking for Dr. Robert Taylor (Spec: Ophthalmologist)...
+  -> Visible Consultations: 0
+Checking for Dr. Lisa Wong (Spec: ENT Specialist)...
+  -> Visible Consultations: 0
+Checking for Dr. Jennifer Adams (Spec: Gynecologist)...
+  -> Visible Consultations: 0
+Checking for Dr. Kevin Park (Spec: Gastroenterologist)...
+  -> Visible Consultations: 0
+Checking for Dr. Amanda White (Spec: Endocrinologist)...
+  -> Visible Consultations: 0

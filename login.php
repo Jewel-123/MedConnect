@@ -96,8 +96,8 @@
                     }
                     // Store user session
                     sessionStorage.setItem('currentUser', JSON.stringify(data.user));
-                    // Redirect to home page
-                    window.location.href = 'index.php';
+                    // Redirect to patient dashboard
+                    window.location.href = 'patient_dashboard.php';
                 } else {
                     alert("Google Login Failed: " + data.message);
                 }
@@ -144,11 +144,11 @@
                         window.location.href = 'admin_dashboard.php';
                     } else if (data.user.role === 'doctor') {
                         // For doctors, we might want to check if they are already approved
-                        window.location.href = 'index.php';
+                        window.location.href = 'doctor_dashboard.php';
                     } else if (data.user.role === 'pharmacy') {
                         window.location.href = 'pharmacy_dashboard_enhanced.php';
                     } else {
-                        window.location.href = 'index.php';
+                        window.location.href = 'patient_dashboard.php';
                     }
                 } else if (data.status === 'verification_required') {
                     alert(data.message);

@@ -124,6 +124,24 @@ try {
             break;
         
         // ==================================================
+        // Get Statistics for Dashboard
+        // ==================================================
+        case 'get_stats':
+            $stats = $conn->query("
+                SELECT 
+                    SUM(CASE WHEN status IN ('finalized', 'sent_to_pharmacy', 'in_progress', 'ready') THEN 1 ELSE 0 END) as active_count
+                FROM prescriptions_v2
+                WHERE patient_id = $patientId
+                AND status != 'draft'
+            ")->fetch_assoc();
+            
+            echo json_encode([
+                'success' => true,
+                'active_prescriptions' => intval($stats['active_count'] ?? 0)
+            ]);
+            break;
+            
+        // ==================================================
         // Get Active Prescriptions Only
         // ==================================================
         case 'get_active_prescriptions':

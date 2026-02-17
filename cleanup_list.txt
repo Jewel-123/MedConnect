@@ -1,0 +1,67 @@
+=== Consultations to potentially delete ===
+ID: 14, Patient: 21, Spec: General Physician, Date: 2026-02-07 08:59:50
+ID: 15, Patient: 21, Spec: General Physician, Date: 2026-02-07 10:09:08
+ID: 16, Patient: 21, Spec: General Physician, Date: 2026-02-07 10:09:08
+ID: 17, Patient: 21, Spec: General Physician, Date: 2026-02-07 10:17:39
+ID: 18, Patient: 21, Spec: , Date: 2026-02-07 12:00:53
+ID: 30, Patient: 21, Spec: General Physician, Date: 2026-02-07 10:59:24
+ID: 31, Patient: 21, Spec: General Physician, Date: 2026-02-07 11:17:10
+ID: 32, Patient: 21, Spec: General Physician, Date: 2026-02-07 11:19:57
+ID: 33, Patient: 21, Spec: General Physician, Date: 2026-02-07 11:19:57
+ID: 35, Patient: 21, Spec: General Physician, Date: 2026-02-07 11:45:21
+ID: 36, Patient: 21, Spec: Dermatologist, Date: 2026-02-07 11:55:36
+ID: 37, Patient: 21, Spec: Dermatologist, Date: 2026-02-07 12:16:41
+ID: 38, Patient: 21, Spec: General Physician, Date: 2026-02-07 12:32:35
+ID: 39, Patient: 21, Spec: General Physician, Date: 2026-02-07 12:32:35
+ID: 40, Patient: 21, Spec: 0, Date: 2026-02-07 12:50:31
+ID: 41, Patient: 21, Spec: 0, Date: 2026-02-07 12:57:11
+ID: 42, Patient: 21, Spec: 0, Date: 2026-02-07 14:49:23
+ID: 43, Patient: 21, Spec: 0, Date: 2026-02-07 14:53:01
+ID: 44, Patient: 21, Spec: 0, Date: 2026-02-07 15:09:48
+ID: 45, Patient: 21, Spec: 0, Date: 2026-02-07 15:18:13
+ID: 46, Patient: 21, Spec: 0, Date: 2026-02-07 15:33:26
+ID: 47, Patient: 21, Spec: 0, Date: 2026-02-07 15:38:20
+ID: 48, Patient: 21, Spec: 0, Date: 2026-02-07 18:38:52
+ID: 49, Patient: 21, Spec: 0, Date: 2026-02-07 18:49:32
+ID: 50, Patient: 21, Spec: 0, Date: 2026-02-07 18:50:07
+ID: 51, Patient: 21, Spec: 0, Date: 2026-02-07 18:55:34
+ID: 52, Patient: 21, Spec: 0, Date: 2026-02-08 10:29:18
+ID: 53, Patient: 21, Spec: 0, Date: 2026-02-08 10:32:44
+ID: 54, Patient: 21, Spec: General Physician, Date: 2026-02-10 12:01:33
+ID: 55, Patient: 21, Spec: Cardiologist, Date: 2026-02-10 12:01:55
+
+=== Appointments to potentially delete ===
+ID: 1, Patient: 21, Doctor: 25, Date: 2026-02-06 20:12:26
+ID: 2, Patient: 21, Doctor: 28, Date: 2026-02-06 22:00:12
+ID: 3, Patient: 21, Doctor: 28, Date: 2026-02-06 22:08:41
+ID: 4, Patient: 21, Doctor: 26, Date: 2026-02-06 22:18:57
+ID: 5, Patient: 21, Doctor: 26, Date: 2026-02-06 22:39:22
+ID: 6, Patient: 21, Doctor: 26, Date: 2026-02-06 22:51:04
+ID: 7, Patient: 21, Doctor: 28, Date: 2026-02-06 23:10:31
+ID: 8, Patient: 21, Doctor: 25, Date: 2026-02-06 23:20:02
+ID: 9, Patient: 21, Doctor: 25, Date: 2026-02-07 08:40:37
+ID: 10, Patient: 21, Doctor: 28, Date: 2026-02-07 08:56:08
+ID: 11, Patient: 21, Doctor: 25, Date: 2026-02-07 09:00:02
+ID: 12, Patient: 21, Doctor: 25, Date: 2026-02-07 10:09:19
+ID: 13, Patient: 21, Doctor: 25, Date: 2026-02-07 10:17:52
+ID: 14, Patient: 21, Doctor: 25, Date: 2026-02-07 10:59:39
+ID: 15, Patient: 21, Doctor: 25, Date: 2026-02-07 11:17:23
+ID: 16, Patient: 21, Doctor: 25, Date: 2026-02-07 11:20:07
+ID: 17, Patient: 21, Doctor: 25, Date: 2026-02-07 11:45:32
+ID: 18, Patient: 21, Doctor: 29, Date: 2026-02-07 11:55:46
+ID: 19, Patient: 21, Doctor: 29, Date: 2026-02-07 12:16:53
+ID: 20, Patient: 21, Doctor: 25, Date: 2026-02-07 12:32:49
+ID: 21, Patient: 21, Doctor: 25, Date: 2026-02-07 12:50:46
+ID: 22, Patient: 21, Doctor: 25, Date: 2026-02-07 12:57:26
+ID: 23, Patient: 21, Doctor: 29, Date: 2026-02-07 14:49:32
+ID: 24, Patient: 21, Doctor: 29, Date: 2026-02-07 14:53:10
+ID: 25, Patient: 21, Doctor: 32, Date: 2026-02-07 15:09:58
+ID: 26, Patient: 21, Doctor: 26, Date: 2026-02-07 15:18:26
+ID: 27, Patient: 21, Doctor: 26, Date: 2026-02-07 15:33:35
+ID: 28, Patient: 21, Doctor: 25, Date: 2026-02-07 15:38:32
+ID: 29, Patient: 21, Doctor: 28, Date: 2026-02-07 18:39:02
+ID: 30, Patient: 21, Doctor: 32, Date: 2026-02-07 18:50:21
+ID: 31, Patient: 21, Doctor: 33, Date: 2026-02-07 18:55:43
+ID: 32, Patient: 21, Doctor: 33, Date: 2026-02-08 10:29:27
+ID: 33, Patient: 21, Doctor: 26, Date: 2026-02-08 10:32:55
+ID: 34, Patient: 21, Doctor: 26, Date: 2026-02-10 12:02:06

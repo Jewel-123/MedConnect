@@ -311,6 +311,7 @@ $current_view = $_GET['view'] ?? 'dashboard';
             <div class="modal-body">
                 <form id="prescriptionForm">
                     <input type="hidden" id="prescConsultationId">
+                    <input type="hidden" id="prescAppointmentId">
                     <input type="hidden" id="prescPatientId">
                     
                     <div class="form-group">

@@ -262,3 +262,389 @@ Stack trace:
 [12-Feb-2026 13:03:48 Europe/Berlin] Prescription save input: {"consultation_id":53,"patient_id":21,"diagnosis":"Need care","medicines":[{"name":"Fluconazole 150mg","dosage":"150","frequency":"Three Times Daily","duration":"5","instructions":"","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"","notes_for_pharmacy":""}
 [12-Feb-2026 13:03:48 Europe/Berlin] Prescription created with ID: 8
 [12-Feb-2026 13:03:48 Europe/Berlin] Prescription saved successfully: ID 8
+[12-Feb-2026 16:36:12 Europe/Berlin] Prescription save input: {"consultation_id":53,"patient_id":21,"diagnosis":"care","medicines":[{"name":"Albendazol","dosage":"400","frequency":"Once Daily","duration":"5","instructions":"","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"","notes_for_pharmacy":""}
+[12-Feb-2026 16:36:12 Europe/Berlin] Prescription created with ID: 9
+[12-Feb-2026 16:36:12 Europe/Berlin] Prescription saved successfully: ID 9
+[13-Feb-2026 14:03:24 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 14:03:24 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 14:03:32 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 14:03:32 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 14:04:07 Europe/Berlin] Prescription save input: {"consultation_id":37,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Albendazol","dosage":"400","frequency":"Once Daily","duration":"5","instructions":"","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"","notes_for_pharmacy":""}
+[13-Feb-2026 14:04:07 Europe/Berlin] Prescription created with ID: 10
+[13-Feb-2026 14:04:08 Europe/Berlin] Prescription saved successfully: ID 10
+[13-Feb-2026 14:07:11 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_api_acceptance.php:16) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[13-Feb-2026 14:07:11 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_api_acceptance.php:16) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[13-Feb-2026 14:07:11 Europe/Berlin] PHP Warning:  Undefined array key "REMOTE_ADDR" in C:\xampp\htdocs\medconnect\doctor_api.php on line 388
+[13-Feb-2026 14:07:13 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at "localhost" port 25, verify your "SMTP" and "smtp_port" setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 14:07:13 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 14:07:13 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\test_api_acceptance.php:32
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\test_api_acceptance.php(32): mysqli->query('SELECT doctor_i...')
+#1 {main}
+  thrown in C:\xampp\htdocs\medconnect\test_api_acceptance.php on line 32
+[13-Feb-2026 14:12:26 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 14:12:26 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 14:31:24 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[13-Feb-2026 14:31:24 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified.php:14) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[13-Feb-2026 14:31:24 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified.php:14) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[13-Feb-2026 14:31:24 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:46
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(46): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_unified.php(19): include('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 46
+[13-Feb-2026 14:32:33 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_robust.php:23) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[13-Feb-2026 14:32:33 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_robust.php:23) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[13-Feb-2026 14:32:33 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[13-Feb-2026 14:32:33 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_robust.php:23) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[13-Feb-2026 14:32:33 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_robust.php:23) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[13-Feb-2026 14:32:33 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:46
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(46): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_robust.php(16): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\medconnect\verify_robust.php(27): test_action('get_consultatio...')
+#3 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 46
+[13-Feb-2026 14:32:56 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_robust.php:23) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[13-Feb-2026 14:32:56 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_robust.php:23) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[13-Feb-2026 14:32:56 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[13-Feb-2026 14:32:56 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_robust.php:23) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[13-Feb-2026 14:32:56 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_robust.php:23) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[13-Feb-2026 14:32:56 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:46
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(46): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_robust.php(16): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\medconnect\verify_robust.php(27): test_action('get_consultatio...')
+#3 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 46
+[13-Feb-2026 14:38:34 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified.php:5) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[13-Feb-2026 14:38:34 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified.php:5) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[13-Feb-2026 14:38:35 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\medconnect\verify_unified.php on line 21
+[13-Feb-2026 14:38:35 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\medconnect\verify_unified.php on line 24
+[13-Feb-2026 14:38:35 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[13-Feb-2026 14:38:35 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified.php:5) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[13-Feb-2026 14:38:35 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified.php:5) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[13-Feb-2026 14:38:35 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:46
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(46): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_unified.php(31): include('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 46
+[13-Feb-2026 15:20:16 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 15:20:17 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 15:22:43 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 15:22:44 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 15:27:57 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 15:27:57 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 15:32:07 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 15:32:08 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 16:36:48 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 16:36:48 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 16:38:38 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 16:38:38 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 16:38:38 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1189
+[13-Feb-2026 16:38:38 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1190
+[13-Feb-2026 16:38:38 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1191
+[13-Feb-2026 17:00:17 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 17:00:17 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 17:01:14 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"99","appointment_id":null,"patient_id":"21","icd_code":"","diagnosis":"test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"3","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"","notes_for_patient":"","notes_for_pharmacy":""}
+[13-Feb-2026 17:01:15 Europe/Berlin] Prescription created with ID: 11
+[13-Feb-2026 17:01:15 Europe/Berlin] Prescription saved successfully: ID 11
+[13-Feb-2026 17:11:13 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 17:11:14 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 17:11:14 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1189
+[13-Feb-2026 17:11:14 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1190
+[13-Feb-2026 17:11:14 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1191
+[13-Feb-2026 17:34:01 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 17:34:01 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 17:49:05 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 17:49:05 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 17:52:03 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 17:52:03 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 17:52:42 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 17:52:43 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 17:54:52 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 17:54:52 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 17:57:12 Europe/Berlin] Prescription save input: {"consultation_id":104,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Albendazol","dosage":"400","frequency":"Once Daily","duration":"5","instructions":"","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"","notes_for_pharmacy":""}
+[13-Feb-2026 17:57:14 Europe/Berlin] Prescription created with ID: 12
+[13-Feb-2026 17:57:16 Europe/Berlin] Prescription saved successfully: ID 12
+[13-Feb-2026 18:09:09 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 18:09:09 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 18:09:09 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1189
+[13-Feb-2026 18:09:09 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1190
+[13-Feb-2026 18:09:09 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1191
+[13-Feb-2026 18:43:00 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 18:43:00 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 18:43:36 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 18:43:36 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 18:43:36 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1225
+[13-Feb-2026 18:43:36 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1226
+[13-Feb-2026 18:43:36 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1227
+[13-Feb-2026 18:44:49 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 18:44:49 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 18:45:01 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 18:45:01 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 18:45:01 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1225
+[13-Feb-2026 18:45:01 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1226
+[13-Feb-2026 18:45:01 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1227
+[13-Feb-2026 18:45:13 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 18:45:13 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 18:45:13 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1225
+[13-Feb-2026 18:45:13 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1226
+[13-Feb-2026 18:45:13 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1227
+[13-Feb-2026 18:45:18 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[13-Feb-2026 18:45:18 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[13-Feb-2026 18:45:18 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1225
+[13-Feb-2026 18:45:18 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1226
+[13-Feb-2026 18:45:18 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1227
+[14-Feb-2026 03:19:48 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_multi_user_mapping.php:14) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[14-Feb-2026 03:19:48 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_multi_user_mapping.php:14) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[14-Feb-2026 03:19:48 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[14-Feb-2026 03:19:48 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_multi_user_mapping.php:14) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[14-Feb-2026 03:19:48 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_multi_user_mapping.php:14) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[14-Feb-2026 03:19:48 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:126
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(126): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_multi_user_mapping.php(102): include('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 126
+[14-Feb-2026 03:20:09 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[14-Feb-2026 03:20:09 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:126
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(126): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_multi_user_mapping.php(110): include('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 126
+[14-Feb-2026 03:20:33 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[14-Feb-2026 03:20:33 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:126
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(126): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_multi_user_mapping.php(73): include('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 126
+[14-Feb-2026 03:21:28 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[14-Feb-2026 03:21:28 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:126
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(126): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_multi_user_mapping.php(74): include('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 126
+[14-Feb-2026 03:21:57 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[14-Feb-2026 03:21:57 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:126
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(126): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_multi_user_mapping.php(79): include('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 126
+[14-Feb-2026 03:22:39 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\doctor_api.php:7) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[14-Feb-2026 03:22:39 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\doctor_api.php:7) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[14-Feb-2026 03:22:39 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\doctor_api.php:7) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[14-Feb-2026 03:22:39 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\doctor_api.php:7) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[14-Feb-2026 03:30:18 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Ophthalmologist
+[14-Feb-2026 04:01:09 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 04:01:37 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 04:05:22 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 04:16:05 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Dermatologist
+[14-Feb-2026 04:17:55 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Ophthalmologist
+[14-Feb-2026 04:40:32 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[14-Feb-2026 05:16:35 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[14-Feb-2026 05:20:29 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[14-Feb-2026 05:57:02 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 05:57:16 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[14-Feb-2026 05:57:18 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[14-Feb-2026 05:57:32 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 05:57:40 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 05:57:50 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 05:58:01 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 05:58:28 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 05:58:33 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 05:59:07 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 05:59:45 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 05:59:49 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:00:09 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:01:26 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:01:33 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:01:41 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[14-Feb-2026 06:01:41 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[14-Feb-2026 06:01:42 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:01:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:02:56 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:05:45 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:08:04 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:08:17 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:14:48 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:16:15 Europe/Berlin] Prescription save input: {"consultation_id":106,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Fluconazole 150mg","dosage":"150","frequency":"Once Daily","duration":"5 days","instructions":"Night after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"Night after food","notes_for_pharmacy":""}
+[14-Feb-2026 06:16:15 Europe/Berlin] Prescription created with ID: 13
+[14-Feb-2026 06:16:15 Europe/Berlin] Prescription saved successfully: ID 13
+[14-Feb-2026 06:16:30 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:38:55 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 06:39:47 Europe/Berlin] Prescription save input: {"consultation_id":106,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Acetaminophen","dosage":"150","frequency":"Twice Daily","duration":"5 days","instructions":"morining after food,evening after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"morining after food,evening after food","notes_for_pharmacy":""}
+[14-Feb-2026 06:39:47 Europe/Berlin] Prescription created with ID: 14
+[14-Feb-2026 06:39:47 Europe/Berlin] Prescription saved successfully: ID 14
+[14-Feb-2026 15:04:55 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[14-Feb-2026 15:05:36 Europe/Berlin] Prescription save input: {"consultation_id":106,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Albendazol","dosage":"400","frequency":"Once Daily","duration":"5","instructions":"Night after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"Night after food","notes_for_pharmacy":""}
+[14-Feb-2026 15:05:36 Europe/Berlin] Prescription created with ID: 15
+[14-Feb-2026 15:05:36 Europe/Berlin] Prescription saved successfully: ID 15
+[15-Feb-2026 08:20:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 08:56:52 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrics
+[15-Feb-2026 09:04:13 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Medicine
+[15-Feb-2026 09:19:39 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 09:19:53 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[15-Feb-2026 09:19:53 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[15-Feb-2026 09:19:54 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 09:20:48 Europe/Berlin] Prescription save input: {"consultation_id":10007,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Fluconazole 150mg","dosage":"150","frequency":"Once Daily","duration":"7","instructions":"Night after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"Night after food","notes_for_pharmacy":""}
+[15-Feb-2026 09:20:48 Europe/Berlin] Prescription created with ID: 16
+[15-Feb-2026 09:20:48 Europe/Berlin] Prescription saved successfully: ID 16
+[15-Feb-2026 09:26:10 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 09:26:31 Europe/Berlin] Prescription save input: {"consultation_id":10007,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Albendazol","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"Night after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"Night after food","notes_for_pharmacy":""}
+[15-Feb-2026 09:26:31 Europe/Berlin] Prescription created with ID: 17
+[15-Feb-2026 09:26:31 Europe/Berlin] Prescription saved successfully: ID 17
+[15-Feb-2026 09:38:14 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[15-Feb-2026 10:21:20 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[15-Feb-2026 10:24:20 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[15-Feb-2026 10:24:33 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[15-Feb-2026 10:30:02 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 10:30:02 Europe/Berlin] DOCTOR_API: Stats - Pending Consultations: 1 for Doctor ID: 10060
+[15-Feb-2026 10:30:02 Europe/Berlin] DOCTOR_API: Fetching consultations for Doc: 10060, Specialty: General Physician
+[15-Feb-2026 10:30:11 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[15-Feb-2026 10:30:11 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[15-Feb-2026 10:30:13 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 10:30:13 Europe/Berlin] DOCTOR_API: Stats - Pending Consultations: 0 for Doctor ID: 10060
+[15-Feb-2026 10:30:13 Europe/Berlin] DOCTOR_API: Fetching consultations for Doc: 10060, Specialty: General Physician
+[15-Feb-2026 10:30:14 Europe/Berlin] DOCTOR_API: Fetching consultations for Doc: 10060, Specialty: General Physician
+[15-Feb-2026 10:30:25 Europe/Berlin] DOCTOR_API: Fetching consultations for Doc: 10060, Specialty: General Physician
+[15-Feb-2026 10:30:29 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_emily_api.php:17) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 10:30:29 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_emily_api.php:17) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 10:30:29 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 10:30:29 Europe/Berlin] DOCTOR_API: Stats - Pending Consultations: 0 for Doctor ID: 10060
+[15-Feb-2026 10:30:29 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 10:30:29 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_emily_api.php:17) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 10:30:29 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_emily_api.php:17) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 10:30:29 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:127
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(127): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_emily_api.php(13): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\medconnect\verify_emily_api.php(22): testAction('get_consultatio...')
+#3 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 127
+[15-Feb-2026 10:30:37 Europe/Berlin] DOCTOR_API: Fetching consultations for Doc: 10060, Specialty: General Physician
+[15-Feb-2026 10:31:11 Europe/Berlin] DOCTOR_API: Fetching consultations for Doc: 10060, Specialty: General Physician
+[15-Feb-2026 10:42:49 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[15-Feb-2026 10:47:26 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[15-Feb-2026 10:47:30 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[15-Feb-2026 10:53:03 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 10:54:07 Europe/Berlin] Prescription save input: {"consultation_id":103,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Fluconazole 150mg","dosage":"150","frequency":"Once Daily","duration":"5","instructions":"after food duriing night","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food duriing night","notes_for_pharmacy":""}
+[15-Feb-2026 10:54:09 Europe/Berlin] Prescription created with ID: 18
+[15-Feb-2026 10:54:10 Europe/Berlin] Prescription saved successfully: ID 18
+[15-Feb-2026 11:00:41 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Neurologist
+[15-Feb-2026 11:01:57 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 11:02:36 Europe/Berlin] Prescription save input: {"consultation_id":103,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Fluconazole 150mg","dosage":"150","frequency":"Once Daily","duration":"7","instructions":"","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"","notes_for_pharmacy":""}
+[15-Feb-2026 11:02:38 Europe/Berlin] Prescription created with ID: 19
+[15-Feb-2026 11:02:39 Europe/Berlin] Prescription saved successfully: ID 19
+[15-Feb-2026 11:11:36 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified_dashboard.php:18) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:11:36 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified_dashboard.php:18) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:11:36 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\medconnect\doctor_api.php on line 55
+[15-Feb-2026 11:11:36 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in C:\xampp\htdocs\medconnect\doctor_api.php:55
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\verify_unified_dashboard.php(11): include()
+#1 C:\xampp\htdocs\medconnect\verify_unified_dashboard.php(19): testApi('doctor_api.php', 10061, 'doctor', 'get_dashboard_s...')
+#2 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 55
+[15-Feb-2026 11:13:19 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified_dashboard_v2.php:20) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:13:19 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified_dashboard_v2.php:20) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:13:19 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Neurologist
+[15-Feb-2026 11:13:19 Europe/Berlin] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:13:19 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified_dashboard_v2.php:20) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:13:19 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\verify_unified_dashboard_v2.php:20) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:13:19 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:134
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(134): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\verify_unified_dashboard_v2.php(13): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\medconnect\verify_unified_dashboard_v2.php(24): testApi('doctor_api.php', 10061, 'doctor', 'get_consultatio...')
+#3 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 134
+[15-Feb-2026 11:21:58 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:24) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:21:58 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:24) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:21:58 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 11:21:58 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:21:58 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:24) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:21:58 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:24) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:21:58 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli object is already closed in C:\xampp\htdocs\medconnect\doctor_api.php:134
+Stack trace:
+#0 C:\xampp\htdocs\medconnect\doctor_api.php(134): mysqli->query('SELECT speciali...')
+#1 C:\xampp\htdocs\medconnect\final_unified_verify.php(11): include('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\medconnect\final_unified_verify.php(30): testDoctorApi('get_consultatio...', 10060)
+#3 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 134
+[15-Feb-2026 11:24:04 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:38) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:24:04 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:38) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:24:05 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 11:24:05 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:24:05 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:38) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:24:05 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:38) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:24:05 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:24:05 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:38) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:24:05 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:38) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:24:05 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:24:05 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:38) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:24:05 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:38) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:24:06 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\get_consultations.php on line 7
+[15-Feb-2026 11:24:06 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_unified_verify.php:38) in C:\xampp\htdocs\medconnect\get_consultations.php on line 10
+[15-Feb-2026 11:27:32 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 11:27:32 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:27:32 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:27:32 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:27:32 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\get_consultations.php on line 7
+[15-Feb-2026 11:34:51 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_confirm_flow.php:34) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:34:51 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_confirm_flow.php:34) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:34:51 Europe/Berlin] PHP Warning:  Undefined array key "patient_id" in C:\xampp\htdocs\medconnect\test_confirm_flow.php on line 44
+[15-Feb-2026 11:34:51 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:34:51 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_confirm_flow.php:34) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[15-Feb-2026 11:34:51 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_confirm_flow.php:34) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[15-Feb-2026 11:36:42 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[15-Feb-2026 11:37:24 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[15-Feb-2026 11:41:27 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:48:09 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 11:51:10 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[15-Feb-2026 11:51:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[15-Feb-2026 11:55:52 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:00:21 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:03:30 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:03:31 Europe/Berlin] PHP Warning:  Undefined array key "REMOTE_ADDR" in C:\xampp\htdocs\medconnect\doctor_api.php on line 1241
+[15-Feb-2026 12:03:33 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at "localhost" port 25, verify your "SMTP" and "smtp_port" setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[15-Feb-2026 12:03:33 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[15-Feb-2026 12:03:33 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:03:33 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\get_consultations.php on line 7
+[15-Feb-2026 12:09:12 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:11:56 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:11:56 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\get_consultations.php on line 7
+[15-Feb-2026 12:18:16 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:18:16 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\get_consultations.php on line 7
+[15-Feb-2026 12:21:09 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:21:10 Europe/Berlin] PHP Warning:  Undefined array key "data" in C:\xampp\htdocs\medconnect\test_confirm_flow.php on line 95
+[15-Feb-2026 12:21:10 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\get_consultations.php on line 7
+[15-Feb-2026 12:33:38 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:33:38 Europe/Berlin] PHP Warning:  Undefined array key "data" in C:\xampp\htdocs\medconnect\test_confirm_flow.php on line 95
+[15-Feb-2026 12:33:38 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\get_consultations.php on line 7
+[15-Feb-2026 12:36:00 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:36:00 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\get_consultations.php on line 7
+[15-Feb-2026 12:38:02 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[15-Feb-2026 12:38:03 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\get_consultations.php on line 7
+[15-Feb-2026 12:43:34 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Neurologist
+[15-Feb-2026 12:43:54 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Neurologist
+[15-Feb-2026 12:46:29 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[15-Feb-2026 12:47:07 Europe/Berlin] Prescription save input: {"consultation_id":103,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Albendazol","dosage":"150","frequency":"Once Daily","duration":"5","instructions":"Night after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"Night after food","notes_for_pharmacy":""}
+[15-Feb-2026 12:47:07 Europe/Berlin] Prescription created with ID: 20
+[15-Feb-2026 12:47:08 Europe/Berlin] Prescription saved successfully: ID 20
+[16-Feb-2026 04:01:00 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[16-Feb-2026 04:01:36 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[17-Feb-2026 02:26:15 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[17-Feb-2026 15:20:14 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[17-Feb-2026 15:20:52 Europe/Berlin] Prescription save input: {"consultation_id":10007,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Albendazol","dosage":"400","frequency":"Once Daily","duration":"7","instructions":"morining after food,evening after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"morining after food,evening after food","notes_for_pharmacy":""}
+[17-Feb-2026 15:20:52 Europe/Berlin] Prescription created with ID: 21
+[17-Feb-2026 15:20:52 Europe/Berlin] Prescription saved successfully: ID 21
+[17-Feb-2026 15:21:59 Europe/Berlin] Prescription save input: {"consultation_id":103,"patient_id":21,"diagnosis":"blood diagonosis","medicines":[{"name":"Fluconazole ","dosage":"150","frequency":"Once Daily","duration":"5","instructions":"Night after food","quantity":1},{"name":"isoteritenoin","dosage":"50","frequency":"Once Daily","duration":"7","instructions":"Night after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"Night after food","notes_for_pharmacy":""}
+[17-Feb-2026 15:21:59 Europe/Berlin] Prescription created with ID: 22
+[17-Feb-2026 15:21:59 Europe/Berlin] Prescription saved successfully: ID 22
+[17-Feb-2026 15:40:34 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[17-Feb-2026 15:40:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist

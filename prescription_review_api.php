@@ -42,17 +42,25 @@ try {
                 throw new Exception('Invalid review data. Rating must be between 1 and 5.');
             }
             
-            // Verify prescription order belongs to patient and is completed
+            // Verify prescription order belongs to patient, is paid, and is completed
             $stmt = $conn->prepare("
-                SELECT id FROM prescription_orders 
-                WHERE id = ? AND prescription_id = ? AND patient_id = ? AND order_status = 'completed'
+                SELECT po.id, po.order_status, po.payment_status, po.paid_at 
+                FROM prescription_orders po
+                JOIN prescriptions_v2 p ON po.prescription_id = p.id
+                WHERE po.id = ? AND po.prescription_id = ? AND po.patient_id = ?
+                AND (po.order_status = 'completed' OR p.status = 'completed')
+                AND po.paid_at IS NOT NULL
+                AND (LOWER(po.payment_status) = 'paid' OR LOWER(po.payment_status) = 'completed')
             ");
             $stmt->bind_param("iii", $orderId, $prescriptionId, $patientId);
             $stmt->execute();
+            $orderResult = $stmt->get_result();
             
-            if ($stmt->get_result()->num_rows === 0) {
-                throw new Exception('Prescription order not found or not completed');
+            if ($orderResult->num_rows === 0) {
+                throw new Exception('Review cannot be submitted until the medicine order is successfully completed and paid.');
             }
+            
+            $order = $orderResult->fetch_assoc();
             
             // Check if review already exists
             $stmt = $conn->prepare("
@@ -95,6 +103,70 @@ try {
                 'success' => true,
                 'message' => 'Review submitted successfully',
                 'review_id' => $conn->insert_id
+            ]);
+            break;
+            
+        // ==================================================
+        // Check Review Eligibility
+        // ==================================================
+        case 'check_eligibility':
+            $prescriptionId = intval($_GET['prescription_id'] ?? 0);
+            
+            if (!$prescriptionId) {
+                throw new Exception('Prescription ID is required');
+            }
+            
+            // 1. Check prescription ownership
+            $stmt = $conn->prepare("SELECT id FROM prescriptions_v2 WHERE id = ? AND patient_id = ?");
+            $stmt->bind_param("ii", $prescriptionId, $patientId);
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows === 0) {
+                echo json_encode(['success' => true, 'eligible' => false, 'reason' => 'Prescription not found or does not belong to you.']);
+                exit;
+            }
+            
+            // 2. Check order and payment status
+            $stmt = $conn->prepare("
+                SELECT po.id, po.order_status, po.payment_status, po.paid_at 
+                FROM prescription_orders po
+                JOIN prescriptions_v2 p ON po.prescription_id = p.id
+                WHERE po.prescription_id = ? AND po.patient_id = ?
+                ORDER BY po.created_at DESC LIMIT 1
+            ");
+            $stmt->bind_param("ii", $prescriptionId, $patientId);
+            $stmt->execute();
+            $order = $stmt->get_result()->fetch_assoc();
+            
+            if (!$order) {
+                echo json_encode(['success' => true, 'eligible' => false, 'reason' => 'No order found for this prescription.']);
+                exit;
+            }
+            
+            $isPaid = !empty($order['paid_at']) && in_array(strtolower($order['payment_status']), ['paid', 'completed']);
+            $isCompleted = strtolower($order['order_status']) === 'completed' || 
+                           (isset($order['id']) && $conn->query("SELECT status FROM prescriptions_v2 WHERE id = $prescriptionId")->fetch_assoc()['status'] === 'completed');
+            
+            if (!$isPaid || !$isCompleted) {
+                $reason = !$isPaid ? 'Review cannot be submitted until the medicine order is successfully paid.' 
+                                   : 'Review cannot be submitted until the medicine order is successfully completed.';
+                echo json_encode(['success' => true, 'eligible' => false, 'reason' => $reason]);
+                exit;
+            }
+            
+            // 3. Check if review already submitted
+            $stmt = $conn->prepare("SELECT id FROM prescription_reviews WHERE prescription_id = ? AND patient_id = ?");
+            $stmt->bind_param("ii", $prescriptionId, $patientId);
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows > 0) {
+                echo json_encode(['success' => true, 'eligible' => false, 'reason' => 'You have already submitted a review for this order.']);
+                exit;
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'eligible' => true,
+                'order_id' => $order['id'],
+                'pharmacy_id' => $conn->query("SELECT pharmacy_id FROM prescription_orders WHERE id = {$order['id']}")->fetch_assoc()['pharmacy_id'] ?? 0
             ]);
             break;
         

@@ -302,12 +302,40 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
                                         <i class="ph ph-credit-card"></i> Pay Now
                                     </a>
                                 ` : ''}
-                                
-                                ${rx.status === 'Completed' && !rx.review_submitted ? `
-                                    <a href="prescription_review.php?prescription_id=${rx.id}" class="btn btn-secondary">
-                                        <i class="ph ph-star"></i> Submit Review
-                                    </a>
-                                ` : ''}
+                                                               ${(() => {
+                                    const isCompleted = status === 'completed';
+                                    const isPaid = (rx.payment_status || '').toLowerCase() === 'paid';
+                                    const hasReviewed = parseInt(rx.review_submitted) === 1;
+
+                                    if (hasReviewed) {
+                                        return `
+                                            <button class="btn btn-outline" disabled style="opacity: 0.7; cursor: not-allowed;">
+                                                <i class="ph ph-check-circle"></i> Review Submitted
+                                            </button>
+                                        `;
+                                    }
+
+                                    if (isCompleted && isPaid) {
+                                        return `
+                                            <a href="prescription_review.php?prescription_id=${rx.id}" class="btn btn-secondary">
+                                                <i class="ph ph-star"></i> Submit Review
+                                            </a>
+                                        `;
+                                    } else if (isPaid && !isCompleted) {
+                                        return `
+                                            <span style="color: #64748b; font-size: 13px; font-style: italic; display: flex; align-items: center; gap: 5px;">
+                                                <i class="ph ph-info"></i> Review available after completion
+                                            </span>
+                                        `;
+                                    } else if (status === 'awaiting payment') {
+                                        return `
+                                            <span style="color: #64748b; font-size: 13px; font-style: italic; display: flex; align-items: center; gap: 5px;">
+                                                <i class="ph ph-lock"></i> Review available after payment
+                                            </span>
+                                        `;
+                                    }
+                                    return '';
+                                })()}
                                 
                                 ${rx.order_number ? `
                                     <button class="btn btn-outline" onclick="viewOrderDetails(${rx.id}, '${rx.order_number}', '${rx.order_status}')">

@@ -1,0 +1,52 @@
+=== Appointment ID 38 ===
+Array
+(
+    [id] => 38
+    [patient_id] => 21
+    [doctor_id] => 25
+    [appointment_date] => 0000-00-00 00:00:00
+    [status] => pending
+    [symptom_description] => 
+    [meeting_link] => 
+    [created_at] => 2026-02-13 18:41:23
+    [scheduled_date] => 2026-02-25
+    [scheduled_time] => 12:00:00
+    [payment_status] => paid
+    [consultation_fee] => 200.00
+    [notes] => 
+    [cancellation_reason] => 
+    [payment_transaction_id] => 59
+    [patient_name] => JEWEL BIJU
+)
+
+=== Consultation ID 69 ===
+Array
+(
+    [id] => 69
+    [patient_id] => 21
+    [doctor_id] => 
+    [consultation_fee] => 0.00
+    [symptoms] => fever
+    [duration] => 
+    [severity] => 
+    [urgency_score] => 70
+    [urgency_level] => urgent
+    [age] => 
+    [gender] => 
+    [existing_conditions] => 
+    [input_method] => text
+    [attachment_count] => 0
+    [status] => pending
+    [consultation_mode] => video
+    [language_preference] => English
+    [matched_specialty] => General Physician
+    [auto_assigned] => 0
+    [payment_status] => pending
+    [payment_transaction_id] => 
+    [created_at] => 2026-02-13 18:41:12
+    [updated_at] => 2026-02-13 18:41:12
+    [assigned_at] => 
+    [start_time] => 
+    [completed_at] => 
+    [patient_name] => JEWEL BIJU
+)

@@ -345,11 +345,19 @@ try {
                     $conn->query("
                         UPDATE prescriptions_v2 p
                         JOIN prescription_orders po ON p.id = po.prescription_id
-                        SET p.status = 'Paid',
+                        SET p.status = CASE WHEN p.status = 'Dispensed' THEN 'Completed' ELSE 'Paid' END,
                             p.payment_status = 'Paid',
                             p.paid_at = NOW(),
                             p.payment_id = '{$razorpayPaymentId}'
                         WHERE po.id = {$transaction['related_id']}
+                    ");
+                    
+                    // Also update order_status in prescription_orders if dispensed
+                    $conn->query("
+                        UPDATE prescription_orders 
+                        SET order_status = CASE WHEN order_status = 'dispensed' THEN 'completed' ELSE order_status END,
+                            completed_at = CASE WHEN order_status = 'dispensed' THEN NOW() ELSE NULL END
+                        WHERE id = {$transaction['related_id']}
                     ");
                 }
                 

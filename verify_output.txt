@@ -1,0 +1,13 @@
+
+--- Checking for Sophia (Dermatologist) ---
+Sophia's Specialization: Dermatologist
+Visible Request: ID 112 (Dermatologist) - Skin rash test
+Visible Request: ID 62 (Dermatologist) - skin irritation
+
+--- Checking for Emily (General Physician) ---
+Emily's Specialization: General Physician
+Visible Request: ID 103 (General Physician) - fever
+Visible Request: ID 102 (General Physician) - fever
+Visible Request: ID 100 (General Physician) - fever
+Visible Request: ID 98 (General Physician) - fever
+Visible Request: ID 97 (General Physician) - fever

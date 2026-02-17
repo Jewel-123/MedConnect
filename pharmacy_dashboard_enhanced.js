@@ -383,7 +383,7 @@ function renderMedicinesTable(medicines) {
         const row = document.createElement('tr');
 
         // Determine stock status
-        const isLowStock = med.stock <= (med.low_stock_threshold || 10);
+        const isLowStock = med.stock <= 10;
         const stockBadgeColor = isLowStock ? '#f43f5e' : '#10b981';
         const stockBadgeText = isLowStock ? 'Low Stock' : 'In Stock';
 

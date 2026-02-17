@@ -428,10 +428,10 @@ section {
     flex: 1;
 }
 
-/* --- Dashboard --- */
+/* --- Dashboard & SPA Layouts --- */
 .dashboard-container {
-    display: grid;
-    grid-template-columns: 280px 1fr;
+    display: flex;
+    /* Changed from grid for SPA flexibility */
     background: var(--surface);
     border-radius: var(--radius);
     box-shadow: var(--shadow-lg);
@@ -441,48 +441,58 @@ section {
 }
 
 .sidebar {
-    background: linear-gradient(160deg, var(--primary-dark) 0%, #115e59 100%);
+    width: 280px;
+    background: linear-gradient(160deg, #0d9488 0%, #0f766e 100%);
     color: white;
-    padding: 2rem;
+    padding: 2.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar h3 {
     color: white;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 1rem;
+    padding-bottom: 1.5rem;
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 .sidebar ul {
     list-style: none;
+    flex: 1;
 }
 
 .sidebar a {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    color: rgba(255, 255, 255, 0.7);
+    gap: 0.85rem;
+    color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
-    padding: 1rem;
-    border-radius: 12px;
-    margin-bottom: 0.5rem;
-    transition: all 0.2s;
+    padding: 0.9rem 1.25rem;
+    border-radius: 14px;
+    margin-bottom: 0.6rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    font-weight: 500;
 }
 
 .sidebar a:hover,
 .sidebar a.active {
     background: rgba(255, 255, 255, 0.15);
     color: white;
-    transform: translateX(5px);
+    transform: translateX(4px);
+}
+
+.sidebar a i {
+    font-size: 1.4rem;
 }
 
 .main-area {
+    flex: 1;
     padding: 3rem;
-    background: #f9fafb;
+    background: #fdfdfd;
     overflow-y: auto;
 }
 
@@ -490,29 +500,108 @@ section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 3rem;
+    margin-bottom: 3.5rem;
+}
+
+.dash-header h2 {
+    font-size: 2.2rem;
+    margin: 0;
 }
 
 .stat-row {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 3.5rem;
 }
 
 .stat-box {
-    flex: 1;
     background: white;
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: var(--shadow-sm);
+    padding: 2.5rem 2rem;
+    border-radius: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.04);
     text-align: center;
-    border: 1px solid rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
 }
 
 .large-number {
-    font-size: 3rem;
+    font-size: 4.5rem;
     font-weight: 800;
-    margin-bottom: 0.5rem;
+    color: var(--primary);
+    line-height: 1;
+    margin-bottom: 0.75rem;
+}
+
+.stat-box p {
+    color: #4b5563;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.activity-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item strong {
+    font-size: 1.1rem;
+    color: #111827;
+}
+
+.activity-item small {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+.status-badge {
+    padding: 0.45rem 1rem;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-assigned {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-in_progress {
+    background: #e0f2fe;
+    color: #075985;
+}
+
+.status-completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.btn-sm {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.85rem;
+    border-radius: 99px;
 }
 
 /* --- Symptom Checker / Chat --- */

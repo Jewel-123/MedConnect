@@ -144,18 +144,23 @@ function renderDashboard() {
 
 async function loadDashboardRequests() {
     try {
-        // Fetch only consultations for this section
-        const consultationsRes = await fetch('doctor_api.php?action=get_consultation_requests');
-        const consultationsResult = await consultationsRes.json();
+        const [consRes, apptRes] = await Promise.all([
+            fetch('doctor_api.php?action=get_consultation_requests'),
+            fetch('doctor_api.php?action=get_appointment_requests')
+        ]);
+
+        const consResult = await consRes.json();
+        const apptResult = await apptRes.json();
 
         const container = document.getElementById('dashboardRequests');
         if (!container) return;
 
         let allRequests = [];
-
-        // Add consultations
-        if (consultationsResult.status === 'success') {
-            allRequests = [...consultationsResult.data.map(c => ({ ...c, type: 'consultation' }))];
+        if (consResult.status === 'success') {
+            allRequests = allRequests.concat(consResult.data.map(c => ({ ...c, type: 'consultation' })));
+        }
+        if (apptResult.status === 'success') {
+            allRequests = allRequests.concat(apptResult.data.map(a => ({ ...a, type: 'appointment' })));
         }
 
         if (allRequests.length === 0) {
@@ -163,15 +168,31 @@ async function loadDashboardRequests() {
             return;
         }
 
+        // Sort by created_at (newest first)
+        allRequests.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+
         const html = allRequests.map(req => {
             const isEmergency = (req.urgency_level === 'emergency' || req.urgency_badge === 'emergency');
             const highlightStyle = isEmergency ? 'border-left: 4px solid #ef4444; background: #fef2f2;' : '';
-            const typeIndicator = `<span class="status-badge urgency-${req.urgency_badge || req.urgency_level}" style="font-size: 0.7rem;">${(req.urgency_badge || req.urgency_level).toUpperCase()}</span>`;
 
-            const description = req.symptoms_summary;
+            let typeBadge = '';
+            if (req.type === 'appointment') {
+                typeBadge = '<span class="status-badge" style="font-size: 0.7rem; background: #e0f2fe; color: #075985;">APPOINTMENT</span>';
+            } else {
+                typeBadge = `<span class="status-badge urgency-${req.urgency_badge || req.urgency_level}" style="font-size: 0.7rem;">${(req.urgency_badge || req.urgency_level).toUpperCase()}</span>`;
+            }
+
+            const name = req.patient_name;
+            const description = req.type === 'appointment' ? (req.reason || 'Scheduled Appointment') : req.symptoms_summary;
+
             const timeInfo = `<span><i class="ph ph-clock"></i> ${new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                              <span><i class="ph ph-globe"></i> ${req.language_preference}</span>`;
-            const actionButtons = `
+                              ${req.type === 'appointment' ? `<span><i class="ph ph-calendar"></i> ${req.scheduled_date}</span>` : `<span><i class="ph ph-globe"></i> ${req.language_preference}</span>`}`;
+
+            const actionButtons = req.type === 'appointment' ? `
+                <button class="btn btn-success btn-sm" onclick="confirmAppointment(${req.id})" style="padding: 0.25rem 0.75rem;">Confirm</button>
+                <button class="btn btn-outline btn-sm" onclick="declineAppointment(${req.id})" style="padding: 0.25rem 0.75rem;">Decline</button>
+            ` : `
                 <button class="btn btn-success btn-sm" onclick="acceptConsultation(${req.id})" style="padding: 0.25rem 0.75rem;">Accept</button>
                 <button class="btn btn-outline btn-sm" onclick="declineConsultation(${req.id})" style="padding: 0.25rem 0.75rem;">Decline</button>
             `;
@@ -181,8 +202,8 @@ async function loadDashboardRequests() {
                 <div style="display: flex; justify-content: space-between; align-items: start;">
                     <div style="flex: 1;">
                         <div style="font-weight: 600; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;">
-                            ${req.patient_name}
-                            ${typeIndicator}
+                            ${name}
+                            ${typeBadge}
                         </div>
                         <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem; line-height: 1.4;">${description}</p>
                         <div style="display: flex; gap: 0.75rem; font-size: 0.8rem; color: var(--text-muted);">
@@ -224,15 +245,28 @@ async function loadDashboardRequests() {
 
 async function loadConsultations() {
     try {
-        const [requestsRes, activeRes] = await Promise.all([
+        const [consReqRes, apptReqRes, activeRes] = await Promise.all([
             fetch('doctor_api.php?action=get_consultation_requests'),
+            fetch('doctor_api.php?action=get_appointment_requests'),
             fetch('doctor_api.php?action=get_active_consultations')
         ]);
 
-        const requests = await requestsRes.json();
+        const consReqResult = await consReqRes.json();
+        const apptReqResult = await apptReqRes.json();
         const active = await activeRes.json();
 
-        renderConsultations(requests.data || [], active.data || []);
+        let allRequests = [];
+        if (consReqResult.status === 'success') {
+            allRequests = allRequests.concat(consReqResult.data.map(c => ({ ...c, type: 'consultation' })));
+        }
+        if (apptReqResult.status === 'success') {
+            allRequests = allRequests.concat(apptReqResult.data.map(a => ({ ...a, type: 'appointment' })));
+        }
+
+        // Sort by created_at (newest first)
+        allRequests.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        renderConsultations(allRequests, active.data || []);
     } catch (error) {
         console.error('Error loading consultations:', error);
     }
@@ -255,73 +289,98 @@ function renderConsultations(requests, active) {
             <div class="panel-body">
                 ${active.length === 0 ? '<p style="text-align:center; color: var(--text-muted); padding: 2rem;">No active consultations</p>' :
             active.map(cons => {
-                let urgencyBadge = 'routine';
-                if (cons.urgency_level === 'emergency' || cons.urgency_score >= 75) urgencyBadge = 'emergency';
-                else if (cons.urgency_level === 'urgent' || cons.urgency_score >= 50) urgencyBadge = 'priority';
+                const urgencyBadge = cons.urgency_level || 'routine';
 
                 // Status mapping
                 let statusLabel = 'Scheduled';
                 let statusClass = 'pending';
 
-                switch (cons.status) {
-                    case 'scheduled':
-                    case 'accepted':
-                        statusLabel = 'Not Started';
-                        statusClass = 'pending';
-                        break;
-                    case 'waiting':
-                        statusLabel = 'Waiting';
-                        statusClass = 'priority';
-                        break;
-                    case 'in_progress':
-                        statusLabel = 'In Progress';
-                        statusClass = 'success';
-                        break;
-                    case 'paused':
-                        statusLabel = 'Paused';
-                        statusClass = 'warning';
-                        break;
+                if (cons.type === 'appointment') {
+                    statusLabel = 'Confirmed';
+                    statusClass = 'success';
+                } else {
+                    switch (cons.status) {
+                        case 'scheduled':
+                        case 'accepted':
+                            statusLabel = 'Not Started';
+                            statusClass = 'pending';
+                            break;
+                        case 'waiting':
+                            statusLabel = 'Waiting';
+                            statusClass = 'priority';
+                            break;
+                        case 'in_progress':
+                            statusLabel = 'In Progress';
+                            statusClass = 'success';
+                            break;
+                        case 'paused':
+                            statusLabel = 'Paused';
+                            statusClass = 'warning';
+                            break;
+                    }
                 }
 
                 const isHighlighted = highlightId == cons.id;
                 const highlightStyle = isHighlighted ? 'background: #fffbeb; border-left: 4px solid var(--warning);' : '';
+                const typeBadge = cons.type === 'appointment' ?
+                    '<span class="status-badge" style="font-size: 0.7rem; background: #e0f2fe; color: #075985; border: 1px solid #bae6fd;">APPOINTMENT</span>' :
+                    `<span class="status-badge urgency-${urgencyBadge}" style="font-size: 0.7rem;">${urgencyBadge.toUpperCase()}</span>`;
+
+                const description = cons.type === 'appointment' ? (cons.symptoms || 'Scheduled Appointment') : (cons.symptoms ? cons.symptoms.substring(0, 80) : 'No symptoms listed');
+
+                const displayId = cons.type === 'appointment' ? `app-${cons.id}` : `cons-${cons.id}`;
+                const timerId = `timer-${displayId}`;
+
+                // State detection for button visibility
+                const isNotStarted = (cons.status === 'accepted' || cons.status === 'confirmed');
+                const isStarted = (cons.status === 'in_progress');
+                const isPaused = (cons.status === 'paused');
+
 
                 return `
-                    <div id="cons-${cons.id}" style="border-bottom: 1px solid var(--border); padding: 1.25rem 0; ${highlightStyle}">
+                    <div id="${displayId}" class="active-item" 
+                         data-id="${cons.id}" 
+                         data-type="${cons.type}" 
+                         data-status="${cons.status}"
+                         data-accumulated="${cons.accumulated_seconds || 0}"
+                         data-last-resume="${cons.last_resume_at || ''}"
+                         onclick="window.location.href='consultation_room.php?id=${cons.id}&type=${cons.type}'"
+                         style="border-bottom: 1px solid var(--border); padding: 1.25rem 0; cursor: pointer; ${highlightStyle}">
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 1rem;">
                             <div>
                                 <div style="font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
                                     ${cons.patient_name}
-                                    <span class="status-badge urgency-${urgencyBadge}" style="font-size: 0.7rem;">${urgencyBadge.toUpperCase()}</span>
+                                    ${typeBadge}
                                     <span class="status-badge" style="font-size: 0.7rem; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;">${statusLabel}</span>
+                                    <span id="${timerId}" style="font-family: monospace; font-weight: 700; color: var(--primary); margin-left: 0.5rem;">00:00</span>
                                 </div>
-                                <div style="font-size: 0.85rem; color: var(--text-muted);">${cons.symptoms ? cons.symptoms.substring(0, 80) : 'No symptoms listed'}...</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">${description}...</div>
+                                ${cons.type === 'appointment' ? `<div style="font-size: 0.75rem; color: var(--primary); font-weight: 500;"><i class="ph ph-calendar"></i> ${cons.scheduled_date} at ${cons.scheduled_time}</div>` : ''}
                             </div>
                             <div style="display: flex; gap: 0.5rem;">
-                                ${cons.status === 'accepted' ? `
-                                    <button class="btn btn-primary btn-sm" onclick="startConsultation(${cons.id})">
+                                ${isNotStarted ? `
+                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); startConsultation(${cons.id}, '${cons.type}')">
                                         <i class="ph ph-play-circle"></i> Start
                                     </button>
-                                ` : cons.status === 'paused' ? `
-                                    <button class="btn btn-primary btn-sm" onclick="resumeConsultation(${cons.id})">
+                                ` : ''}
+
+                                ${isStarted ? `
+                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); window.location.href='consultation_room.php?id=${cons.id}&type=${cons.type}'">
+                                        <i class="ph ph-video-camera"></i> Join Room
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); pauseConsultation(${cons.id}, '${cons.type}')">
+                                        <i class="ph ph-pause-circle"></i> Pause
+                                    </button>
+                                ` : ''}
+
+                                ${isPaused ? `
+                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); resumeConsultation(${cons.id}, '${cons.type}')">
                                         <i class="ph ph-play-circle"></i> Resume
                                     </button>
-                                ` : `
-                                    <a href="consultation_room.php?id=${cons.id}" class="btn btn-primary btn-sm" style="text-decoration: none; display: flex; align-items: center; gap: 0.25rem;">
-                                        <i class="ph ph-video-camera"></i> Join Room
-                                    </a>
-                                `}
-                                ${cons.status === 'in_progress' ? `
-                                <button class="btn btn-outline btn-sm" onclick="pauseConsultation(${cons.id})">
-                                    <i class="ph ph-pause-circle"></i> Pause
-                                </button>
                                 ` : ''}
-                                <button class="btn btn-success btn-sm" onclick="openPrescriptionModal(${cons.id}, ${cons.patient_id})">
-                                    <i class="ph ph-prescription"></i> Prescribe
-                                </button>
-                                <button class="btn btn-outline btn-sm" onclick="completeConsultation(${cons.id})" title="Complete & Archive">
-                                    <i class="ph ph-check-circle"></i> Complete
-                                </button>
+
+                                <button class="ph ph-prescription action-btn" title="Prescribe" onclick="event.stopPropagation(); openPrescriptionModal(${cons.id}, ${cons.patient_id}, '${cons.type}')"></button>
+                                <button class="ph ph-check action-btn" title="Complete" onclick="event.stopPropagation(); completeConsultation(${cons.id}, '${cons.type}')"></button>
                             </div>
                         </div>
                     </div>
@@ -343,26 +402,35 @@ function renderConsultations(requests, active) {
                 let highlightStyle = isEmergency ? 'border: 2px solid #ef4444; background: #fef2f2; animation: pulse-red 2s infinite;' : '';
                 if (isHighlighted) highlightStyle = 'border: 2px solid var(--primary); background: #f0f9ff;';
 
+                const typeBadge = req.type === 'appointment' ? '<span class="status-badge" style="font-size: 0.75rem; background: #e0f2fe; color: #075985;">APPOINTMENT</span>' : `<span class="status-badge urgency-${req.urgency_badge || req.urgency_level}" style="font-size: 0.75rem;">${(req.urgency_badge || req.urgency_level).toUpperCase()}</span>`;
+                const description = req.type === 'appointment' ? (req.reason || 'Scheduled Appointment') : req.symptoms_summary;
+                const timeStr = new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
                 return `
                     <div id="cons-${req.id}" style="border-bottom: 1px solid var(--border); padding: 1.25rem; margin-bottom: 0.5rem; border-radius: 8px; ${highlightStyle}">
                         <div style="display: flex; justify-content: space-between; align-items: start;">
                             <div style="flex: 1;">
                                 <div style="font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
                                     ${req.patient_name} (${req.patient_age})
-                                    <span class="status-badge urgency-${req.urgency_badge || req.urgency_level}" style="font-size: 0.75rem;">${(req.urgency_badge || req.urgency_level).toUpperCase()}</span>
+                                    ${typeBadge}
                                     ${isEmergency ? '<span style="color: #ef4444; font-weight: 800; font-size: 0.7rem; text-transform: uppercase;"><i class="ph ph-warning-circle"></i> HIGH PRIORITY</span>' : ''}
                                 </div>
-                                <p style="color: #475569; font-size: 0.95rem; margin-bottom: 0.75rem; font-weight: 500;">${req.symptoms_summary}</p>
+                                <p style="color: #475569; font-size: 0.95rem; margin-bottom: 0.75rem; font-weight: 500;">${description}</p>
                                 <div style="display: flex; gap: 1.25rem; font-size: 0.85rem; color: #64748b;">
-                                    <span><i class="ph ph-${req.consultation_mode === 'video' ? 'video-camera' : req.consultation_mode === 'audio' ? 'microphone' : 'chat-circle'}"></i> ${req.consultation_mode}</span>
-                                    <span><i class="ph ph-globe"></i> ${req.language_preference}</span>
-                                    <span><i class="ph ph-clock"></i> ${req.duration}</span>
-                                    <span><i class="ph ph-calendar"></i> ${new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    <span><i class="ph ph-${req.type === 'appointment' ? 'calendar' : (req.consultation_mode === 'video' ? 'video-camera' : req.consultation_mode === 'audio' ? 'microphone' : 'chat-circle')}"></i> ${req.type === 'appointment' ? req.scheduled_date : req.consultation_mode}</span>
+                                    ${req.type === 'appointment' ? `<span><i class="ph ph-clock"></i> ${req.scheduled_time}</span>` : `<span><i class="ph ph-globe"></i> ${req.language_preference}</span>`}
+                                    ${req.duration ? `<span><i class="ph ph-hourglass"></i> ${req.duration}</span>` : ''}
+                                    <span><i class="ph ph-bell"></i> ${timeStr}</span>
                                 </div>
                             </div>
                             <div style="display: flex; gap: 0.75rem; align-items: center; height: 100%;">
-                                <button class="btn btn-success" style="padding: 0.5rem 1.25rem;" onclick="acceptConsultation(${req.id})">Accept</button>
-                                <button class="btn btn-outline" style="padding: 0.5rem 1.25rem;" onclick="declineConsultation(${req.id})">Decline</button>
+                                ${req.type === 'appointment' ? `
+                                    <button class="btn btn-success" style="padding: 0.5rem 1.25rem;" onclick="confirmAppointment(${req.id})">Confirm</button>
+                                    <button class="btn btn-outline" style="padding: 0.5rem 1.25rem;" onclick="declineAppointment(${req.id})">Decline</button>
+                                ` : `
+                                    <button class="btn btn-success" style="padding: 0.5rem 1.25rem;" onclick="acceptConsultation(${req.id})">Accept</button>
+                                    <button class="btn btn-outline" style="padding: 0.5rem 1.25rem;" onclick="declineConsultation(${req.id})">Decline</button>
+                                `}
                             </div>
                         </div>
                     </div>
@@ -481,8 +549,14 @@ async function startSession(consultationId, patientId) {
 // PRESCRIPTION MODAL
 // ========================================
 
-function openPrescriptionModal(consultationId, patientId) {
-    document.getElementById('prescConsultationId').value = consultationId;
+function openPrescriptionModal(requestId, patientId, type = 'consultation') {
+    if (type === 'appointment') {
+        document.getElementById('prescAppointmentId').value = requestId;
+        document.getElementById('prescConsultationId').value = '';
+    } else {
+        document.getElementById('prescConsultationId').value = requestId;
+        document.getElementById('prescAppointmentId').value = '';
+    }
     document.getElementById('prescPatientId').value = patientId;
     document.getElementById('prescriptionForm').reset();
     medicines = [];
@@ -525,6 +599,7 @@ function removeMedicine(index) {
 
 async function savePrescription() {
     const consultationId = document.getElementById('prescConsultationId').value;
+    const appointmentId = document.getElementById('prescAppointmentId').value;
     const patientId = document.getElementById('prescPatientId').value;
     const icdCode = document.getElementById('icdCode').value;
     const diagnosis = document.getElementById('diagnosis').value;
@@ -590,7 +665,8 @@ async function savePrescription() {
             },
             body: JSON.stringify({
                 action: 'save_prescription',
-                consultation_id: consultationId,
+                consultation_id: consultationId || null,
+                appointment_id: appointmentId || null,
                 patient_id: patientId,
                 icd_code: icdCode,
                 diagnosis: diagnosis,
@@ -609,9 +685,9 @@ async function savePrescription() {
             alert('Prescription saved successfully!');
             closeModal('prescriptionModal');
 
-            // Ask if they want to complete the consultation
-            if (confirm('Mark this consultation as completed?')) {
-                completeConsultation(consultationId);
+            // Ask if they want to complete the consultation/appointment
+            if (confirm(`Mark this ${consultationId ? 'consultation' : 'appointment'} as completed?`)) {
+                completeConsultation(consultationId || appointmentId, consultationId ? 'consultation' : 'appointment');
             }
         } else {
             alert('Error: ' + (result.message || 'Unknown error'));
@@ -622,11 +698,15 @@ async function savePrescription() {
     }
 }
 
-async function completeConsultation(consultationId) {
+async function completeConsultation(requestId, type = 'consultation') {
     try {
         const formData = new FormData();
         formData.append('action', 'complete_consultation');
-        formData.append('consultation_id', consultationId);
+        if (type === 'appointment') {
+            formData.append('appointment_id', requestId);
+        } else {
+            formData.append('consultation_id', requestId);
+        }
 
         const response = await fetch('doctor_api.php', {
             method: 'POST',
@@ -648,22 +728,30 @@ async function completeConsultation(consultationId) {
 }
 
 
-// Start consultation - change from 'accepted' to 'in_progress'
-async function startConsultation(consultationId) {
+// Start consultation - change from 'accepted' to 'in_progress' and go to consultation room
+async function startConsultation(requestId, type = 'consultation') {
     if (!confirm('Start this consultation?')) return;
 
     try {
+        const formData = new FormData();
+        formData.append('action', 'start_consultation');
+        if (type === 'appointment') {
+            formData.append('appointment_id', requestId);
+        } else {
+            formData.append('consultation_id', requestId);
+        }
+
         const response = await fetch('doctor_api.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `action=start_consultation&consultation_id=${consultationId}`
+            body: formData
         });
 
         const data = await response.json();
 
         if (data.status === 'success') {
             showNotification('Consultation started successfully', 'success');
-            loadActiveConsultations();
+            // Redirect to consultation room
+            window.location.href = `consultation_room.php?id=${requestId}&type=${type}`;
         } else {
             showNotification(data.error || 'Failed to start consultation', 'error');
         }
@@ -674,19 +762,27 @@ async function startConsultation(consultationId) {
 }
 
 // Resume consultation - change from 'paused' to 'in_progress'
-async function resumeConsultation(consultationId) {
+async function resumeConsultation(requestId, type = 'consultation') {
     try {
+        const formData = new FormData();
+        formData.append('action', 'resume_consultation');
+        if (type === 'appointment') {
+            formData.append('appointment_id', requestId);
+        } else {
+            formData.append('consultation_id', requestId);
+        }
+
         const response = await fetch('doctor_api.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `action=resume_consultation&consultation_id=${consultationId}`
+            body: formData
         });
 
         const data = await response.json();
 
         if (data.status === 'success') {
             showNotification('Consultation resumed', 'success');
-            loadActiveConsultations();
+            loadConsultations();
+            loadDashboard();
         } else {
             showNotification(data.error || 'Failed to resume consultation', 'error');
         }
@@ -697,11 +793,15 @@ async function resumeConsultation(consultationId) {
 }
 
 // Pause consultation - change from 'in_progress' to 'paused'
-async function pauseConsultation(consultationId) {
+async function pauseConsultation(requestId, type = 'consultation') {
     try {
         const formData = new FormData();
         formData.append('action', 'pause_consultation');
-        formData.append('consultation_id', consultationId);
+        if (type === 'appointment') {
+            formData.append('appointment_id', requestId);
+        } else {
+            formData.append('consultation_id', requestId);
+        }
 
         const response = await fetch('doctor_api.php', {
             method: 'POST',

@@ -1,0 +1,438 @@
+--- Payments for Doctor Sophia (ID 29) ---
+Array
+(
+    [0] => Array
+        (
+            [id] => 38
+            [transaction_number] => TXN17704561952832
+            [user_id] => 21
+            [doctor_id] => 29
+            [transaction_type] => consultation_fee
+            [related_id] => 24
+            [related_type] => appointment
+            [amount] => 300.00
+            [refund_amount] => 
+            [refund_transaction_id] => 
+            [refund_status] => none
+            [refund_initiated_at] => 
+            [currency] => INR
+            [payment_method] => wallet
+            [payment_gateway] => Razorpay
+            [gateway_transaction_id] => pay_SDClVd1CttK1IQ
+            [status] => completed
+            [failure_reason] => 
+            [payment_metadata] => 
+            [created_at] => 2026-02-07 14:53:16
+            [completed_at] => 2026-02-07 14:53:37
+            [razorpay_order_id] => order_SDClP4xk4iU4fK
+            [razorpay_payment_id] => pay_SDClVd1CttK1IQ
+            [razorpay_signature] => baf74ff2fce44d887547638baf8ebdc302718fce466696d16e19201c69adca5b
+        )
+
+    [1] => Array
+        (
+            [id] => 37
+            [transaction_number] => TXN17704559764338
+            [user_id] => 21
+            [doctor_id] => 29
+            [transaction_type] => consultation_fee
+            [related_id] => 23
+            [related_type] => appointment
+            [amount] => 300.00
+            [refund_amount] => 
+            [refund_transaction_id] => 
+            [refund_status] => none
+            [refund_initiated_at] => 
+            [currency] => INR
+            [payment_method] => wallet
+            [payment_gateway] => Razorpay
+            [gateway_transaction_id] => pay_SDChhhqwBxRJim
+            [status] => completed
+            [failure_reason] => 
+            [payment_metadata] => 
+            [created_at] => 2026-02-07 14:49:37
+            [completed_at] => 2026-02-07 14:50:01
+            [razorpay_order_id] => order_SDChY2RV52DKk5
+            [razorpay_payment_id] => pay_SDChhhqwBxRJim
+            [razorpay_signature] => 271a23007a9c1d5508155bb6bbc96a3748f11235491eaec64e4def0f48a504fe
+        )
+
+    [2] => Array
+        (
+            [id] => 33
+            [transaction_number] => TXN17704474178819
+            [user_id] => 21
+            [doctor_id] => 29
+            [transaction_type] => consultation_fee
+            [related_id] => 19
+            [related_type] => appointment
+            [amount] => 300.00
+            [refund_amount] => 
+            [refund_transaction_id] => 
+            [refund_status] => none
+            [refund_initiated_at] => 
+            [currency] => INR
+            [payment_method] => wallet
+            [payment_gateway] => Razorpay
+            [gateway_transaction_id] => pay_SDAH2yHIH31tOm
+            [status] => completed
+            [failure_reason] => 
+            [payment_metadata] => 
+            [created_at] => 2026-02-07 12:26:59
+            [completed_at] => 2026-02-07 12:27:28
+            [razorpay_order_id] => order_SDAGs9GWfKohqa
+            [razorpay_payment_id] => pay_SDAH2yHIH31tOm
+            [razorpay_signature] => ed737491da6ba1d5b63b9edb101aaf17e91bb36576888e2a62be771924041344
+        )
+
+    [3] => Array
+        (
+            [id] => 32
+            [transaction_number] => TXN17704472166458
+            [user_id] => 21
+            [doctor_id] => 29
+            [transaction_type] => consultation_fee
+            [related_id] => 19
+            [related_type] => appointment
+            [amount] => 300.00
+            [refund_amount] => 
+            [refund_transaction_id] => 
+            [refund_status] => none
+            [refund_initiated_at] => 
+            [currency] => INR
+            [payment_method] => wallet
+            [payment_gateway] => Razorpay
+            [gateway_transaction_id] => pay_SDADVaPMq8kG2M
+            [status] => completed
+            [failure_reason] => 
+            [payment_metadata] => 
+            [created_at] => 2026-02-07 12:23:38
+            [completed_at] => 2026-02-07 12:24:04
+            [razorpay_order_id] => order_SDADKpnLYSVQSC
+            [razorpay_payment_id] => pay_SDADVaPMq8kG2M
+            [razorpay_signature] => 00e67a0ab4326d68be60390eaee7cfa535b04c06e7d48d5208e7086414ef414e
+        )
+
+    [4] => Array
+        (
+            [id] => 31
+            [transaction_number] => TXN17704469828764
+            [user_id] => 21
+            [doctor_id] => 29
+            [transaction_type] => consultation_fee
+            [related_id] => 19
+            [related_type] => appointment
+            [amount] => 300.00
+            [refund_amount] => 
+            [refund_transaction_id] => 
+            [refund_status] => none
+            [refund_initiated_at] => 
+            [currency] => INR
+            [payment_method] => wallet
+            [payment_gateway] => Razorpay
+            [gateway_transaction_id] => pay_SDA9TWjKxFpg8y
+            [status] => completed
+            [failure_reason] => 
+            [payment_metadata] => 
+            [created_at] => 2026-02-07 12:19:44
+            [completed_at] => 2026-02-07 12:20:18
+            [razorpay_order_id] => order_SDA9Dxh8lup5bR
+            [razorpay_payment_id] => pay_SDA9TWjKxFpg8y
+            [razorpay_signature] => 0ac9add427aa54e1c70ee8cdccfecfcdda87f77d3ffb371dbbf21325b1baaf79
+        )
+
+    [5] => Array
+        (
+            [id] => 30
+            [transaction_number] => TXN17704468181029
+            [user_id] => 21
+            [doctor_id] => 29
+            [transaction_type] => consultation_fee
+            [related_id] => 19
+            [related_type] => appointment
+            [amount] => 300.00
+            [refund_amount] => 
+            [refund_transaction_id] => 
+            [refund_status] => none
+            [refund_initiated_at] => 
+            [currency] => INR
+            [payment_method] => wallet
+            [payment_gateway] => Razorpay
+            [gateway_transaction_id] => pay_SDA6W8UXKnlzrq
+            [status] => completed
+            [failure_reason] => 
+            [payment_metadata] => 
+            [created_at] => 2026-02-07 12:16:59
+            [completed_at] => 2026-02-07 12:17:34
+            [razorpay_order_id] => order_SDA6JUz1daFurH
+            [razorpay_payment_id] => pay_SDA6W8UXKnlzrq
+            [razorpay_signature] => dcbe066000aef3cbf0b37e309b915e397bf87b33658ec5c4678ae105eaabad6a
+        )
+
+    [6] => Array
+        (
+            [id] => 29
+            [transaction_number] => TXN17704455508273
+            [user_id] => 21
+            [doctor_id] => 29
+            [transaction_type] => consultation_fee
+            [related_id] => 18
+            [related_type] => appointment
+            [amount] => 300.00
+            [refund_amount] => 
+            [refund_transaction_id] => 
+            [refund_status] => none
+            [refund_initiated_at] => 
+            [currency] => INR
+            [payment_method] => wallet
+            [payment_gateway] => Razorpay
+            [gateway_transaction_id] => pay_SD9k67ZtE2cvcv
+            [status] => completed
+            [failure_reason] => 
+            [payment_metadata] => 
+            [created_at] => 2026-02-07 11:55:51
+            [completed_at] => 2026-02-07 11:56:16
+            [razorpay_order_id] => order_SD9jyv9dnoncBf
+            [razorpay_payment_id] => pay_SD9k67ZtE2cvcv
+            [razorpay_signature] => dc56afcba40506df8b3b99b63a75ce108e296b128656fdce7fab13801c1bea28
+        )
+
+    [7] => Array
+        (
+            [id] => 19
+            [transaction_number] => TEST_TXN_1770441486_29
+            [user_id] => 21
+            [doctor_id] => 29
+            [transaction_type] => consultation_fee
+            [related_id] => 22
+            [related_type] => consultation
+            [amount] => 300.00
+            [refund_amount] => 
+            [refund_transaction_id] => 
+            [refund_status] => none
+            [refund_initiated_at] => 
+            [currency] => INR
+            [payment_method] => card
+            [payment_gateway] => razorpay
+            [gateway_transaction_id] => 
+            [status] => completed
+            [failure_reason] => 
+            [payment_metadata] => 
+            [created_at] => 2026-02-07 10:48:06
+            [completed_at] => 2026-02-07 10:48:06
+            [razorpay_order_id] => order_test_1770441486
+            [razorpay_payment_id] => pay_test_1770441486
+            [razorpay_signature] => 
+        )
+
+)
+
+--- Unassigned Consultations (Doctor ID NULL or 0) ---
+Array
+(
+    [0] => Array
+        (
+            [id] => 100
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 21:04:45
+        )
+
+    [1] => Array
+        (
+            [id] => 98
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 21:01:55
+        )
+
+    [2] => Array
+        (
+            [id] => 97
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 21:01:09
+        )
+
+    [3] => Array
+        (
+            [id] => 96
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 20:41:37
+        )
+
+    [4] => Array
+        (
+            [id] => 93
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 20:25:26
+        )
+
+    [5] => Array
+        (
+            [id] => 92
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 20:15:13
+        )
+
+    [6] => Array
+        (
+            [id] => 91
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 20:15:13
+        )
+
+    [7] => Array
+        (
+            [id] => 86
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 20:08:25
+        )
+
+    [8] => Array
+        (
+            [id] => 76
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 19:47:44
+        )
+
+    [9] => Array
+        (
+            [id] => 74
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 19:26:44
+        )
+
+    [10] => Array
+        (
+            [id] => 73
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 19:16:19
+        )
+
+    [11] => Array
+        (
+            [id] => 72
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 19:00:34
+        )
+
+    [12] => Array
+        (
+            [id] => 71
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 19:00:34
+        )
+
+    [13] => Array
+        (
+            [id] => 70
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 18:46:44
+        )
+
+    [14] => Array
+        (
+            [id] => 69
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 18:41:12
+        )
+
+    [15] => Array
+        (
+            [id] => 62
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 18:31:49
+        )
+
+    [16] => Array
+        (
+            [id] => 58
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 18:19:11
+        )
+
+    [17] => Array
+        (
+            [id] => 56
+            [patient_id] => 21
+            [patient_name] => JEWEL BIJU
+            [status] => pending
+            [payment_status] => pending
+            [created_at] => 2026-02-13 18:14:41
+        )
+
+)
+
+--- Appointments for Doctor Sophia ---
+Array
+(
+    [0] => Array
+        (
+            [id] => 55
+            [patient_id] => 21
+            [doctor_id] => 29
+            [appointment_date] => 0000-00-00 00:00:00
+            [status] => 
+            [symptom_description] => 
+            [meeting_link] => 
+            [created_at] => 2026-02-13 22:37:30
+            [scheduled_date] => 2026-02-18
+            [scheduled_time] => 11:30:00
+            [payment_status] => paid
+            [consultation_fee] => 300.00
+            [notes] => 
+            [cancellation_reason] => 
+            [payment_transaction_id] => 78
+        )
+
+)
+

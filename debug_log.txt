@@ -1,0 +1,8 @@
+CONFIRM APPT START: ID 68
+Running UPDATE appointments
+UPDATE success
+Running INSERT consultation_audit_log
+Audit log success
+Notifying patient
+Notification sent
+Commit success

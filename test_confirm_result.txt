@@ -1,0 +1,7 @@
+=== Testing Appointment Confirmation Flow for Doctor 10060 ===
+Found 3 pending appointments.
+Testing Appointment ID: 68 (Patient: 21, Status: confirmed)
+Appointment already confirmed. Proceeding to verify Active status.
+Verifying Active Consultations...
+VERIFIED: Appointment 68 is now in Active Consultations (Status: confirmed)
+PATIENT VIEW: Appointment 68 status is 'confirmed' and Doctor is 'Emily Smith'

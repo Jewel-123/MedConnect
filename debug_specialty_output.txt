@@ -1,0 +1,62 @@
+--- Doctor Profiles ---
+Data for ID 25:
+Array
+(
+    [full_name] => Emily Smith
+    [specialization] => General Physician
+)
+
+Data for ID 29:
+Array
+(
+    [full_name] => Sophia Martinez
+    [specialization] => Dermatologist
+)
+
+
+--- Unassigned Consultations (Last 5) ---
+Array
+(
+    [id] => 100
+    [doctor_id] => 
+    [matched_specialty] => General Physician
+    [symptoms] => fever
+    [created_at] => 2026-02-13 21:04:45
+)
+
+Array
+(
+    [id] => 98
+    [doctor_id] => 
+    [matched_specialty] => General Physician
+    [symptoms] => fever
+    [created_at] => 2026-02-13 21:01:55
+)
+
+Array
+(
+    [id] => 97
+    [doctor_id] => 
+    [matched_specialty] => General Physician
+    [symptoms] => fever
+    [created_at] => 2026-02-13 21:01:09
+)
+
+Array
+(
+    [id] => 96
+    [doctor_id] => 
+    [matched_specialty] => General Physician
+    [symptoms] => fevre
+    [created_at] => 2026-02-13 20:41:37
+)
+
+Array
+(
+    [id] => 93
+    [doctor_id] => 
+    [matched_specialty] => General Physician
+    [symptoms] => fever
+    [created_at] => 2026-02-13 20:25:26
+)
+

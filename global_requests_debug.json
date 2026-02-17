@@ -1,0 +1,158 @@
+{
+    "latest_appointments": [
+        {
+            "id": "70",
+            "patient_id": "43",
+            "doctor_id": "10062",
+            "status": "pending",
+            "payment_status": "paid",
+            "created_at": "2026-02-15 14:50:27",
+            "patient_name": "Jewel Biju",
+            "doctor_name": "David Chen"
+        },
+        {
+            "id": "69",
+            "patient_id": "21",
+            "doctor_id": "10062",
+            "status": "",
+            "payment_status": "paid",
+            "created_at": "2026-02-15 14:06:53",
+            "patient_name": "JEWEL BIJU",
+            "doctor_name": "David Chen"
+        },
+        {
+            "id": "68",
+            "patient_id": "21",
+            "doctor_id": "10060",
+            "status": "pending",
+            "payment_status": "paid",
+            "created_at": "2026-02-15 13:48:50",
+            "patient_name": "JEWEL BIJU",
+            "doctor_name": "Emily Smith"
+        }
+    ],
+    "latest_consultations": [
+        {
+            "id": "10007",
+            "patient_id": "21",
+            "doctor_id": "10060",
+            "status": "in_progress",
+            "payment_status": "unpaid",
+            "matched_specialty": "General Physician",
+            "created_at": "2026-02-15 13:38:07",
+            "patient_name": "JEWEL BIJU"
+        },
+        {
+            "id": "10006",
+            "patient_id": "21",
+            "doctor_id": null,
+            "status": "accepted",
+            "payment_status": "paid",
+            "matched_specialty": null,
+            "created_at": "2026-02-14 10:30:51",
+            "patient_name": "JEWEL BIJU"
+        },
+        {
+            "id": "107",
+            "patient_id": "21",
+            "doctor_id": null,
+            "status": "completed",
+            "payment_status": "paid",
+            "matched_specialty": "General Physician",
+            "created_at": "2026-02-13 22:01:19",
+            "patient_name": "JEWEL BIJU"
+        },
+        {
+            "id": "106",
+            "patient_id": "21",
+            "doctor_id": null,
+            "status": "in_progress",
+            "payment_status": "paid",
+            "matched_specialty": "General Physician",
+            "created_at": "2026-02-13 21:54:50",
+            "patient_name": "JEWEL BIJU"
+        },
+        {
+            "id": "105",
+            "patient_id": "21",
+            "doctor_id": null,
+            "status": "completed",
+            "payment_status": "paid",
+            "matched_specialty": "General Physician",
+            "created_at": "2026-02-13 21:47:18",
+            "patient_name": "JEWEL BIJU"
+        },
+        {
+            "id": "104",
+            "patient_id": "21",
+            "doctor_id": null,
+            "status": "completed",
+            "payment_status": "paid",
+            "matched_specialty": "General Physician",
+            "created_at": "2026-02-13 21:45:07",
+            "patient_name": "JEWEL BIJU"
+        },
+        {
+            "id": "103",
+            "patient_id": "21",
+            "doctor_id": null,
+            "status": "pending",
+            "payment_status": "paid",
+            "matched_specialty": "General Physician",
+            "created_at": "2026-02-13 21:41:49",
+            "patient_name": "JEWEL BIJU"
+        },
+        {
+            "id": "102",
+            "patient_id": "21",
+            "doctor_id": null,
+            "status": "accepted",
+            "payment_status": "paid",
+            "matched_specialty": "General Physician",
+            "created_at": "2026-02-13 21:28:33",
+            "patient_name": "JEWEL BIJU"
+        },
+        {
+            "id": "101",
+            "patient_id": "21",
+            "doctor_id": null,
+            "status": "completed",
+            "payment_status": "paid",
+            "matched_specialty": "Gastroenterologist",
+            "created_at": "2026-02-13 21:05:30",
+            "patient_name": "JEWEL BIJU"
+        },
+        {
+            "id": "100",
+            "patient_id": "21",
+            "doctor_id": null,
+            "status": "pending",
+            "payment_status": "unpaid",
+            "matched_specialty": "General Physician",
+            "created_at": "2026-02-13 21:04:45",
+            "patient_name": "JEWEL BIJU"
+        }
+    ],
+    "doctors": [
+        {
+            "id": "10060",
+            "full_name": "Emily Smith",
+            "specialization": "General Physician"
+        },
+        {
+            "id": "10061",
+            "full_name": "Amanda White",
+            "specialization": "Neurologist"
+        },
+        {
+            "id": "10062",
+            "full_name": "David Chen",
+            "specialization": "Gastroenterologist"
+        },
+        {
+            "id": "10063",
+            "full_name": "James Wilson",
+            "specialization": "dermatology"
+        }
+    ]
+}

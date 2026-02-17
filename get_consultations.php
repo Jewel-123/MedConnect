@@ -36,55 +36,73 @@ try {
     $stmt = $conn->prepare("
         SELECT 
             c.*,
-            u.full_name as doctor_name
+            u.full_name as doctor_name,
+            'consultation' as type
         FROM consultations c
         LEFT JOIN users u ON c.doctor_id = u.id
         WHERE c.patient_id = ?
         ORDER BY c.created_at DESC
     ");
     
-    if (!$stmt) {
-        throw new Exception("Database error: " . $conn->error);
-    }
-    
     $stmt->bind_param("i", $patientId);
-    
-    if (!$stmt->execute()) {
-        throw new Exception("Query execution failed: " . $stmt->error);
-    }
-    
+    $stmt->execute();
     $result = $stmt->get_result();
-    $consultations = [];
+    $activity = [];
     
     while ($row = $result->fetch_assoc()) {
-        // Format the data
-        $consultations[] = [
+        $activity[] = [
             'id' => $row['id'],
-            'symptoms' => $row['symptoms'],
+            'type' => 'consultation',
             'symptoms_preview' => strlen($row['symptoms']) > 100 
                 ? substr($row['symptoms'], 0, 100) . '...' 
                 : $row['symptoms'],
-            'duration' => $row['duration'],
-            'severity' => $row['severity'],
-            'age' => $row['age'],
-            'gender' => $row['gender'],
-            'existing_conditions' => $row['existing_conditions'],
-            'input_method' => $row['input_method'],
             'status' => $row['status'],
             'created_at' => $row['created_at'],
-            'updated_at' => $row['updated_at'],
             'created_at_formatted' => date('M d, Y g:i A', strtotime($row['created_at'])),
-            'doctor_name' => $row['doctor_name']
+            'doctor_name' => ($row['status'] === 'pending' || $row['status'] === 'assigned' || !$row['doctor_id']) ? 'Seeking Doctor' : $row['doctor_name']
         ];
     }
     
+    // Also fetch appointments
+    $apptStmt = $conn->prepare("
+        SELECT 
+            a.*,
+            u.full_name as doctor_name,
+            'appointment' as type
+        FROM appointments a
+        LEFT JOIN users u ON a.doctor_id = u.id
+        WHERE a.patient_id = ?
+        ORDER BY a.created_at DESC
+    ");
+    $apptStmt->bind_param("i", $patientId);
+    $apptStmt->execute();
+    $apptRes = $apptStmt->get_result();
+    
+    while ($row = $apptRes->fetch_assoc()) {
+        $activity[] = [
+            'id' => $row['id'],
+            'type' => 'appointment',
+            'symptoms_preview' => $row['notes'] ? $row['notes'] : 'General Checkup',
+            'status' => $row['status'],
+            'created_at' => $row['created_at'],
+            'created_at_formatted' => date('M d, Y g:i A', strtotime($row['created_at'])),
+            'doctor_name' => ($row['status'] === 'pending' || $row['status'] === 'booked' || !$row['doctor_id']) ? 'Seeking Doctor' : $row['doctor_name']
+        ];
+    }
+    
+    // Sort combined activity by created_at DESC
+    usort($activity, function($a, $b) {
+        return strtotime($b['created_at']) - strtotime($a['created_at']);
+    });
+    
     echo json_encode([
         'success' => true,
-        'count' => count($consultations),
-        'consultations' => $consultations
+        'count' => count($activity),
+        'consultations' => $activity // Keep key name for frontend compatibility
     ], JSON_PRETTY_PRINT);
     
     $stmt->close();
+    $apptStmt->close();
     
 } catch (Exception $e) {
     http_response_code(500);
@@ -94,4 +112,4 @@ try {
     ]);
 }
 
-$conn->close();
+// Connection closed automatically by PHP at end of request

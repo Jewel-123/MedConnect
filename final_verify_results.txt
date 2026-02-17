@@ -1,0 +1,13 @@
+=== Doctor 10060 (Emily Smith) Dashboard Stats ===
+Pending Requests Count (Combined): 3
+
+=== Doctor 10060 Incoming Requests ===
+Consultations visible: 0
+Appointments visible: 3
+
+=== Doctor 10060 Active Consultations View ===
+No active items found.
+
+=== Patient 43 (Jewel Biju) Activity Feed ===
+ - Type: appointment | Status: pending | Doctor/Label: Seeking Doctor | Preview: Scheduled Appointment: General Checkup
+ - Type: appointment | Status: confirmed | Doctor/Label: David Chen | Preview: Scheduled Appointment: General Checkup

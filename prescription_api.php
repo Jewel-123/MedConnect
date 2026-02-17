@@ -40,6 +40,8 @@ try {
                        po.order_number,
                        po.id as order_id,
                        po.order_status,
+                       po.payment_status,
+                       po.review_submitted,
                        po.total_amount as order_amount,
                        pharm.full_name as pharmacy_name
                 FROM prescriptions_v2 p

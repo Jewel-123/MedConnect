@@ -1019,6 +1019,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         const consultationId = <?php echo $consultationId; ?>;
         const role = '<?php echo $role; ?>';
         const userId = <?php echo $_SESSION['user_id']; ?>;
+        const userName = '<?php echo htmlspecialchars($_SESSION['user_name'] ?? "You"); ?>';
         const receiverId = <?php echo ($role === 'patient') ? ($consultation['doctor_id'] ?: 0) : $consultation['patient_id']; ?>;
         let lastMessageId = 0;
         let isTyping = false;
@@ -1456,7 +1457,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                     const localVideoWrapper = document.getElementById('localVideoWrapper');
                     localVideoWrapper.innerHTML = `
                         <video id="localVid" autoplay playsinline muted style="width:100%; height:100%; object-fit: cover;"></video>
-                        <div class="feed-label"><span>You</span></div>
+                        <div class="feed-label"><span>${userName}</span></div>
                     `;
                     document.getElementById('localVid').srcObject = localStream;
                     document.getElementById('btnVideo').classList.add('active');

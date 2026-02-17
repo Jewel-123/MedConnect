@@ -23,14 +23,18 @@ $stmt = $conn->prepare("
     JOIN prescriptions_v2 p ON po.prescription_id = p.id
     JOIN users u ON po.pharmacy_id = u.id
     LEFT JOIN pharmacy_profiles pp ON u.id = pp.user_id
-    WHERE po.prescription_id = ? AND po.patient_id = ? AND po.order_status = 'completed'
+    WHERE po.prescription_id = ? 
+    AND po.patient_id = ? 
+    AND (po.order_status = 'completed' OR p.status = 'completed')
+    AND po.paid_at IS NOT NULL
+    AND (LOWER(po.payment_status) = 'paid' OR LOWER(po.payment_status) = 'completed')
 ");
 $stmt->bind_param("ii", $prescriptionId, $userId);
 $stmt->execute();
 $order = $stmt->get_result()->fetch_assoc();
 
 if (!$order) {
-    die('Prescription order not found or not completed');
+    die('Review cannot be submitted until the medicine order is successfully completed and payment is confirmed.');
 }
 
 // Check if review already submitted
@@ -57,12 +61,12 @@ if ($existingReview) {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; }
         
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #0d9488 0%, #065f46 100%); color: white; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .header h1 { font-size: 28px; margin-bottom: 5px; }
         .header p { opacity: 0.9; font-size: 14px; }
         
         .container { max-width: 700px; margin: 30px auto; padding: 0 20px; }
-        .back-btn { display: inline-flex; align-items: center; gap: 8px; background: white; color: #667eea; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-bottom: 20px; transition: all 0.3s; }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; background: white; color: #0d9488; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-bottom: 20px; transition: all 0.3s; }
         .back-btn:hover { background: #f8f9ff; transform: translateX(-5px); }
         
         .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
@@ -81,15 +85,15 @@ if ($existingReview) {
         .form-group { margin: 20px 0; }
         .form-group label { display: block; font-weight: 600; color: #1e293b; margin-bottom: 8px; }
         .form-group textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical; min-height: 120px; }
-        .form-group textarea:focus { outline: none; border-color: #667eea; }
+        .form-group textarea:focus { outline: none; border-color: #0d9488; }
         
         .checkbox-group { display: flex; align-items: center; gap: 10px; margin: 15px 0; }
         .checkbox-group input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
         .checkbox-group label { cursor: pointer; color: #475569; }
         
         .btn { padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 100%; justify-content: center; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+        .btn-primary { background: linear-gradient(135deg, #0d9488 0%, #065f46 100%); color: white; width: 100%; justify-content: center; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .success-message { background: #d1fae5; color: #065f46; padding: 15px; border-radius: 8px; margin: 20px 0; display: none; }

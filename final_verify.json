@@ -1,0 +1,17 @@
+{
+    "pending_badge_count": "1",
+    "consultation_requests": [
+        {
+            "id": "103",
+            "payment_status": "paid",
+            "status": "pending"
+        }
+    ],
+    "appointment_requests": [
+        {
+            "id": "68",
+            "status": "pending",
+            "payment_status": "paid"
+        }
+    ]
+}

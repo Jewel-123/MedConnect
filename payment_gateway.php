@@ -222,7 +222,7 @@ if ($transactionId) {
                 <div class="success-icon">✅</div>
                 <h2 style="color: #1e293b; margin: 20px 0;">Payment Successful!</h2>
                 <p style="color: #64748b;">Your transaction has been completed</p>
-                <button class="btn-pay" onclick="window.location.href='index.php'" style="margin-top: 20px;">
+                <button class="btn-pay" onclick="window.location.href='patient_dashboard.php'" style="margin-top: 20px;">
                     Back to Dashboard
                 </button>
             </div>

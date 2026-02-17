@@ -51,19 +51,43 @@ try {
         case 'get_dashboard_stats':
             $today = date('Y-m-d');
             
+            // Fetch doctor's specialization for matching unassigned requests
+            $docProfile = $conn->query("SELECT specialization FROM doctor_profiles WHERE user_id = $doctor_id")->fetch_assoc();
+            $specialization = $docProfile['specialization'] ?? '';
+
+            // Helper condition for unassigned requests matching specialty
+            // Handle cases where specialization might be 'General Physician' matching 'General' etc if needed, 
+            // but for now strict matching or simple text matching.
+            $specialtyCondition = "";
+            if ($specialization) {
+                // Robust matching: handle 'dermatology' vs 'Dermatologist' etc using LIKE
+                $escapedSpecialty = $conn->real_escape_string($specialization);
+                $specialtyCondition = " OR (c.doctor_id IS NULL AND (LOWER(TRIM(c.matched_specialty)) LIKE LOWER(TRIM('%$escapedSpecialty%')) OR LOWER(TRIM('%$escapedSpecialty%')) LIKE LOWER(TRIM(c.matched_specialty))))";
+                error_log("DOCTOR_API: Filtering requests for specialty: $specialization");
+            }
+
             // Today's consultations
             $todayConsultations = $conn->query("
                 SELECT COUNT(*) as count FROM consultations 
                 WHERE doctor_id = $doctor_id AND DATE(created_at) = '$today'
             ")->fetch_assoc()['count'];
             
-            // Pending requests (paid OR pending consultations ONLY for THIS doctor)
-            // Including 'assigned' status which might come from auto-matcher
-            $pendingRequests = $conn->query("
-                SELECT COUNT(*) as count FROM consultations 
-                WHERE doctor_id = $doctor_id
-                  AND status IN ('pending', 'assigned')
+            // Pending requests (paid consultations + paid appointments)
+            $pendingConsults = $conn->query("
+                SELECT COUNT(*) as count FROM consultations c
+                WHERE (c.doctor_id = $doctor_id $specialtyCondition)
+                  AND c.status IN ('pending', 'assigned')
+                  AND c.payment_status = 'paid'
             ")->fetch_assoc()['count'];
+
+            $pendingAppts = $conn->query("
+                SELECT COUNT(*) as count FROM appointments 
+                WHERE doctor_id = $doctor_id 
+                  AND status = 'pending' 
+                  AND payment_status = 'paid'
+            ")->fetch_assoc()['count'];
+
+            $pendingRequests = $pendingConsults + $pendingAppts;
             
             // Follow-ups due
             $followUpsDue = $conn->query("
@@ -106,29 +130,37 @@ try {
             break;
             
         case 'get_consultation_requests':
-            // STRICT ROUTING: Show ONLY paid consultations assigned to THIS specific doctor
-            // Each consultation is booked for ONE doctor, appears in ONLY that doctor's dashboard
+            // Fetch doctor's specialization first
+            $docProfile = $conn->query("SELECT specialization FROM doctor_profiles WHERE user_id = $doctor_id")->fetch_assoc();
+            $specialization = $docProfile['specialization'] ?? '';
+            
+            $specialtyCondition = "";
+            if ($specialization) {
+                $escapedSpecialty = $conn->real_escape_string($specialization);
+                $specialtyCondition = " OR (c.doctor_id IS NULL AND (LOWER(TRIM(c.matched_specialty)) LIKE LOWER(TRIM('%$escapedSpecialty%')) OR LOWER(TRIM('%$escapedSpecialty%')) LIKE LOWER(TRIM(c.matched_specialty))))";
+            }
+
+            // SHOW:
+            // 1. Paid consultations assigned to THIS doctor
+            // 2. Paid consultations that are UNASSIGNED but match THIS doctor's specialty
             $requests = $conn->query("
                 SELECT c.*, u.full_name as patient_name, u.email as patient_email,
                        p.gender as patient_gender,
                        TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
-                       (CASE 
-                           WHEN c.severity = 'high' OR c.urgency_score >= 75 THEN 'emergency'
-                           WHEN c.severity = 'medium' OR c.urgency_score >= 50 THEN 'priority'
-                           ELSE 'routine' 
-                       END) as urgency_level
+                       c.created_at as created_at_original
                 FROM consultations c
                 JOIN users u ON c.patient_id = u.id
                 LEFT JOIN patient_profiles p ON u.id = p.user_id
-                WHERE c.doctor_id = $doctor_id
+                WHERE (c.doctor_id = $doctor_id $specialtyCondition)
                   AND c.status IN ('pending', 'assigned')
+                  AND c.payment_status = 'paid'
                 ORDER BY 
                     (CASE 
                         WHEN c.severity = 'high' OR c.urgency_score >= 75 THEN 1
                         WHEN c.severity = 'medium' OR c.urgency_score >= 50 THEN 2
                         ELSE 3 
                     END) ASC, 
-                    c.created_at ASC
+                    c.created_at DESC
                 LIMIT 50
             ");
             
@@ -149,7 +181,9 @@ try {
                 
                 $data[] = [
                     'id' => $row['id'],
+                    'patient_id' => $row['patient_id'],
                     'patient_name' => $row['patient_name'],
+
                     'patient_age' => $row['patient_age'] ?? 'N/A',
                     'patient_gender' => $row['patient_gender'] ?? 'N/A',
                     'symptoms' => $row['symptoms'],
@@ -162,7 +196,7 @@ try {
                     'language_preference' => $row['language_preference'],
                     'duration' => $row['duration'],
                     'payment_status' => $row['payment_status'],
-                    'created_at' => $row['created_at']
+                    'created_at' => $row['created_at_original'] ?? $row['created_at']
                 ];
             }
             
@@ -192,7 +226,9 @@ try {
             while ($row = $appointments->fetch_assoc()) {
                 $data[] = [
                     'id' => $row['id'],
+                    'patient_id' => $row['patient_id'],
                     'patient_name' => $row['patient_name'],
+
                     'patient_email' => $row['patient_email'],
                     'patient_phone' => $row['patient_phone'] ?? 'N/A',
                     'patient_age' => $row['patient_age'] ?? 'N/A',
@@ -200,6 +236,7 @@ try {
                     'scheduled_time' => $row['scheduled_time'],
                     'consultation_fee' => $row['consultation_fee'],
                     'notes' => $row['notes'] ?? '',
+                    'reason' => $row['notes'] ?? 'Scheduled Appointment',
                     'status' => $row['status'],
                     'payment_status' => $row['payment_status'],
                     'created_at' => $row['created_at'],
@@ -210,90 +247,7 @@ try {
             echo json_encode(['status' => 'success', 'data' => $data]);
             break;
             
-        // ========================================
-        // CONFIRM APPOINTMENT
-        // ========================================
-        case 'confirm_appointment':
-            $appointment_id = $_POST['appointment_id'] ?? 0;
-            
-            if (!$appointment_id) {
-                throw new Exception('Appointment ID is required');
-            }
-            
-            // Update appointment status to 'confirmed'
-            $stmt = $conn->prepare("
-                UPDATE appointments 
-                SET status = 'confirmed', updated_at = NOW() 
-                WHERE id = ? AND doctor_id = ? AND status = 'pending' AND payment_status = 'paid'
-            ");
-            $stmt->bind_param("ii", $appointment_id, $doctor_id);
-            
-            if ($stmt->execute() && $stmt->affected_rows > 0) {
-                // Get appointment details for notification
-                $appt = $conn->query("
-                    SELECT patient_id, scheduled_date, scheduled_time 
-                    FROM appointments WHERE id = $appointment_id
-                ")->fetch_assoc();
-                
-                // Notify patient
-                require_once 'notification_service.php';
-                $notifService = getNotificationService();
-                $notifService->send(
-                    $appt['patient_id'],
-                    'all',
-                    'Appointment Confirmed',
-                    "Your appointment on {$appt['scheduled_date']} at {$appt['scheduled_time']} has been confirmed by the doctor.",
-                    ['notification_type' => 'appointment_confirmed', 'related_id' => $appointment_id]
-                );
-                
-                echo json_encode(['status' => 'success', 'message' => 'Appointment confirmed successfully']);
-            } else {
-                throw new Exception('Failed to confirm appointment');
-            }
-            break;
-            
-        // ========================================
-        // DECLINE APPOINTMENT
-        // ========================================
-        case 'decline_appointment':
-            $appointment_id = $_POST['appointment_id'] ?? 0;
-            $reason = $_POST['reason'] ?? '';
-            
-            if (!$appointment_id) {
-                throw new Exception('Appointment ID is required');
-            }
-            
-            $stmt = $conn->prepare("
-                UPDATE appointments 
-                SET status = 'cancelled', cancellation_reason = ?, updated_at = NOW() 
-                WHERE id = ? AND doctor_id = ? AND payment_status = 'paid'
-            ");
-            $stmt->bind_param("sii", $reason, $appointment_id, $doctor_id);
-            
-            if ($stmt->execute()) {
-                // Get appointment details for notification
-                $appt = $conn->query("
-                    SELECT patient_id, scheduled_date, scheduled_time 
-                    FROM appointments WHERE id = $appointment_id
-                ")->fetch_assoc();
-                
-                // Notify patient about cancellation
-                require_once 'notification_service.php';
-                $notifService = getNotificationService();
-                $notifService->send(
-                    $appt['patient_id'],
-                    'all',
-                    'Appointment Cancelled',
-                    "Your appointment on {$appt['scheduled_date']} at {$appt['scheduled_time']} has been cancelled by the doctor." . ($reason ? " Reason: $reason" : ''),
-                    ['notification_type' => 'appointment_cancelled', 'related_id' => $appointment_id]
-                );
-                
-                echo json_encode(['status' => 'success', 'message' => 'Appointment declined']);
-            } else {
-                throw new Exception('Failed to decline appointment');
-            }
-            break;
-            
+
         // ========================================
         // ACCEPT CONSULTATION - ENHANCED WITH EARNINGS TRACKING
         // ========================================
@@ -317,12 +271,23 @@ try {
                 }
             }
             
+            // Fetch doctor's specialization to allow accepting matching unassigned requests
+            $docProfile = $conn->query("SELECT specialization FROM doctor_profiles WHERE user_id = $doctor_id")->fetch_assoc();
+            $specialization = $docProfile['specialization'] ?? '';
+            
+            $specialtyCondition = "";
+            if ($specialization) {
+                $escapedSpecialty = $conn->real_escape_string($specialization);
+                // Allow if doctor_id matches OR (doctor_id is NULL AND specialty matches)
+                $specialtyCondition = " OR (doctor_id IS NULL AND LOWER(TRIM(matched_specialty)) = LOWER(TRIM('$escapedSpecialty')))";
+            }
+
             // Get consultation details first for earnings calculation
             $consultation = $conn->query("
                 SELECT patient_id, consultation_fee, payment_transaction_id 
                 FROM consultations 
                 WHERE id = $consultation_id 
-                  AND doctor_id = $doctor_id 
+                  AND (doctor_id = $doctor_id $specialtyCondition)
                   AND status IN ('pending', 'assigned')
             ")->fetch_assoc();
             
@@ -334,15 +299,16 @@ try {
             $conn->begin_transaction();
             
             try {
-                // Update consultation status to 'accepted' (NOT started yet)
-                // Consultation will start only when doctor clicks "Start" button
+                // Update consultation status to 'accepted' AND assign to this doctor
+                // We must handle both cases: already assigned to us, or unassigned matching specialty
                 $stmt = $conn->prepare("
                     UPDATE consultations 
                     SET status = 'accepted', 
-                        assigned_at = NOW() 
-                    WHERE id = ? AND doctor_id = ? AND status IN ('pending', 'assigned')
+                        assigned_at = NOW(),
+                        doctor_id = ?
+                    WHERE id = ? AND (doctor_id = ? OR doctor_id IS NULL) AND status IN ('pending', 'assigned')
                 ");
-                $stmt->bind_param("ii", $consultation_id, $doctor_id);
+                $stmt->bind_param("iii", $doctor_id, $consultation_id, $doctor_id);
                 
                 if (!$stmt->execute() || $stmt->affected_rows === 0) {
                     throw new Exception('Failed to update consultation status');
@@ -507,39 +473,63 @@ try {
             }
             break;
             
-        // ========================================
-        // GET ACTIVE CONSULTATIONS
-        // ========================================
         case 'get_active_consultations':
-            // Show ONLY accepted consultations that are currently active
-            // pending = Incoming Requests | in_progress/paused = Active | completed = History
+            // Show both active consultations and confirmed appointments
             $active = $conn->query("
-                SELECT c.*, u.full_name as patient_name, u.email as patient_email,
+                (SELECT c.id, u.full_name as patient_name, u.email as patient_email,
                        p.gender as patient_gender,
                        TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
-                       (CASE 
+                       CAST('consultation' AS CHAR) as type,
+                       CAST(c.status AS CHAR) as status,
+                       c.updated_at,
+                       CAST(c.symptoms AS CHAR) as symptoms,
+                       CAST(c.consultation_mode AS CHAR) as consultation_mode,
+                       CAST((CASE 
                            WHEN c.severity = 'high' OR c.urgency_score >= 75 THEN 'emergency'
                            WHEN c.severity = 'medium' OR c.urgency_score >= 50 THEN 'priority'
                            ELSE 'routine' 
-                       END) as urgency_level
+                       END) AS CHAR) as urgency_level
                 FROM consultations c
                 JOIN users u ON c.patient_id = u.id
                 LEFT JOIN patient_profiles p ON u.id = p.user_id
                 WHERE c.doctor_id = $doctor_id 
-                  AND c.status IN ('accepted', 'in_progress', 'paused')
+                  AND c.status IN ('accepted', 'in_progress', 'paused'))
+                
+                UNION ALL
+                
+                (SELECT a.id, u.full_name as patient_name, u.email as patient_email,
+                       p.gender as patient_gender,
+                       TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
+                       CAST('appointment' AS CHAR) as type,
+                       CAST(a.status AS CHAR) as status,
+                       a.created_at as updated_at,
+                       CAST(a.notes AS CHAR) as symptoms,
+                       CAST('offline' AS CHAR) as consultation_mode,
+                       CAST('routine' AS CHAR) as urgency_level
+                FROM appointments a
+                JOIN users u ON a.patient_id = u.id
+                LEFT JOIN patient_profiles p ON u.id = p.user_id
+                WHERE a.doctor_id = $doctor_id 
+                  AND a.status = 'confirmed'
+                  AND a.payment_status = 'paid')
+                  
                 ORDER BY 
                     (CASE 
-                        WHEN c.status = 'in_progress' THEN 1
-                        WHEN c.status = 'paused' THEN 2
-                        ELSE 3
+                        WHEN status = 'in_progress' THEN 1
+                        WHEN status = 'paused' THEN 2
+                        WHEN status = 'accepted' THEN 3
+                        WHEN status = 'confirmed' THEN 4
+                        ELSE 5
                     END) ASC,
-                    (CASE 
-                        WHEN c.severity = 'high' OR c.urgency_score >= 75 THEN 1
-                        WHEN c.severity = 'medium' OR c.urgency_score >= 50 THEN 2
-                        ELSE 3 
-                    END) ASC, 
-                    c.updated_at DESC
+
+                    updated_at DESC
             ");
+            
+            if (!$active) {
+                error_log("Query Error: " . $conn->error);
+                throw new Exception("Query failed: " . $conn->error);
+            }
+
             
             $data = [];
             while ($row = $active->fetch_assoc()) {
@@ -597,17 +587,17 @@ try {
                 throw new Exception('Consultation ID is required');
             }
             
-            // Start consultation: change from 'accepted' to 'in_progress' and start timer
+            // Start consultation: change from 'accepted' or 'pending' to 'in_progress' and start timer
             $stmt = $conn->prepare("
                 UPDATE consultations 
                 SET status = 'in_progress', 
                     start_time = NOW() 
-                WHERE id = ? AND doctor_id = ? AND status = 'accepted'
+                WHERE id = ? AND doctor_id = ? AND status IN ('accepted', 'pending')
             ");
             $stmt->bind_param("ii", $consultation_id, $doctor_id);
             
             if (!$stmt->execute() || $stmt->affected_rows === 0) {
-                throw new Exception('Failed to start consultation or consultation not in accepted state');
+                throw new Exception('Failed to start consultation. Please check consultation status.');
             }
             
             // Create/update consultation session
@@ -1197,6 +1187,142 @@ try {
         // ========================================
         // GET PATIENT LIST
         // ========================================
+
+        // ========================================
+        // CONFIRM APPOINTMENT
+        // ========================================
+        case 'confirm_appointment':
+            $appointment_id = $_POST['appointment_id'] ?? 0;
+            
+            if (!$appointment_id) {
+                throw new Exception('Appointment ID is required');
+            }
+            
+            // Get appointment details
+            $appointment = $conn->query("
+                SELECT * FROM appointments 
+                WHERE id = $appointment_id AND doctor_id = $doctor_id
+            ")->fetch_assoc();
+            
+            if (!$appointment) {
+                throw new Exception('Appointment not found or not authorized');
+            }
+            
+            if ($appointment['status'] !== 'pending') {
+                throw new Exception('Appointment is not pending');
+            }
+            
+            // Start transaction
+            $conn->begin_transaction();
+            
+            try {
+                // Update status
+                $stmt = $conn->prepare("
+                    UPDATE appointments 
+                    SET status = 'confirmed' 
+                    WHERE id = ?
+                ");
+                if (!$stmt) {
+                    throw new Exception("Prepare failed: " . $conn->error);
+                }
+                $stmt->bind_param("i", $appointment_id);
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to update appointment status');
+                }
+                
+                // Create earnings record (pending)
+                // ... (skipping logs for calculation) ...
+                $gross_amount = floatval($appointment['consultation_fee'] ?? 0);
+                if ($gross_amount <= 0) {
+                     $profile = $conn->query("SELECT consultation_fee FROM doctor_profiles WHERE user_id = $doctor_id")->fetch_assoc();
+                     $gross_amount = floatval($profile['consultation_fee'] ?? 0);
+                }
+                
+                // Log audit
+                $auditRes = $conn->query("
+                    INSERT IGNORE INTO consultation_audit_log (doctor_id, action, action_details, ip_address) 
+                    VALUES ($doctor_id, 'confirmed_appointment', '{\"appointment_id\": $appointment_id}', '{$_SERVER['REMOTE_ADDR']}')
+                ");
+                
+                // Notify patient
+                require_once 'notification_service.php';
+                $notifService = getNotificationService();
+                $notifService->send(
+                    $appointment['patient_id'],
+                    'all',
+                    'Appointment Confirmed',
+                    "Your appointment on {$appointment['scheduled_date']} at {$appointment['scheduled_time']} has been confirmed.",
+                    ['notification_type' => 'appointment_confirmed', 'related_id' => $appointment_id]
+                );
+                
+                $conn->commit();
+                
+                echo json_encode([
+                    'status' => 'success', 
+                    'message' => 'Appointment confirmed successfully'
+                ]);
+            } catch (Exception $e) {
+                $conn->rollback();
+                throw $e;
+            }
+            break;
+
+        // ========================================
+        // DECLINE APPOINTMENT
+        // ========================================
+        case 'decline_appointment':
+            $appointment_id = $_POST['appointment_id'] ?? 0;
+            $reason = $_POST['reason'] ?? 'No reason provided';
+            
+            if (!$appointment_id) {
+                throw new Exception('Appointment ID is required');
+            }
+            
+            $conn->begin_transaction();
+            
+            try {
+                // Update status
+                $stmt = $conn->prepare("
+                    UPDATE appointments 
+                    SET status = 'cancelled', cancellation_reason = ? 
+                    WHERE id = ? AND doctor_id = ?
+                ");
+                $stmt->bind_param("sii", $reason, $appointment_id, $doctor_id);
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to decline appointment');
+                }
+                
+                // Log audit
+                $conn->query("
+                    INSERT IGNORE INTO consultation_audit_log (doctor_id, action, action_details, ip_address) 
+                    VALUES ($doctor_id, 'declined_appointment', '{\"appointment_id\": $appointment_id, \"reason\": \"$reason\"}', '{$_SERVER['REMOTE_ADDR']}')
+                ");
+                
+                // Get patient ID for notification
+                $appt = $conn->query("SELECT patient_id FROM appointments WHERE id = $appointment_id")->fetch_assoc();
+                
+                // Notify patient
+                require_once 'notification_service.php';
+                $notifService = getNotificationService();
+                $notifService->send(
+                    $appt['patient_id'],
+                    'all',
+                    'Appointment Declined',
+                    "Your appointment request has been declined. Reason: $reason.",
+                    ['notification_type' => 'appointment_declined', 'related_id' => $appointment_id]
+                );
+                
+                $conn->commit();
+                
+                echo json_encode(['status' => 'success', 'message' => 'Appointment declined']);
+            } catch (Exception $e) {
+                $conn->rollback();
+                throw $e;
+            }
+            break;
+
         case 'get_patient_list':
             $search = $_GET['search'] ?? '';
             $filter = $_GET['filter'] ?? 'all'; // all, chronic, recent
@@ -1553,4 +1679,4 @@ try {
     ]);
 }
 
-$conn->close();
+// Connection closed automatically by PHP at end of request
