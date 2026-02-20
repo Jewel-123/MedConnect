@@ -1,0 +1,44 @@
+--- Consultations Schema ---
+id | int(11) | NO | PRI |  | auto_increment
+patient_id | int(11) | NO | MUL |  | 
+doctor_id | int(11) | YES | MUL |  | 
+consultation_fee | decimal(10,2) | YES |  | 0.00 | 
+symptoms | text | NO |  |  | 
+duration | varchar(100) | NO |  |  | 
+severity | enum('low','medium','high') | NO |  |  | 
+urgency_score | int(11) | YES |  | 50 | 
+urgency_level | enum('routine','priority','urgent','emergency') | YES |  | routine | 
+age | int(11) | YES |  |  | 
+gender | enum('male','female','other') | YES |  |  | 
+existing_conditions | text | YES |  |  | 
+input_method | enum('text','voice') | YES |  | text | 
+attachment_count | int(11) | YES |  | 0 | 
+status | enum('pending','accepted','in_progress','paused','completed','cancelled','declined') | YES | MUL | pending | 
+consultation_mode | enum('video','audio','chat') | YES |  | chat | 
+language_preference | varchar(50) | YES |  | English | 
+matched_specialty | varchar(100) | YES |  |  | 
+auto_assigned | tinyint(1) | YES |  | 0 | 
+payment_status | enum('unpaid','paid','refunded','pending') | YES |  | unpaid | 
+payment_transaction_id | int(11) | YES | MUL |  | 
+created_at | timestamp | NO | MUL | current_timestamp() | 
+updated_at | timestamp | NO |  | current_timestamp() | on update current_timestamp()
+assigned_at | timestamp | YES |  |  | 
+start_time | timestamp | YES |  |  | 
+completed_at | timestamp | YES |  |  | 
+
+--- Appointments Schema ---
+id | int(11) | NO | PRI |  | auto_increment
+patient_id | int(11) | NO | MUL |  | 
+doctor_id | int(11) | NO | MUL |  | 
+appointment_date | datetime | NO |  |  | 
+status | enum('booked','pending','confirmed','cancelled','completed') | YES |  | booked | 
+symptom_description | text | YES |  |  | 
+meeting_link | varchar(255) | YES |  |  | 
+created_at | timestamp | NO |  | current_timestamp() | 
+scheduled_date | date | YES |  |  | 
+scheduled_time | time | YES |  |  | 
+payment_status | enum('unpaid','paid','refunded','pending') | YES |  | unpaid | 
+consultation_fee | decimal(10,2) | YES |  | 0.00 | 
+notes | text | YES |  |  | 
+cancellation_reason | text | YES |  |  | 
+payment_transaction_id | int(11) | YES | MUL |  | 

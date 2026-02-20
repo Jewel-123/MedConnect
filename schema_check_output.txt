@@ -1,4 +1,103 @@
-prescription_orders has paid_at: NO
-prescription_orders has payment_status: YES
-prescriptions_v2 has paid_at: YES
-prescriptions_v2 has payment_status: YES
+--- Table: prescriptions_v2 ---
+id | int(11) | NO | PRI | 
+consultation_id | int(11) | NO | MUL | 
+appointment_id | int(11) | YES | MUL | 
+patient_id | int(11) | NO | MUL | 
+doctor_id | int(11) | NO | MUL | 
+pharmacy_id | int(11) | YES | MUL | 
+sent_to_pharmacy_at | datetime | YES |  | 
+prescription_number | varchar(50) | YES | UNI | 
+icd_code | varchar(20) | YES |  | 
+diagnosis | text | NO |  | 
+follow_up_date | date | YES |  | 
+notes_for_patient | text | YES |  | 
+notes_for_pharmacy | text | YES |  | 
+digital_signature | text | YES |  | 
+signature_timestamp | timestamp | YES |  | 
+status | enum('Created','Pending','Verified','Awaiting Payment','Paid','Dispensed','Completed','Cancelled','draft','finalized','sent_to_pharmacy','in_progress','ready','completed','cancelled') | YES | MUL | Created
+sent_at | timestamp | YES |  | 
+filled_at | timestamp | YES |  | 
+created_at | timestamp | NO |  | current_timestamp()
+updated_at | timestamp | NO |  | current_timestamp()
+total_amount | decimal(10,2) | YES |  | 0.00
+payment_status | enum('Unpaid','Paid') | YES |  | Unpaid
+payment_id | varchar(255) | YES |  | 
+ordered_at | timestamp | YES |  | 
+verified_at | timestamp | YES |  | 
+paid_at | timestamp | YES |  | 
+dispensed_at | timestamp | YES |  | 
+completed_at | timestamp | YES |  | 
+pharmacist_id | int(11) | YES | MUL | 
+bill_generated_at | timestamp | YES |  | 
+auto_sent_to_pharmacy | tinyint(1) | YES |  | 0
+
+--- Table: consultations ---
+id | int(11) | NO | PRI | 
+appointment_id | int(11) | YES | MUL | 
+patient_id | int(11) | NO | MUL | 
+doctor_id | int(11) | YES | MUL | 
+consultation_fee | decimal(10,2) | YES |  | 0.00
+symptoms | text | NO |  | 
+duration | varchar(100) | NO |  | 
+severity | enum('low','medium','high') | NO |  | 
+urgency_score | int(11) | YES |  | 50
+urgency_level | enum('routine','priority','urgent','emergency') | YES |  | routine
+age | int(11) | YES |  | 
+gender | enum('male','female','other') | YES |  | 
+existing_conditions | text | YES |  | 
+input_method | enum('text','voice') | YES |  | text
+attachment_count | int(11) | YES |  | 0
+status | enum('pending','accepted','confirmed','in_progress','paused','completed','cancelled','declined') | YES | MUL | pending
+consultation_mode | enum('video','audio','chat') | YES |  | chat
+language_preference | varchar(50) | YES |  | English
+matched_specialty | varchar(100) | YES |  | 
+auto_assigned | tinyint(1) | YES |  | 0
+payment_status | enum('unpaid','paid','refunded','pending') | YES |  | unpaid
+payment_transaction_id | int(11) | YES | MUL | 
+created_at | timestamp | NO | MUL | current_timestamp()
+updated_at | timestamp | NO |  | current_timestamp()
+assigned_at | timestamp | YES |  | 
+start_time | timestamp | YES |  | 
+completed_at | timestamp | YES |  | 
+
+--- Table: users ---
+id | int(11) | NO | PRI | 
+full_name | varchar(100) | NO |  | 
+email | varchar(100) | NO | UNI | 
+password | varchar(255) | NO |  | 
+phone | varchar(20) | YES |  | 
+status | enum('pending_onboarding','pending','approved','rejected') | YES |  | pending_onboarding
+is_verified | tinyint(1) | YES |  | 0
+role | enum('patient','doctor','admin','pharmacy') | NO |  | 
+google_id | varchar(255) | YES |  | 
+created_at | timestamp | NO |  | current_timestamp()
+updated_at | timestamp | NO |  | current_timestamp()
+
+--- Table: prescription_items_v2 ---
+id | int(11) | NO | PRI | 
+prescription_id | int(11) | NO | MUL | 
+medicine_id | int(11) | YES | MUL | 
+medicine_name | varchar(200) | NO |  | 
+dosage | varchar(100) | NO |  | 
+frequency | varchar(100) | NO |  | 
+duration | varchar(50) | NO |  | 
+instructions | text | YES |  | 
+quantity | int(11) | YES |  | 1
+
+--- Table: appointments ---
+id | int(11) | NO | PRI | 
+patient_id | int(11) | NO | MUL | 
+doctor_id | int(11) | NO | MUL | 
+appointment_date | datetime | NO |  | 
+status | enum('booked','pending','confirmed','in_progress','paused','cancelled','completed') | YES |  | pending
+symptom_description | text | YES |  | 
+meeting_link | varchar(255) | YES |  | 
+created_at | timestamp | NO |  | current_timestamp()
+scheduled_date | date | YES |  | 
+scheduled_time | time | YES |  | 
+payment_status | enum('unpaid','paid','refunded','pending') | YES |  | unpaid
+consultation_fee | decimal(10,2) | YES |  | 0.00
+notes | text | YES |  | 
+cancellation_reason | text | YES |  | 
+payment_transaction_id | int(11) | YES | MUL | 
+

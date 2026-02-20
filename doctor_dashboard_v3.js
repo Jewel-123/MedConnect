@@ -184,7 +184,8 @@ async function loadDashboardRequests() {
             }
 
             const name = req.patient_name;
-            const description = req.type === 'appointment' ? (req.reason || 'Scheduled Appointment') : req.symptoms_summary;
+            const rawDescription = req.type === 'appointment' ? req.reason : req.symptoms_summary;
+            const description = rawDescription === 'No symptoms provided' ? rawDescription : `Symptoms: ${rawDescription}`;
 
             const timeInfo = `<span><i class="ph ph-clock"></i> ${new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                               ${req.type === 'appointment' ? `<span><i class="ph ph-calendar"></i> ${req.scheduled_date}</span>` : `<span><i class="ph ph-globe"></i> ${req.language_preference}</span>`}`;
@@ -295,29 +296,25 @@ function renderConsultations(requests, active) {
                 let statusLabel = 'Scheduled';
                 let statusClass = 'pending';
 
-                if (cons.type === 'appointment') {
-                    statusLabel = 'Confirmed';
-                    statusClass = 'success';
-                } else {
-                    switch (cons.status) {
-                        case 'scheduled':
-                        case 'accepted':
-                            statusLabel = 'Not Started';
-                            statusClass = 'pending';
-                            break;
-                        case 'waiting':
-                            statusLabel = 'Waiting';
-                            statusClass = 'priority';
-                            break;
-                        case 'in_progress':
-                            statusLabel = 'In Progress';
-                            statusClass = 'success';
-                            break;
-                        case 'paused':
-                            statusLabel = 'Paused';
-                            statusClass = 'warning';
-                            break;
-                    }
+                switch (cons.status) {
+                    case 'scheduled':
+                    case 'accepted':
+                    case 'confirmed':
+                        statusLabel = cons.type === 'appointment' ? 'Confirmed' : 'Not Started';
+                        statusClass = 'pending';
+                        break;
+                    case 'waiting':
+                        statusLabel = 'Waiting';
+                        statusClass = 'priority';
+                        break;
+                    case 'in_progress':
+                        statusLabel = 'In Progress';
+                        statusClass = 'success';
+                        break;
+                    case 'paused':
+                        statusLabel = 'Paused';
+                        statusClass = 'warning';
+                        break;
                 }
 
                 const isHighlighted = highlightId == cons.id;
@@ -326,9 +323,20 @@ function renderConsultations(requests, active) {
                     '<span class="status-badge" style="font-size: 0.7rem; background: #e0f2fe; color: #075985; border: 1px solid #bae6fd;">APPOINTMENT</span>' :
                     `<span class="status-badge urgency-${urgencyBadge}" style="font-size: 0.7rem;">${urgencyBadge.toUpperCase()}</span>`;
 
-                const description = cons.type === 'appointment' ? (cons.symptoms || 'Scheduled Appointment') : (cons.symptoms ? cons.symptoms.substring(0, 80) : 'No symptoms listed');
+                const rawDesc = cons.type === 'appointment' ? (cons.symptoms || 'No symptoms provided') : (cons.symptoms || 'No symptoms provided');
+                const description = rawDesc === 'No symptoms provided' ? rawDesc : `Symptoms: ${rawDesc.substring(0, 80)}`;
 
-                const displayId = cons.type === 'appointment' ? `app-${cons.id}` : `cons-${cons.id}`;
+                let displayId = cons.type === 'appointment' ? `app-${cons.id}` : `cons-${cons.id}`;
+                let targetId = cons.id;
+                let targetType = cons.type;
+
+                // If appointment has a linked consultation, use it
+                if (cons.type === 'appointment' && cons.linked_consultation_id) {
+                    targetId = cons.linked_consultation_id;
+                    targetType = 'consultation';
+                    displayId = `cons-${targetId}`;
+                }
+
                 const timerId = `timer-${displayId}`;
 
                 // State detection for button visibility
@@ -339,12 +347,12 @@ function renderConsultations(requests, active) {
 
                 return `
                     <div id="${displayId}" class="active-item" 
-                         data-id="${cons.id}" 
-                         data-type="${cons.type}" 
+                         data-id="${targetId}" 
+                         data-type="${targetType}" 
                          data-status="${cons.status}"
                          data-accumulated="${cons.accumulated_seconds || 0}"
                          data-last-resume="${cons.last_resume_at || ''}"
-                         onclick="window.location.href='consultation_room.php?id=${cons.id}&type=${cons.type}'"
+                         onclick="window.location.href='consultation_room.php?id=${targetId}&type=${targetType}'"
                          style="border-bottom: 1px solid var(--border); padding: 1.25rem 0; cursor: pointer; ${highlightStyle}">
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 1rem;">
                             <div>
@@ -359,28 +367,28 @@ function renderConsultations(requests, active) {
                             </div>
                             <div style="display: flex; gap: 0.5rem;">
                                 ${isNotStarted ? `
-                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); startConsultation(${cons.id}, '${cons.type}')">
+                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); startConsultation(${targetId}, '${targetType}')">
                                         <i class="ph ph-play-circle"></i> Start
                                     </button>
                                 ` : ''}
 
                                 ${isStarted ? `
-                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); window.location.href='consultation_room.php?id=${cons.id}&type=${cons.type}'">
+                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); window.location.href='consultation_room.php?id=${targetId}&type=${targetType}'">
                                         <i class="ph ph-video-camera"></i> Join Room
                                     </button>
-                                    <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); pauseConsultation(${cons.id}, '${cons.type}')">
+                                    <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); pauseConsultation(${targetId}, '${targetType}')">
                                         <i class="ph ph-pause-circle"></i> Pause
                                     </button>
                                 ` : ''}
 
                                 ${isPaused ? `
-                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); resumeConsultation(${cons.id}, '${cons.type}')">
+                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); resumeConsultation(${targetId}, '${targetType}')">
                                         <i class="ph ph-play-circle"></i> Resume
                                     </button>
                                 ` : ''}
 
-                                <button class="ph ph-prescription action-btn" title="Prescribe" onclick="event.stopPropagation(); openPrescriptionModal(${cons.id}, ${cons.patient_id}, '${cons.type}')"></button>
-                                <button class="ph ph-check action-btn" title="Complete" onclick="event.stopPropagation(); completeConsultation(${cons.id}, '${cons.type}')"></button>
+                                <button class="ph ph-prescription action-btn" title="Prescribe" onclick="event.stopPropagation(); openPrescriptionModal(${targetId}, ${cons.patient_id}, '${targetType}')"></button>
+                                <button class="ph ph-check action-btn" title="Complete" onclick="event.stopPropagation(); completeConsultation(${targetId}, '${targetType}')"></button>
                             </div>
                         </div>
                     </div>
@@ -403,7 +411,8 @@ function renderConsultations(requests, active) {
                 if (isHighlighted) highlightStyle = 'border: 2px solid var(--primary); background: #f0f9ff;';
 
                 const typeBadge = req.type === 'appointment' ? '<span class="status-badge" style="font-size: 0.75rem; background: #e0f2fe; color: #075985;">APPOINTMENT</span>' : `<span class="status-badge urgency-${req.urgency_badge || req.urgency_level}" style="font-size: 0.75rem;">${(req.urgency_badge || req.urgency_level).toUpperCase()}</span>`;
-                const description = req.type === 'appointment' ? (req.reason || 'Scheduled Appointment') : req.symptoms_summary;
+                const rawDescription = req.type === 'appointment' ? req.reason : req.symptoms_summary;
+                const description = rawDescription === 'No symptoms provided' ? rawDescription : `Symptoms: ${rawDescription}`;
                 const timeStr = new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 return `
@@ -461,9 +470,14 @@ function renderConsultations(requests, active) {
 }
 
 async function acceptConsultation(consultationId) {
-    if (!confirm('Accept this consultation request?')) return;
+    const element = document.getElementById(`cons-${consultationId}`);
 
     try {
+        if (element) {
+            element.style.opacity = '0.5';
+            element.style.pointerEvents = 'none';
+        }
+
         const formData = new FormData();
         formData.append('action', 'accept_consultation');
         formData.append('consultation_id', consultationId);
@@ -476,13 +490,31 @@ async function acceptConsultation(consultationId) {
         const result = await response.json();
 
         if (result.status === 'success') {
-            alert('Consultation accepted successfully!');
-            loadConsultations();
-            loadDashboard(); // Refresh stats
+            if (element) {
+                element.style.transition = 'all 0.3s ease';
+                element.style.transform = 'translateX(20px)';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.remove();
+                    loadConsultations();
+                    loadDashboard();
+                }, 300);
+            } else {
+                loadConsultations();
+                loadDashboard();
+            }
         } else {
+            if (element) {
+                element.style.opacity = '1';
+                element.style.pointerEvents = 'auto';
+            }
             alert('Error: ' + result.message);
         }
     } catch (error) {
+        if (element) {
+            element.style.opacity = '1';
+            element.style.pointerEvents = 'auto';
+        }
         console.error('Error accepting consultation:', error);
         alert('Failed to accept consultation');
     }
@@ -531,17 +563,17 @@ async function startSession(consultationId, patientId) {
 
         if (result.status === 'success') {
             // Navigate to the consultation room
-            window.location.href = `consultation_room.php?id=${consultationId}`;
+            window.location.href = `consultation_room.php?id=${consultationId}&type=consultation`;
         } else {
             console.warn('Start session API returned:', result);
             // Fallback: Still try to go to the room if it's an error about session already existing 
             // or just to be safe if the status was updated.
-            window.location.href = `consultation_room.php?id=${consultationId}`;
+            window.location.href = `consultation_room.php?id=${consultationId}&type=consultation`;
         }
     } catch (error) {
         console.error('Error starting session:', error);
         // Final fallback: redirect anyway so the user isn't stuck
-        window.location.href = `consultation_room.php?id=${consultationId}`;
+        window.location.href = `consultation_room.php?id=${consultationId}&type=consultation`;
     }
 }
 
@@ -550,6 +582,11 @@ async function startSession(consultationId, patientId) {
 // ========================================
 
 function openPrescriptionModal(requestId, patientId, type = 'consultation') {
+    console.log("[Prescription] Opening modal for:", type, "ID:", requestId, "PatientID:", patientId);
+
+    // Reset form FIRST, so we don't clear the IDs we set below
+    document.getElementById('prescriptionForm').reset();
+
     if (type === 'appointment') {
         document.getElementById('prescAppointmentId').value = requestId;
         document.getElementById('prescConsultationId').value = '';
@@ -558,7 +595,7 @@ function openPrescriptionModal(requestId, patientId, type = 'consultation') {
         document.getElementById('prescAppointmentId').value = '';
     }
     document.getElementById('prescPatientId').value = patientId;
-    document.getElementById('prescriptionForm').reset();
+
     medicines = [];
     document.getElementById('medicinesList').innerHTML = '';
     addMedicine(); // Add one medicine field by default
@@ -749,11 +786,12 @@ async function startConsultation(requestId, type = 'consultation') {
         const data = await response.json();
 
         if (data.status === 'success') {
-            showNotification('Consultation started successfully', 'success');
-            // Redirect to consultation room
-            window.location.href = `consultation_room.php?id=${requestId}&type=${type}`;
+            showNotification(data.message || 'Consultation started successfully', 'success');
+            // Redirect to consultation room using the (possibly new) consultation_id
+            const targetId = data.consultation_id || requestId;
+            window.location.href = `consultation_room.php?id=${targetId}&type=consultation`;
         } else {
-            showNotification(data.error || 'Failed to start consultation', 'error');
+            showNotification(data.message || data.error || 'Failed to start consultation', 'error');
         }
     } catch (error) {
         showNotification('Error starting consultation', 'error');
@@ -780,11 +818,11 @@ async function resumeConsultation(requestId, type = 'consultation') {
         const data = await response.json();
 
         if (data.status === 'success') {
-            showNotification('Consultation resumed', 'success');
+            showNotification(data.message || 'Consultation resumed', 'success');
             loadConsultations();
             loadDashboard();
         } else {
-            showNotification(data.error || 'Failed to resume consultation', 'error');
+            showNotification(data.message || data.error || 'Failed to resume consultation', 'error');
         }
     } catch (error) {
         showNotification('Error resuming consultation', 'error');
@@ -811,11 +849,11 @@ async function pauseConsultation(requestId, type = 'consultation') {
         const result = await response.json();
 
         if (result.status === 'success') {
-            alert('Consultation paused');
+            showNotification(result.message || 'Consultation paused', 'success');
             loadConsultations();
             loadDashboard();
         } else {
-            alert('Error: ' + result.message);
+            showNotification(result.message || 'Error pausing consultation', 'error');
         }
     } catch (error) {
         console.error('Error pausing consultation:', error);
@@ -1551,9 +1589,14 @@ async function declineConsultation(consultationId) {
 // ========================================
 
 async function confirmAppointment(appointmentId) {
-    if (!confirm('Confirm this appointment?')) return;
+    const element = document.querySelector(`[onclick="confirmAppointment(${appointmentId})"]`)?.closest('div[style*="border-bottom"]');
 
     try {
+        if (element) {
+            element.style.opacity = '0.5';
+            element.style.pointerEvents = 'none';
+        }
+
         const formData = new FormData();
         formData.append('action', 'confirm_appointment');
         formData.append('appointment_id', appointmentId);
@@ -1566,13 +1609,36 @@ async function confirmAppointment(appointmentId) {
         const result = await response.json();
 
         if (result.status === 'success') {
-            alert('Appointment confirmed successfully!');
-            loadDashboard();
-            loadDashboardRequests();
+            if (element) {
+                element.style.transition = 'all 0.3s ease';
+                element.style.transform = 'translateX(20px)';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.remove();
+                    if (currentView === 'consultations') {
+                        loadConsultations();
+                    } else {
+                        loadDashboard();
+                        loadDashboardRequests();
+                    }
+                }, 300);
+            } else {
+                loadDashboard();
+                loadDashboardRequests();
+                if (currentView === 'consultations') loadConsultations();
+            }
         } else {
+            if (element) {
+                element.style.opacity = '1';
+                element.style.pointerEvents = 'auto';
+            }
             alert('Error: ' + result.message);
         }
     } catch (error) {
+        if (element) {
+            element.style.opacity = '1';
+            element.style.pointerEvents = 'auto';
+        }
         console.error('Error confirming appointment:', error);
         alert('Failed to confirm appointment');
     }

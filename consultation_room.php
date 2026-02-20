@@ -15,26 +15,103 @@ if (!$consultationId) {
     die("Consultation ID required");
 }
 
-// Fetch consultation details with extended info
-$stmt = $conn->prepare("
-    SELECT c.*, 
-           u_p.full_name as patient_name,
-           u_d.full_name as doctor_name,
-           TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
-           p.gender as patient_gender,
-           p.medical_history_summary
-    FROM consultations c
-    INNER JOIN users u_p ON c.patient_id = u_p.id
-    LEFT JOIN users u_d ON c.doctor_id = u_d.id
-    LEFT JOIN patient_profiles p ON u_p.id = p.user_id
-    WHERE c.id = ?
-");
-$stmt->bind_param('i', $consultationId);
-$stmt->execute();
-$consultation = $stmt->get_result()->fetch_assoc();
+$type = $_GET['type'] ?? 'consultation';
+
+// --- [UNIFICATION LOGIC] ---
+// If type=appointment is passed, we must always redirect to the unified consultation view.
+if ($type === 'appointment') {
+    $stmt = $conn->prepare("SELECT id FROM consultations WHERE appointment_id = ?");
+    $stmt->bind_param("i", $consultationId);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    
+    if ($res->num_rows > 0) {
+        $realConsId = $res->fetch_assoc()['id'];
+        header("Location: consultation_room.php?id=$realConsId&type=consultation");
+        exit;
+    } else {
+        // Double check appointment exists before creating consultation
+        $stmt = $conn->prepare("SELECT id, patient_id, doctor_id FROM appointments WHERE id = ?");
+        $stmt->bind_param("i", $consultationId);
+        $stmt->execute();
+        $apptRes = $stmt->get_result();
+        
+        if ($apptRes->num_rows > 0) {
+            // Create consultation record from appointment
+            $stmt = $conn->prepare("
+                INSERT INTO consultations (patient_id, doctor_id, symptoms, consultation_mode, status, urgency_score, severity, appointment_id, start_time)
+                SELECT patient_id, doctor_id, notes, 'offline', 'in_progress', 0, 'medium', id, NOW()
+                FROM appointments 
+                WHERE id = ?
+            ");
+            $stmt->bind_param("i", $consultationId);
+            $stmt->execute();
+            $realConsId = $conn->insert_id;
+            
+            // Update appointment status
+            $conn->query("UPDATE appointments SET status = 'in_progress' WHERE id = $consultationId");
+            
+            header("Location: consultation_room.php?id=$realConsId&type=consultation");
+            exit;
+        }
+    }
+}
+
+function fetchConsultationData($conn, $id, $type) {
+    if ($type === 'appointment') {
+        $stmt = $conn->prepare("
+            SELECT a.id, a.patient_id, a.doctor_id, a.status, 
+                   a.scheduled_date as created_at, a.notes as symptoms,
+                   'offline' as consultation_mode, 'routine' as urgency_level,
+                   'medium' as severity, 'N/A' as duration,
+                   u_p.full_name as patient_name,
+                   u_d.full_name as doctor_name,
+                   TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
+                   p.gender as patient_gender,
+                   p.medical_history_summary,
+                   s.started_at
+            FROM appointments a
+            INNER JOIN users u_p ON a.patient_id = u_p.id
+            LEFT JOIN users u_d ON a.doctor_id = u_d.id
+            LEFT JOIN patient_profiles p ON u_p.id = p.user_id
+            LEFT JOIN consultation_sessions s ON a.id = s.consultation_id AND s.session_type = 'appointment'
+            WHERE a.id = ?
+        ");
+    } else {
+        $stmt = $conn->prepare("
+            SELECT c.*, 
+                   u_p.full_name as patient_name,
+                   u_d.full_name as doctor_name,
+                   TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
+                   p.gender as patient_gender,
+                   p.medical_history_summary,
+                   s.started_at
+            FROM consultations c
+            INNER JOIN users u_p ON c.patient_id = u_p.id
+            LEFT JOIN users u_d ON c.doctor_id = u_d.id
+            LEFT JOIN patient_profiles p ON u_p.id = p.user_id
+            LEFT JOIN consultation_sessions s ON c.id = s.consultation_id AND s.session_type = 'consultation'
+            WHERE c.id = ?
+        ");
+    }
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+}
+
+$consultation = fetchConsultationData($conn, $consultationId, $type);
+
+// --- [FALLBACK LOGIC] ---
+if (!$consultation) {
+    $fallbackType = ($type === 'consultation') ? 'appointment' : 'consultation';
+    $consultation = fetchConsultationData($conn, $consultationId, $fallbackType);
+    if ($consultation) {
+        $type = $fallbackType; // Update type for the rest of the script
+    }
+}
 
 if (!$consultation) {
-    die("Consultation not found");
+    die("Record #$consultationId not found in " . ($type === 'consultation' ? "appointments or consultations" : "consultations or appointments"));
 }
 
 // Authorization check
@@ -53,10 +130,14 @@ if ($_SESSION['user_id'] != $consultation['patient_id'] && $_SESSION['user_id'] 
         $newId = (int)$_SESSION['user_id'];
         $oldId = (int)$consultation['patient_id'];
         
-        // Update Consultation
-        $conn->query("UPDATE consultations SET patient_id = $newId WHERE id = $consultationId");
+        // Update Record
+        if ($type === 'appointment') {
+            $conn->query("UPDATE appointments SET patient_id = $newId WHERE id = $consultationId");
+        } else {
+            $conn->query("UPDATE consultations SET patient_id = $newId WHERE id = $consultationId");
+        }
         
-        // Update Messages (Sender/Receiver)
+        // Update Messages (Sender/Receiver) - Appointments also use consultation_id alias
         $conn->query("UPDATE messages SET sender_id = $newId WHERE sender_id = $oldId AND consultation_id = $consultationId");
         $conn->query("UPDATE messages SET receiver_id = $newId WHERE receiver_id = $oldId AND consultation_id = $consultationId");
         
@@ -73,18 +154,24 @@ $otherName = ($role === 'patient') ? $consultation['doctor_name'] : $consultatio
 // --- [AUTOMATIC SESSION START FOR DOCTORS] ---
 if ($role === 'doctor' && $_SESSION['user_id'] == $consultation['doctor_id']) {
     // If it's a doctor and status is not yet 'completed' or 'cancelled'
-    if (in_array($consultation['status'], ['accepted', 'scheduled', 'waiting', 'paused'])) {
+    if (in_array($consultation['status'], ['accepted', 'confirmed', 'scheduled', 'waiting', 'paused'])) {
         // Update status to in_progress
-        $conn->query("UPDATE consultations SET status = 'in_progress', updated_at = NOW() WHERE id = $consultationId");
+        if ($type === 'appointment') {
+            $conn->query("UPDATE appointments SET status = 'in_progress' WHERE id = $consultationId");
+        } else {
+            $conn->query("UPDATE consultations SET status = 'in_progress', updated_at = NOW() WHERE id = $consultationId");
+        }
         
-        // Log session if token doesn't exist for this consultation
-        $checkSession = $conn->query("SELECT id FROM consultation_sessions WHERE consultation_id = $consultationId");
-        if ($checkSession->num_rows === 0) {
-            $session_token = bin2hex(random_bytes(32));
-            $mode = $consultation['consultation_mode'] ?? 'video';
-            $stmt = $conn->prepare("INSERT INTO consultation_sessions (consultation_id, session_token, session_type) VALUES (?, ?, ?)");
-            $stmt->bind_param("iss", $consultationId, $session_token, $mode);
-            $stmt->execute();
+        // Log session (Only for consultations for now as it depends on consultation_id FK)
+        if ($type === 'consultation') {
+            $checkSession = $conn->query("SELECT id FROM consultation_sessions WHERE consultation_id = $consultationId");
+            if ($checkSession->num_rows === 0) {
+                $session_token = bin2hex(random_bytes(32));
+                $mode = $consultation['consultation_mode'] ?? 'video';
+                $stmt = $conn->prepare("INSERT INTO consultation_sessions (consultation_id, session_token, session_type) VALUES (?, ?, ?)");
+                $stmt->bind_param("iss", $consultationId, $session_token, $mode);
+                $stmt->execute();
+            }
         }
     }
 }
@@ -378,6 +465,63 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             border-radius: 12px;
             outline: none;
             font-size: 14px;
+            resize: none;
+            max-height: 120px;
+            min-height: 48px;
+            line-height: 1.5;
+            font-family: inherit;
+        }
+
+        .chat-attachment-btn {
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            transition: color 0.2s;
+            padding: 8px;
+        }
+
+        .chat-attachment-btn:hover {
+            color: var(--primary);
+        }
+
+        #filePreviewContainer {
+            padding: 10px 16px;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-item .remove-preview {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
 
         /* Private Notes Panel */
@@ -465,6 +609,34 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             border-radius: 50%;
         }
 
+        .avatar-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1e293b;
+            z-index: 2;
+            transition: opacity 0.3s;
+        }
+        .avatar-placeholder.hidden { opacity: 0; pointer-events: none; }
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
         .video-controls {
             display: flex;
             justify-content: center;
@@ -515,15 +687,31 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
 
         /* Utility */
         .badge-live {
-            background: #fee2e2;
-            color: var(--danger);
-            padding: 4px 10px;
+            background: #dcfce7;
+            color: #166534;
+            padding: 6px 14px;
             border-radius: 999px;
             font-size: 11px;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .badge-live.active {
+            background: #dcfce7 !important;
+            color: #166534 !important;
+        }
+
+        .badge-live.ended {
+            background: #fee2e2 !important;
+            color: #ef4444 !important;
+        }
+
+        .badge-live.paused {
+            background: #fef3c7 !important;
+            color: #92400e !important;
         }
 
         .live-dot {
@@ -614,9 +802,9 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                         <p><?php echo $consultation['patient_age']; ?>y · <?php echo ucfirst($consultation['patient_gender']); ?> · ID: #<?php echo $consultation['patient_id']; ?></p>
                     </div>
                 </div>
-                <div class="badge-live <?php echo ($consultation['urgency_level'] === 'emergency' ? 'emergency-active' : ''); ?>">
-                    <div class="live-dot"></div>
-                    <?php echo ($consultation['urgency_level'] === 'emergency' ? 'EMERGENCY SESSION' : 'IN CONSULTATION'); ?> 
+                <div id="statusBadge" class="badge-live active <?php echo ($consultation['urgency_level'] === 'emergency' ? 'emergency-active' : ''); ?>">
+                    <div class="live-dot" id="statusDot"></div>
+                    <span id="statusText"><?php echo ($consultation['urgency_level'] === 'emergency' ? 'EMERGENCY SESSION' : 'IN CONSULTATION'); ?></span>
                     <span id="sessionTimer" style="margin-left:5px; font-variant-numeric: tabular-nums;">00:00:00</span>
                 </div>
             </div>
@@ -641,7 +829,13 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 <div id="tab-symptoms">
                     <div class="content-group" style="background: #fff1f2; border: 1px solid #e11d48; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
                         <h4 style="color: #be123c; margin-bottom: 5px; font-size: 11px;">⚠️ ALLERGIES</h4>
+                        <?php if ($role === 'doctor'): ?>
+                        <textarea id="patientAllergies" oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';" 
+                            placeholder="Enter allergies..." 
+                            style="width:100%; background:transparent; border:none; color:#881337; font-weight:600; font-size:13px; resize:none; outline:none; font-family:inherit; overflow:hidden;"><?php echo htmlspecialchars($allergies); ?></textarea>
+                        <?php else: ?>
                         <p style="color: #881337; font-weight: 600; font-size: 13px; margin: 0;"><?php echo htmlspecialchars($allergies); ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="content-group">
@@ -663,7 +857,13 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 <div id="tab-history" class="hidden">
                     <div class="content-group">
                         <h4>Medical History</h4>
+                        <?php if ($role === 'doctor'): ?>
+                        <textarea id="patientHistory" oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';" 
+                            placeholder="Enter patient medical history..." 
+                            style="width:100%; border:1px solid var(--border); border-radius:8px; padding:10px; color:var(--text-muted); font-size:13px; resize:none; outline:none; font-family:inherit; min-height:80px;"><?php echo htmlspecialchars($consultation['medical_history_summary'] ?: ''); ?></textarea>
+                        <?php else: ?>
                         <p style="font-size: 13px; color: var(--text-muted);"><?php echo htmlspecialchars($consultation['medical_history_summary'] ?: 'No history recorded.'); ?></p>
+                        <?php endif; ?>
                     </div>
                     <div class="content-group">
                         <h4>Recent Records</h4>
@@ -862,10 +1062,14 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
 
                     <div class="chat-footer">
                         <input type="file" id="chatAttachmentInput" style="display: none;" onchange="handleFileSelect(this)">
-                        <button class="control-btn" style="background:none; color: var(--text-muted);" onclick="document.getElementById('chatAttachmentInput').click()">
+                        <div id="filePreviewContainer"></div>
+                        <label for="chatAttachment" class="chat-attachment-btn">
                             <i class="fas fa-paperclip"></i>
-                        </button>
-                        <input type="text" class="chat-input" id="messageInput" placeholder="Type a message..." oninput="handleTyping()" onkeydown="if(event.key === 'Enter') { event.preventDefault(); sendMessage(); }">
+                            <input type="file" id="chatAttachment" class="hidden" onchange="handleFilePreview(this)">
+                        </label>
+                        <textarea class="chat-input" id="messageInput" placeholder="Type a message..." rows="1"
+                            oninput="handleTyping(); this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';" 
+                            onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); }"></textarea>
                         <button class="control-btn active" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
@@ -889,19 +1093,21 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         <aside class="panel panel-right">
             <div class="video-grid">
                 <div class="video-feed" id="remoteVideoWrapper">
+                    <video id="remoteVideo" autoplay playsinline style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:1; display:none;"></video>
                     <div class="feed-label">
                         <div class="quality-indicator" id="remoteQuality"></div>
                         <span><?php echo ($role === 'doctor') ? htmlspecialchars($consultation['patient_name']) : 'Dr. ' . htmlspecialchars($consultation['doctor_name']); ?></span>
                     </div>
-                    <div id="remotePlaceholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#64748b;">
+                    <div id="remotePlaceholder" class="avatar-placeholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#64748b;">
                         <i class="<?php echo ($role === 'doctor') ? 'fas fa-user' : 'fas fa-user-md'; ?> fa-3x"></i>
                     </div>
                 </div>
                 <div class="video-feed" id="localVideoWrapper" style="height: 140px;">
+                    <video id="localVideo" autoplay playsinline muted style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:1; display:none;"></video>
                     <div class="feed-label">
                         <span>You</span>
                     </div>
-                    <div id="localPlaceholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#64748b;">
+                    <div id="localPlaceholder" class="avatar-placeholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#64748b;">
                         <i class="fas fa-camera-slash"></i>
                     </div>
                 </div>
@@ -910,7 +1116,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             <div class="video-controls">
                 <button class="control-btn hint--top" data-hint="Toggle Video" id="btnVideo" onclick="toggleVideo()"><i class="fas fa-video"></i></button>
                 <button class="control-btn hint--top" data-hint="Mute/Unmute" id="btnAudio" onclick="toggleAudio()"><i class="fas fa-microphone"></i></button>
-                <button class="control-btn hint--top" data-hint="Share Screen" id="btnShare"><i class="fas fa-desktop"></i></button>
+                <button class="control-btn hint--top" data-hint="Share Screen" id="btnShare" onclick="toggleScreenShare()"><i class="fas fa-desktop"></i></button>
                 <button class="control-btn danger hint--top" data-hint="End Session" onclick="endConsultation()"><i class="fas fa-phone-slash"></i></button>
             </div>
 
@@ -1034,27 +1240,54 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
         };
 
         // --- Session Timer ---
-        let startTime = new Date('<?php echo $consultation['assigned_at'] ?: $consultation['created_at']; ?>').getTime();
+        let startTimeString = '<?php echo $consultation['started_at'] ?: ($consultation['assigned_at'] ?: $consultation['created_at']); ?>';
+        let startTime = new Date(startTimeString).getTime();
+        if (isNaN(startTime)) startTime = new Date().getTime(); // Fallback to now if invalid
+        let timerInterval;
+        let isTimerStopped = false;
+
         function updateTimer() {
+            if (isTimerStopped) return;
+            
             const now = new Date().getTime();
-            const diff = now - startTime;
+            const diff = Math.max(0, now - startTime);
             
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
             
-            document.getElementById('sessionTimer').textContent = 
-                (hours < 10 ? '0' + hours : hours) + ':' + 
-                (minutes < 10 ? '0' + minutes : minutes) + ':' + 
-                (seconds < 10 ? '0' + seconds : seconds);
-            
-            // Highlight if session exceeds 30 mins
-            if (minutes >= 30) {
-                document.getElementById('sessionTimer').parentElement.style.background = '#fee2e2';
-                document.getElementById('sessionTimer').parentElement.style.color = '#ef4444';
+            const timerEl = document.getElementById('sessionTimer');
+            if (timerEl) {
+                timerEl.textContent = 
+                    (hours < 10 ? '0' + hours : hours) + ':' + 
+                    (minutes < 10 ? '0' + minutes : minutes) + ':' + 
+                    (seconds < 10 ? '0' + seconds : seconds);
+                
+                // Highlight if session exceeds 30 mins (warning state)
+                if (minutes >= 30 && !isTimerStopped) {
+                    const badge = document.getElementById('statusBadge');
+                    if (badge) {
+                        badge.style.border = '1px solid #ef4444';
+                    }
+                }
             }
         }
-        setInterval(updateTimer, 1000);
+
+        function stopTimer() {
+            isTimerStopped = true;
+            const badge = document.getElementById('statusBadge');
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (badge) {
+                badge.classList.remove('active');
+                badge.classList.add('ended');
+            }
+            if (dot) dot.style.display = 'none';
+            if (text) text.textContent = 'SESSION ENDED';
+        }
+
+        timerInterval = setInterval(updateTimer, 1000);
         updateTimer(); // Initial call
 
         // --- Advanced Actions ---
@@ -1112,18 +1345,11 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             const target = document.getElementById('tab-' + tabId);
             if (target) {
                 target.classList.remove('hidden');
-            } else {
-                console.error("Tab content not found for showTab:", tabId);
             }
             
             // Add active class to clicked button
             if (el) {
                 el.classList.add('active');
-            } else if (window.event && window.event.currentTarget) {
-                window.event.currentTarget.classList.add('active');
-            } else {
-                // Fallback to find by text if el not provided
-                Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.toLowerCase().includes(tabId))?.classList.add('active');
             }
         }
 
@@ -1131,16 +1357,21 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             console.log('[Chat] sendMessage() called');
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
-            console.log('[Chat] Message text:', text);
-            console.log('[Chat] receiverId:', receiverId);
+            const fileInput = document.getElementById('chatAttachment');
+            const hasFile = fileInput.files.length > 0;
             
-            if (!text) {
-                console.log('[Chat] Empty message, ignoring');
+            if (!text && !hasFile) {
+                console.log('[Chat] Empty message and no file, ignoring');
                 return;
             }
             if (!receiverId) {
                 console.error('[Chat] ERROR: receiverId is not set!');
                 alert("Cannot send message: Receiver not identified yet.");
+                return;
+            }
+
+            if (hasFile) {
+                await handleFileUpload(fileInput);
                 return;
             }
 
@@ -1150,6 +1381,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             formData.append('content', text);
             formData.append('receiver_id', receiverId);
             formData.append('type', 'text');
+            formData.append('session_type', '<?php echo $type; ?>');
 
             try {
                 console.log('[Chat] Sending message to chat_api.php...', { consultationId, receiverId, text });
@@ -1159,10 +1391,12 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 
                 if (data.success) {
                     input.value = '';
+                    input.style.height = 'auto';
                     const newMsg = {
                         id: data.message_id,
                         sender_id: userId,
                         message_content: text,
+                        message_type: 'text',
                         created_at: new Date().toISOString()
                     };
                     appendMessage(newMsg, true);
@@ -1191,8 +1425,8 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
 
         async function fetchMessages() {
             try {
-                console.log('[Chat] Fetching messages - consultationId:', consultationId, 'lastMessageId:', lastMessageId);
-                const response = await fetch(`chat_api.php?action=fetch&consultation_id=${consultationId}&last_id=${lastMessageId}`);
+                const type = '<?php echo $type; ?>';
+                const response = await fetch(`chat_api.php?action=fetch&consultation_id=${consultationId}&last_id=${lastMessageId}&type=${type}`);
                 const data = await response.json();
                 console.log('[Chat] Fetch response:', data);
                 
@@ -1261,13 +1495,55 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             container.scrollTop = container.scrollHeight;
         }
 
-        async function handleFileSelect(input) {
+        function handleFilePreview(input) {
+            const previewContainer = document.getElementById('filePreviewContainer');
             const file = input.files[0];
+            
+            if (!file) {
+                previewContainer.style.display = 'none';
+                return;
+            }
+
+            previewContainer.innerHTML = '';
+            previewContainer.style.display = 'flex';
+
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+            
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewItem.innerHTML = `<img src="${e.target.result}"><div class="remove-preview" onclick="removeFile()">&times;</div>`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewItem.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:#f1f5f9; font-size:10px; color:#64748b;"><i class="fas fa-file-pdf fa-2x" style="color:#ef4444"></i></div><div class="remove-preview" onclick="removeFile()">&times;</div>`;
+            }
+            
+            const fileNameSpan = document.createElement('span');
+            fileNameSpan.style.fontSize = '12px';
+            fileNameSpan.style.color = '#64748b';
+            fileNameSpan.textContent = file.name;
+            
+            previewContainer.appendChild(previewItem);
+            previewContainer.appendChild(fileNameSpan);
+        }
+
+        function removeFile() {
+            const input = document.getElementById('chatAttachment');
+            input.value = '';
+            document.getElementById('filePreviewContainer').style.display = 'none';
+        }
+
+        async function handleFileUpload(input) {
+            const file = input.files[0];
+            const text = document.getElementById('messageInput').value.trim();
+            
             if (!file) return;
 
             if (file.size > 5 * 1024 * 1024) {
                 alert("File is too large. Max size is 5MB.");
-                input.value = '';
+                removeFile();
                 return;
             }
 
@@ -1276,30 +1552,17 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             formData.append('attachment', file);
 
             try {
-                // Show temporary uploading message
-                const tempId = 'temp-' + Date.now();
-                appendMessage({
-                    id: tempId,
-                    message_content: `Uploading ${file.name}...`,
-                    message_type: 'text',
-                    created_at: new Date()
-                }, true);
-
                 const response = await fetch('chat_api.php', { method: 'POST', body: formData });
                 const data = await response.json();
                 
-                // Remove temporary message
-                const tempMsg = document.getElementById('msg-' + tempId);
-                if (tempMsg) tempMsg.remove();
-
                 if (data.success) {
-                    // Send message with file URL
                     const msgFormData = new FormData();
                     msgFormData.append('action', 'send');
                     msgFormData.append('consultation_id', consultationId);
                     msgFormData.append('content', data.file_url);
                     msgFormData.append('receiver_id', receiverId);
                     msgFormData.append('type', data.file_type);
+                    msgFormData.append('session_type', '<?php echo $type; ?>');
 
                     const sendResponse = await fetch('chat_api.php', { method: 'POST', body: msgFormData });
                     const sendData = await sendResponse.json();
@@ -1311,8 +1574,14 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                             message_type: data.file_type,
                             created_at: new Date()
                         }, true);
-                    } else {
-                        throw new Exception(sendData.error || "Failed to send file info");
+                        
+                        // If there was also text, send it separately
+                        if (text) {
+                            document.getElementById('messageInput').value = text;
+                            await sendMessage();
+                        }
+                        
+                        removeFile();
                     }
                 } else {
                     alert("Upload failed: " + data.error);
@@ -1321,7 +1590,6 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 console.error(err);
                 alert("An error occurred during upload.");
             }
-            input.value = '';
         }
 
         // --- Prescription Hub ---
@@ -1343,7 +1611,14 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             const formData = new FormData(form);
             
             // Get patient_id from the consultation
-            const patientId = <?php echo $consultation['patient_id']; ?>;
+            const patientId = parseInt('<?php echo $consultation['patient_id']; ?>');
+            console.log("[Prescription] Submitting with ConsultationID:", consultationId, "PatientID:", patientId);
+
+            if (isNaN(patientId) || !patientId) {
+                console.error("[Prescription] ERROR: Invalid Patient ID:", patientId);
+                alert("Critical Error: Patient ID is missing. Please refresh the page.");
+                return;
+            }
             
             // Extract diagnosis
             const diagnosis = formData.get('diagnosis');
@@ -1450,16 +1725,17 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
 
         // --- WebRTC Functions ---
         async function toggleVideo(isAuto = false) {
-            console.log("Toggling video...", isAuto ? "(auto-start)" : "(manual)");
             if (!localStream) {
                 try {
                     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                    const localVideoWrapper = document.getElementById('localVideoWrapper');
-                    localVideoWrapper.innerHTML = `
-                        <video id="localVid" autoplay playsinline muted style="width:100%; height:100%; object-fit: cover;"></video>
-                        <div class="feed-label"><span>${userName}</span></div>
-                    `;
-                    document.getElementById('localVid').srcObject = localStream;
+                    const localVid = document.getElementById('localVideo');
+                    if (localVid) {
+                        localVid.srcObject = localStream;
+                        localVid.style.display = 'block';
+                    }
+                    
+                    const localPlaceholder = document.getElementById('localPlaceholder');
+                    if (localPlaceholder) localPlaceholder.style.display = 'none';
                     document.getElementById('btnVideo').classList.add('active');
                     document.getElementById('btnAudio').classList.add('active');
                     
@@ -1478,9 +1754,67 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 if (videoTrack) {
                     videoTrack.enabled = !videoTrack.enabled;
                     document.getElementById('btnVideo').classList.toggle('active', videoTrack.enabled);
+                    const localPlaceholder = document.getElementById('localPlaceholder');
+                    if (localPlaceholder) localPlaceholder.style.display = videoTrack.enabled ? 'none' : 'flex';
+                    const localVid = document.getElementById('localVideo');
+                    if (localVid) localVid.style.display = videoTrack.enabled ? 'block' : 'none';
                     sendSignal({ type: 'media_status', video: videoTrack.enabled });
+                } else if (!isAuto) {
+                    localStream = null;
+                    toggleVideo();
                 }
             }
+        }
+
+        function toggleAudio() {
+            if (!localStream) {
+                toggleVideo(); // Audio requires stream init
+                return;
+            }
+            const track = localStream.getAudioTracks()[0];
+            if (track) {
+                track.enabled = !track.enabled;
+                document.getElementById('btnAudio').classList.toggle('active', track.enabled);
+                sendSignal({ type: 'media_status', audio: track.enabled });
+            }
+        }
+
+        let isScreenSharing = false;
+        async function toggleScreenShare() {
+            try {
+                if (!isScreenSharing) {
+                    const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                    const videoTrack = screenStream.getVideoTracks()[0];
+                    
+                    const sender = peerConnection.getSenders().find(s => s.track.kind === 'video');
+                    if (sender) {
+                        sender.replaceTrack(videoTrack);
+                    }
+                    
+                    document.getElementById('localVideo').srcObject = screenStream;
+                    document.getElementById('btnShare').classList.add('active');
+                    isScreenSharing = true;
+
+                    videoTrack.onended = () => {
+                        stopScreenShare();
+                    };
+                } else {
+                    stopScreenShare();
+                }
+            } catch (err) {
+                console.error("Screen share failed:", err);
+            }
+        }
+
+        function stopScreenShare() {
+            const videoTrack = localStream.getVideoTracks()[0];
+            const sender = peerConnection.getSenders().find(s => s.track.kind === 'video');
+            if (sender) {
+                sender.replaceTrack(videoTrack);
+            }
+            document.getElementById('localVideo').srcObject = localStream;
+            document.getElementById('btnShare').classList.remove('active');
+            isScreenSharing = false;
         }
 
         function setupPeerConnection() {
@@ -1489,15 +1823,13 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
             peerConnection.ontrack = (event) => {
-                const remoteWrapper = document.getElementById('remoteVideoWrapper');
-                remoteWrapper.innerHTML = `
-                    <video id="remoteVid" autoplay playsinline style="width:100%; height:100%; object-fit: cover;"></video>
-                    <div class="feed-label">
-                        <div class="quality-indicator"></div>
-                        <span>Dr. ${'<?php echo $consultation['doctor_name']; ?>'}</span>
-                    </div>
-                `;
-                document.getElementById('remoteVid').srcObject = event.streams[0];
+                const remoteVid = document.getElementById('remoteVideo');
+                const remotePlaceholder = document.getElementById('remotePlaceholder');
+                if (remoteVid) {
+                    remoteVid.srcObject = event.streams[0];
+                    remoteVid.style.display = 'block';
+                }
+                if (remotePlaceholder) remotePlaceholder.style.display = 'none';
             };
 
             peerConnection.onicecandidate = (e) => e.candidate && sendSignal({ target: 'webrtc', candidate: e.candidate });
@@ -1510,6 +1842,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             formData.append('content', JSON.stringify(signal));
             formData.append('receiver_id', receiverId);
             formData.append('type', 'signal');
+            formData.append('session_type', '<?php echo $type; ?>');
             await fetch('chat_api.php', { method: 'POST', body: formData });
         }
 
@@ -1527,44 +1860,100 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                     await peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
                 }
             } else if (signal.type === 'media_status') {
-                // Update UI indicator if remote camera is off
-            }
-        }
-
-        function toggleAudio() {
-            if (localStream) {
-                const track = localStream.getAudioTracks()[0];
-                if (track) {
-                    track.enabled = !track.enabled;
-                    document.getElementById('btnAudio').classList.toggle('active', track.enabled);
-                    sendSignal({ type: 'media_status', audio: track.enabled });
+                if (signal.video !== undefined) {
+                    const remotePlaceholder = document.getElementById('remotePlaceholder');
+                    if (remotePlaceholder) remotePlaceholder.style.display = signal.video ? 'none' : 'flex';
+                    const remoteVid = document.getElementById('remoteVideo');
+                    if (remoteVid) remoteVid.style.display = signal.video ? 'block' : 'none';
+                }
+                if (signal.audio !== undefined) {
+                    // Could update a mute icon on remote feed
                 }
             }
         }
 
-        // --- Private Notes Auto-save ---
-        const notesEl = document.getElementById('privateNotes');
-        if (notesEl) {
-            let timeout;
-            notesEl.addEventListener('input', () => {
-                clearTimeout(timeout);
-                timeout = setTimeout(async () => {
-                    const formData = new FormData();
-                    formData.append('action', 'save_private_notes');
-                    formData.append('consultation_id', consultationId);
-                    formData.append('notes', notesEl.value);
-                    await fetch('doctor_api.php', { method: 'POST', body: formData });
-                }, 2000);
-            });
+// Removed duplicate toggleAudio definition
+
+        // --- Auto-save System (5s cycle) ---
+        let lastNotesSaved = '';
+        let lastAllergiesSaved = '';
+        let lastHistorySaved = '';
+
+        async function performAutoSave() {
+            if (role !== 'doctor') return;
+
+            const notesEl = document.getElementById('privateNotes');
+            const allergiesEl = document.getElementById('patientAllergies');
+            const historyEl = document.getElementById('patientHistory');
+            const statusEl = document.getElementById('autosaveStatus');
+            
+            let hasChanges = false;
+            const formData = new FormData();
+            formData.append('consultation_id', consultationId);
+            formData.append('type', '<?php echo $type; ?>');
+
+            if (notesEl && notesEl.value !== lastNotesSaved) {
+                formData.append('action', 'save_private_notes');
+                formData.append('notes', notesEl.value);
+                lastNotesSaved = notesEl.value;
+                hasChanges = true;
+            }
+
+            if (allergiesEl && allergiesEl.value !== lastAllergiesSaved) {
+                // If not already saving notes, we'll save allergies separately if needed
+                // But usually we can bundle them or send separate requests.
+                // Let's implement a 'update_patient_master' action in doctor_api.php
+                const patientData = new FormData();
+                patientData.append('action', 'update_patient_info');
+                patientData.append('patient_id', '<?php echo $consultation['patient_id']; ?>');
+                patientData.append('allergies', allergiesEl.value);
+                if (historyEl) patientData.append('history', historyEl.value);
+                
+                await fetch('doctor_api.php', { method: 'POST', body: patientData });
+                lastAllergiesSaved = allergiesEl.value;
+                if (historyEl) lastHistorySaved = historyEl.value;
+                if (statusEl) statusEl.textContent = 'Patient info saved';
+            }
+
+            if (hasChanges) {
+                if (statusEl) statusEl.textContent = 'Saving...';
+                try {
+                    const response = await fetch('doctor_api.php', { method: 'POST', body: formData });
+                    const result = await response.json();
+                    if (statusEl) {
+                        const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        statusEl.textContent = 'Last saved: ' + now;
+                    }
+                } catch (err) {
+                    if (statusEl) statusEl.textContent = 'Save failed';
+                }
+            }
         }
 
+        // Initialize last saved values
+        window.addEventListener('DOMContentLoaded', () => {
+            const notesEl = document.getElementById('privateNotes');
+            const allergiesEl = document.getElementById('patientAllergies');
+            const historyEl = document.getElementById('patientHistory');
+            if (notesEl) lastNotesSaved = notesEl.value;
+            if (allergiesEl) lastAllergiesSaved = allergiesEl.value;
+            if (historyEl) lastHistorySaved = historyEl.value;
+        });
+
+        // Auto-save every 5 seconds
+        setInterval(performAutoSave, 5000);
+
         async function endConsultation() {
-            if(!confirm("Are you sure you want to end this session? This will mark it as completed and calculate your earnings.")) return;
+            const confirmMsg = role === 'doctor' 
+                ? "Are you sure you want to end this session? This will mark it as completed and calculate your earnings."
+                : "Are you sure you want to end this session?";
+            if(!confirm(confirmMsg)) return;
 
             try {
                 const formData = new FormData();
                 formData.append('action', 'complete_consultation');
-                formData.append('consultation_id', <?php echo $consultationId; ?>);
+                formData.append('<?php echo ($type === 'appointment' ? 'appointment_id' : 'consultation_id'); ?>', <?php echo $consultationId; ?>);
+                formData.append('type', '<?php echo $type; ?>');
 
                 const response = await fetch('doctor_api.php', {
                     method: 'POST',
@@ -1574,8 +1963,13 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 const result = await response.json();
                 
                 if (result.status === 'success') {
+                    stopTimer();
                     alert('Consultation completed successfully!');
-                    window.location.href = 'doctor_dashboard.php?view=earnings';
+                    if (role === 'doctor') {
+                        window.location.href = 'doctor_dashboard.php?view=earnings';
+                    } else {
+                        window.location.href = 'patient_dashboard.php';
+                    }
                 } else {
                     alert('Error ending session: ' + result.message);
                 }

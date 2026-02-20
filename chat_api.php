@@ -30,6 +30,21 @@ try {
                 throw new Exception("Missing required fields");
             }
 
+            // Verify if user is part of this session
+            $session_type = $_POST['session_type'] ?? 'consultation';
+            if ($session_type === 'appointment') {
+                $authStmt = $conn->prepare("SELECT patient_id, doctor_id FROM appointments WHERE id = ?");
+            } else {
+                $authStmt = $conn->prepare("SELECT patient_id, doctor_id FROM consultations WHERE id = ?");
+            }
+            $authStmt->bind_param("i", $consultation_id);
+            $authStmt->execute();
+            $authResult = $authStmt->get_result()->fetch_assoc();
+
+            if (!$authResult || ($authResult['patient_id'] != $user_id && $authResult['doctor_id'] != $user_id)) {
+                throw new Exception("Unauthorized to send messages to this session");
+            }
+
             $stmt = $conn->prepare("
                 INSERT INTO messages (consultation_id, sender_id, receiver_id, message_content, message_type)
                 VALUES (?, ?, ?, ?, ?)
@@ -84,13 +99,18 @@ try {
         case 'fetch':
             $consultation_id = $_GET['consultation_id'];
             $last_id = $_GET['last_id'] ?? 0;
+            $type = $_GET['type'] ?? 'consultation';
 
             if (!$consultation_id) {
-                throw new Exception("Consultation ID required");
+                throw new Exception("ID required");
             }
 
-            // Verify if user is part of this consultation
-            $authStmt = $conn->prepare("SELECT patient_id, doctor_id FROM consultations WHERE id = ?");
+            // Verify if user is part of this session
+            if ($type === 'appointment') {
+                $authStmt = $conn->prepare("SELECT patient_id, doctor_id FROM appointments WHERE id = ?");
+            } else {
+                $authStmt = $conn->prepare("SELECT patient_id, doctor_id FROM consultations WHERE id = ?");
+            }
             $authStmt->bind_param("i", $consultation_id);
             $authStmt->execute();
             $result = $authStmt->get_result()->fetch_assoc();

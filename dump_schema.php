@@ -1,9 +1,7 @@
 <?php
-require 'db.php';
-$res = $conn->query('DESCRIBE medicines');
-$rows = [];
+require_once 'db.php';
+$res = $conn->query('DESCRIBE appointments');
 while($row = $res->fetch_assoc()) {
-    $rows[] = $row;
+    echo $row['Field'] . ' ' . $row['Type'] . "\n";
 }
-file_put_contents('medicines_schema.txt', print_r($rows, true));
 ?>

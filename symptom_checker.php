@@ -21,6 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($data['symptoms']) && !empty($data['symptoms'])) {
         $symptoms = $data['symptoms'];
         
+        // Save to session for persistence during appointment booking
+        if (!isset($_SESSION['pending_consultation'])) {
+            $_SESSION['pending_consultation'] = [];
+        }
+        $_SESSION['pending_consultation']['symptoms'] = $symptoms;
+        
         // Prepare data for Flask API
         $payload = json_encode(['symptoms' => $symptoms]);
         

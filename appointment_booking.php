@@ -117,7 +117,9 @@ $doctors = $conn->query("
                 
                 <div class="notes-section">
                     <h4 style="margin-bottom: 10px; color: #475569;">Additional Notes (Optional)</h4>
-                    <textarea id="appointmentNotes" placeholder="Any specific concerns or requirements..."></textarea>
+                    <textarea id="appointmentNotes" placeholder="Any specific concerns or requirements..."><?php 
+                        echo isset($_SESSION['pending_consultation']['symptoms']) ? htmlspecialchars($_SESSION['pending_consultation']['symptoms']) : ''; 
+                    ?></textarea>
                 </div>
                 
                 <div class="action-buttons">

@@ -87,7 +87,7 @@ async function loadPatientDashboardData() {
                                 ${consultation.status.replace('_', ' ')}
                             </span>
                             ${(consultation.status === 'assigned' || consultation.status === 'in_progress') ? `
-                                <a href="consultation_room.php?id=${consultation.id}" class="btn btn-primary btn-sm">Join</a>
+                                <a href="consultation_room.php?id=${consultation.id}&type=${consultation.type || 'consultation'}" class="btn btn-primary btn-sm">Join</a>
                             ` : ''}
                         </div>
                     </div>

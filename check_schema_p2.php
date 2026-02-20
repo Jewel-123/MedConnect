@@ -1,6 +1,6 @@
 <?php
 require_once 'db.php';
-$res = $conn->query('DESCRIBE appointments');
+$res = $conn->query("DESCRIBE prescriptions_v2");
 while($row = $res->fetch_assoc()) {
     print_r($row);
 }

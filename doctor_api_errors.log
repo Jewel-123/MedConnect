@@ -648,3 +648,216 @@ Stack trace:
 [17-Feb-2026 15:21:59 Europe/Berlin] Prescription saved successfully: ID 22
 [17-Feb-2026 15:40:34 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
 [17-Feb-2026 15:40:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[18-Feb-2026 05:18:42 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[18-Feb-2026 05:19:30 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[18-Feb-2026 05:21:50 Europe/Berlin] Prescription save input: {"consultation_id":103,"patient_id":21,"diagnosis":"blood test","medicines":[{"name":"Fluconazole 150mg","dosage":"150","frequency":"Once Daily","duration":"5","instructions":"Night after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"Night after food","notes_for_pharmacy":""}
+[18-Feb-2026 05:21:50 Europe/Berlin] Prescription created with ID: 23
+[18-Feb-2026 05:21:50 Europe/Berlin] Prescription saved successfully: ID 23
+[18-Feb-2026 05:22:04 Europe/Berlin] Prescription save input: {"consultation_id":103,"patient_id":21,"diagnosis":"blood test","medicines":[{"name":"Fluconazole 150mg","dosage":"150","frequency":"Once Daily","duration":"5","instructions":"Night after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"Night after food","notes_for_pharmacy":""}
+[18-Feb-2026 05:22:04 Europe/Berlin] Prescription created with ID: 24
+[18-Feb-2026 05:22:04 Europe/Berlin] Prescription saved successfully: ID 24
+[18-Feb-2026 05:22:45 Europe/Berlin] Prescription save input: {"consultation_id":103,"patient_id":21,"diagnosis":"blood test","medicines":[{"name":"Albendazol","dosage":"400","frequency":"Once Daily","duration":"7","instructions":"morining after food,evening after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"morining after food,evening after food","notes_for_pharmacy":""}
+[18-Feb-2026 05:22:45 Europe/Berlin] Prescription created with ID: 25
+[18-Feb-2026 05:22:45 Europe/Berlin] Prescription saved successfully: ID 25
+[18-Feb-2026 05:29:27 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[18-Feb-2026 05:53:56 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[18-Feb-2026 05:56:12 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[18-Feb-2026 06:09:44 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[18-Feb-2026 06:10:18 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[18-Feb-2026 06:11:52 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[18-Feb-2026 06:11:58 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[18-Feb-2026 06:22:35 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[18-Feb-2026 07:00:51 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[18-Feb-2026 07:03:21 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[18-Feb-2026 07:09:34 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[18-Feb-2026 07:38:07 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_verify_fix.php:4) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[18-Feb-2026 07:38:07 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_verify_fix.php:4) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[18-Feb-2026 07:38:08 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\medconnect\final_verify_fix.php on line 14
+[18-Feb-2026 07:39:26 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_verify_fix.php:5) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[18-Feb-2026 07:39:26 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\final_verify_fix.php:5) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[18-Feb-2026 07:39:26 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\medconnect\final_verify_fix.php on line 15
+[18-Feb-2026 07:48:17 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[18-Feb-2026 07:48:42 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[18-Feb-2026 15:36:02 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 04:34:23 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 04:51:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 04:54:11 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[19-Feb-2026 04:54:11 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[19-Feb-2026 04:54:14 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 05:00:49 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 05:01:04 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 05:17:48 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 05:18:48 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 05:19:14 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_start_appt.php:13) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[19-Feb-2026 05:19:14 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_start_appt.php:13) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[19-Feb-2026 05:19:14 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\medconnect\test_start_appt.php on line 23
+[19-Feb-2026 05:23:26 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 05:23:53 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 05:23:56 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 05:23:59 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:24:04 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:24:10 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:24:11 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:24:13 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 05:24:18 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:24:31 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:24:35 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:24:36 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:24:36 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:24:39 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:29:17 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:29:20 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:32:17 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:43:05 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:43:10 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:43:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:43:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:43:18 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:44:56 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 05:45:01 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:658
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 658
+[19-Feb-2026 06:13:41 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 06:58:25 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[19-Feb-2026 07:00:00 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[19-Feb-2026 07:00:00 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[19-Feb-2026 07:00:02 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[19-Feb-2026 07:00:02 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[19-Feb-2026 07:00:02 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1213
+[19-Feb-2026 07:00:02 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1214
+[19-Feb-2026 07:00:02 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1215
+[19-Feb-2026 07:00:07 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[19-Feb-2026 07:00:37 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 07:00:43 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 07:02:55 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 07:03:04 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 07:07:51 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[19-Feb-2026 07:16:17 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[19-Feb-2026 07:18:37 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[19-Feb-2026 08:05:38 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[19-Feb-2026 08:10:57 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 08:11:09 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 08:42:48 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 08:43:28 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 08:46:43 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 08:46:56 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 08:59:27 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 09:00:08 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[19-Feb-2026 09:26:08 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 09:26:17 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 09:28:52 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[19-Feb-2026 09:53:39 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_unification.php:6) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[19-Feb-2026 09:53:39 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_unification.php:6) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[19-Feb-2026 09:54:31 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_unification.php:9) in C:\xampp\htdocs\medconnect\doctor_api.php on line 18
+[19-Feb-2026 09:54:32 Europe/Berlin] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\medconnect\test_unification.php:9) in C:\xampp\htdocs\medconnect\doctor_api.php on line 19
+[19-Feb-2026 10:04:27 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 10:05:54 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 10:06:43 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 10:07:05 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[19-Feb-2026 10:07:05 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[19-Feb-2026 10:07:05 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1242
+[19-Feb-2026 10:07:05 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1243
+[19-Feb-2026 10:07:05 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1244
+[19-Feb-2026 10:07:10 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[19-Feb-2026 10:07:29 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:687
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 687
+[19-Feb-2026 10:07:34 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:687
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 687
+[19-Feb-2026 10:07:49 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:687
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 687
+[20-Feb-2026 03:00:51 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 03:01:12 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 03:02:53 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:687
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 687
+[20-Feb-2026 03:04:58 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetaminophen","dosage":"100","frequency":"morning and night after food","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-02-28","notes_for_patient":"","notes_for_pharmacy":""}
+[20-Feb-2026 03:05:20 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetaminophen","dosage":"100","frequency":"morning and night after food","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-02-28","notes_for_patient":"send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:05:52 Europe/Berlin] Prescription save input: {"consultation_id":10014,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Albendazol","dosage":"150","frequency":"Once Daily","duration":"7","instructions":"after food duriing night","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food duriing night","notes_for_pharmacy":""}
+[20-Feb-2026 03:05:52 Europe/Berlin] Prescription created with ID: 28
+[20-Feb-2026 03:05:52 Europe/Berlin] Prescription saved successfully: ID 28
+[20-Feb-2026 03:08:41 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 03:13:49 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"9","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-02-21","notes_for_patient":"send  to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:28:56 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"8","quantity":"100","instructions":""}],"tests":[],"follow_up_date":"2026-02-17","notes_for_patient":"Send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:28:57 Europe/Berlin] Prescription save error: Missing or invalid required fields (consultation_id, patient_id, diagnosis) - Input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"8","quantity":"100","instructions":""}],"tests":[],"follow_up_date":"2026-02-17","notes_for_patient":"Send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:34:02 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"8","quantity":"100","instructions":""}],"tests":[],"follow_up_date":"2026-02-17","notes_for_patient":"Send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:34:02 Europe/Berlin] Prescription save error: Missing or invalid required fields (consultation_id, patient_id, diagnosis) - Input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"8","quantity":"100","instructions":""}],"tests":[],"follow_up_date":"2026-02-17","notes_for_patient":"Send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:35:01 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"9","quantity":"10","instructions":""}],"tests":[],"follow_up_date":"2026-02-21","notes_for_patient":"send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:35:01 Europe/Berlin] Prescription save error: Missing or invalid required fields (consultation_id, patient_id, diagnosis) - Input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"9","quantity":"10","instructions":""}],"tests":[],"follow_up_date":"2026-02-21","notes_for_patient":"send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:35:17 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"9","quantity":"10","instructions":""}],"tests":[],"follow_up_date":"2026-02-21","notes_for_patient":"send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:35:17 Europe/Berlin] Prescription save error: Missing or invalid required fields (consultation_id, patient_id, diagnosis) - Input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"9","quantity":"10","instructions":""}],"tests":[],"follow_up_date":"2026-02-21","notes_for_patient":"send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:41:22 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"9","quantity":"10","instructions":""}],"tests":[],"follow_up_date":"2026-02-21","notes_for_patient":"send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:41:22 Europe/Berlin] Prescription save error: Missing or invalid required fields (consultation_id, patient_id, diagnosis) - Input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"undefined","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"9","quantity":"10","instructions":""}],"tests":[],"follow_up_date":"2026-02-21","notes_for_patient":"send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:43:27 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10014","appointment_id":null,"patient_id":"21","icd_code":"","diagnosis":"blood test","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"morning and night after food","duration":"9","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-02-21","notes_for_patient":"pls send to pharmacy","notes_for_pharmacy":""}
+[20-Feb-2026 03:43:27 Europe/Berlin] Prescription created with ID: 30
+[20-Feb-2026 03:43:27 Europe/Berlin] Prescription saved successfully: ID 30
+[20-Feb-2026 03:43:35 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 03:43:35 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 03:43:35 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 03:43:35 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 03:43:35 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 03:43:36 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics

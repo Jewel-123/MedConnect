@@ -37,6 +37,11 @@ try {
             $scheduledTime = $input['scheduled_time'] ?? '';
             $notes = $input['notes'] ?? '';
             
+            // Fallback to session symptoms if notes are empty (e.g., from symptom checker)
+            if (empty($notes) && isset($_SESSION['pending_consultation']['symptoms'])) {
+                $notes = $_SESSION['pending_consultation']['symptoms'];
+            }
+            
             if (!$doctorId || !$scheduledDate || !$scheduledTime) {
                 throw new Exception('Doctor, date, and time are required');
             }

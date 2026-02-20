@@ -167,9 +167,9 @@ try {
             $data = [];
             while ($row = $requests->fetch_assoc()) {
                 // AI-summarize symptoms (simplified - in production use actual NLP)
-                $symptomsSummary = strlen($row['symptoms']) > 100 
-                    ? substr($row['symptoms'], 0, 100) . '...' 
-                    : $row['symptoms'];
+                $symptomsSummary = !empty($row['symptoms']) 
+                    ? (strlen($row['symptoms']) > 100 ? substr($row['symptoms'], 0, 100) . '...' : $row['symptoms'])
+                    : 'No symptoms provided';
                 
                 // Determine urgency badge
                 $urgencyBadge = 'routine';
@@ -211,13 +211,14 @@ try {
             $appointments = $conn->query("
                 SELECT a.*, u.full_name as patient_name, u.email as patient_email,
                        p.phone as patient_phone,
-                       TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age
+                       TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
+                       (SELECT symptoms FROM consultations WHERE patient_id = a.patient_id ORDER BY created_at DESC LIMIT 1) as latest_consultation_symptoms
                 FROM appointments a
                 JOIN users u ON a.patient_id = u.id
                 LEFT JOIN patient_profiles p ON u.id = p.user_id
                 WHERE a.doctor_id = $doctor_id 
                   AND a.payment_status = 'paid' 
-                  AND a.status IN ('pending', 'confirmed')
+                  AND a.status = 'pending'
                 ORDER BY a.scheduled_date ASC, a.scheduled_time ASC
                 LIMIT 50
             ");
@@ -236,7 +237,7 @@ try {
                     'scheduled_time' => $row['scheduled_time'],
                     'consultation_fee' => $row['consultation_fee'],
                     'notes' => $row['notes'] ?? '',
-                    'reason' => $row['notes'] ?? 'Scheduled Appointment',
+                    'reason' => (!empty($row['notes']) ? $row['notes'] : (!empty($row['latest_consultation_symptoms']) ? $row['latest_consultation_symptoms'] : 'No symptoms provided')),
                     'status' => $row['status'],
                     'payment_status' => $row['payment_status'],
                     'created_at' => $row['created_at'],
@@ -303,7 +304,7 @@ try {
                 // We must handle both cases: already assigned to us, or unassigned matching specialty
                 $stmt = $conn->prepare("
                     UPDATE consultations 
-                    SET status = 'accepted', 
+                    SET status = 'confirmed', 
                         assigned_at = NOW(),
                         doctor_id = ?
                     WHERE id = ? AND (doctor_id = ? OR doctor_id IS NULL) AND status IN ('pending', 'assigned')
@@ -476,10 +477,10 @@ try {
         case 'get_active_consultations':
             // Show both active consultations and confirmed appointments
             $active = $conn->query("
-                (SELECT c.id, u.full_name as patient_name, u.email as patient_email,
+                (SELECT c.id, c.patient_id, u.full_name as patient_name, u.email as patient_email,
                        p.gender as patient_gender,
                        TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
-                       CAST('consultation' AS CHAR) as type,
+                       CAST('consultation' AS CHAR(20)) as type,
                        CAST(c.status AS CHAR) as status,
                        c.updated_at,
                        CAST(c.symptoms AS CHAR) as symptoms,
@@ -488,37 +489,44 @@ try {
                            WHEN c.severity = 'high' OR c.urgency_score >= 75 THEN 'emergency'
                            WHEN c.severity = 'medium' OR c.urgency_score >= 50 THEN 'priority'
                            ELSE 'routine' 
-                       END) AS CHAR) as urgency_level
+                       END) AS CHAR) as urgency_level,
+                        CAST(NULL AS CHAR) as scheduled_date,
+                        CAST(NULL AS CHAR) as scheduled_time,
+                        c.id as linked_consultation_id
                 FROM consultations c
                 JOIN users u ON c.patient_id = u.id
                 LEFT JOIN patient_profiles p ON u.id = p.user_id
                 WHERE c.doctor_id = $doctor_id 
-                  AND c.status IN ('accepted', 'in_progress', 'paused'))
+                  AND c.status IN ('accepted', 'confirmed', 'in_progress', 'paused'))
                 
                 UNION ALL
                 
-                (SELECT a.id, u.full_name as patient_name, u.email as patient_email,
+                (SELECT a.id, a.patient_id, u.full_name as patient_name, u.email as patient_email,
                        p.gender as patient_gender,
                        TIMESTAMPDIFF(YEAR, p.date_of_birth, CURDATE()) as patient_age,
-                       CAST('appointment' AS CHAR) as type,
+                       CAST('appointment' AS CHAR(20)) as type,
                        CAST(a.status AS CHAR) as status,
                        a.created_at as updated_at,
                        CAST(a.notes AS CHAR) as symptoms,
                        CAST('offline' AS CHAR) as consultation_mode,
-                       CAST('routine' AS CHAR) as urgency_level
+                       CAST('routine' AS CHAR) as urgency_level,
+                        CAST(a.scheduled_date AS CHAR) as scheduled_date,
+                        CAST(a.scheduled_time AS CHAR) as scheduled_time,
+                        c_link.id as linked_consultation_id
                 FROM appointments a
                 JOIN users u ON a.patient_id = u.id
                 LEFT JOIN patient_profiles p ON u.id = p.user_id
+                LEFT JOIN consultations c_link ON a.id = c_link.appointment_id
                 WHERE a.doctor_id = $doctor_id 
-                  AND a.status = 'confirmed'
+                  AND a.status IN ('confirmed', 'in_progress', 'paused')
                   AND a.payment_status = 'paid')
                   
                 ORDER BY 
                     (CASE 
                         WHEN status = 'in_progress' THEN 1
                         WHEN status = 'paused' THEN 2
-                        WHEN status = 'accepted' THEN 3
-                        WHEN status = 'confirmed' THEN 4
+                        WHEN status = 'confirmed' THEN 3
+                        WHEN status = 'accepted' THEN 4
                         ELSE 5
                     END) ASC,
 
@@ -582,36 +590,73 @@ try {
         // ========================================
         case 'start_consultation':
             $consultation_id = $_POST['consultation_id'] ?? 0;
+            $appointment_id = $_POST['appointment_id'] ?? 0;
             
-            if (!$consultation_id) {
-                throw new Exception('Consultation ID is required');
+            if (!$consultation_id && !$appointment_id) {
+                throw new Exception('ID is required');
             }
             
-            // Start consultation: change from 'accepted' or 'pending' to 'in_progress' and start timer
-            $stmt = $conn->prepare("
-                UPDATE consultations 
-                SET status = 'in_progress', 
-                    start_time = NOW() 
-                WHERE id = ? AND doctor_id = ? AND status IN ('accepted', 'pending')
-            ");
-            $stmt->bind_param("ii", $consultation_id, $doctor_id);
-            
-            if (!$stmt->execute() || $stmt->affected_rows === 0) {
-                throw new Exception('Failed to start consultation. Please check consultation status.');
+            if ($appointment_id) {
+                // Check if consultation already exists for this appointment
+                $check = $conn->prepare("SELECT id FROM consultations WHERE appointment_id = ?");
+                $check->bind_param("i", $appointment_id);
+                $check->execute();
+                $check_res = $check->get_result();
+                
+                if ($check_res->num_rows > 0) {
+                    $consultation_id = $check_res->fetch_assoc()['id'];
+                    $stmt = $conn->prepare("UPDATE consultations SET status = 'in_progress', start_time = NOW() WHERE id = ?");
+                    $stmt->bind_param("i", $consultation_id);
+                } else {
+                    // Create new consultation from appointment
+                    $stmt = $conn->prepare("
+                        INSERT INTO consultations (patient_id, doctor_id, symptoms, consultation_mode, status, urgency_score, severity, appointment_id, start_time)
+                        SELECT patient_id, doctor_id, notes, 'offline', 'in_progress', 0, 'medium', id, NOW()
+                        FROM appointments 
+                        WHERE id = ? AND doctor_id = ?
+                    ");
+                    $stmt->bind_param("ii", $appointment_id, $doctor_id);
+                    $stmt->execute();
+                    $consultation_id = $conn->insert_id;
+                    $stmt = null; // Mark as done
+                }
+                
+                // Update appointment status to in_progress (or you could use 'completed' if the consultation replaces it)
+                $conn->query("UPDATE appointments SET status = 'in_progress' WHERE id = $appointment_id");
+                
+            } else {
+                $stmt = $conn->prepare("
+                    UPDATE consultations 
+                    SET status = 'in_progress', 
+                        start_time = NOW() 
+                    WHERE id = ? AND doctor_id = ? AND status IN ('accepted', 'confirmed', 'pending')
+                ");
+                $stmt->bind_param("ii", $consultation_id, $doctor_id);
             }
             
-            // Create/update consultation session
-            $conn->query("
-                INSERT INTO consultation_sessions (consultation_id, doctor_id, patient_id, started_at)
-                SELECT id, doctor_id, patient_id, NOW()
-                FROM consultations
-                WHERE id = $consultation_id
-                ON DUPLICATE KEY UPDATE started_at = NOW()
-            ");
+            if ($stmt && (!$stmt->execute() || $stmt->affected_rows === 0)) {
+                throw new Exception('Failed to start consultation. Please check status.');
+            }
+            
+            if ($appointment_id || $consultation_id) {
+                $target_id = $appointment_id ?: $consultation_id;
+                $target_type = $appointment_id ? 'appointment' : 'consultation';
+                $target_table = $appointment_id ? 'appointments' : 'consultations';
+                
+                // Create/update consultation session
+                $conn->query("
+                    INSERT INTO consultation_sessions (consultation_id, doctor_id, patient_id, started_at, session_type)
+                    SELECT id, doctor_id, patient_id, NOW(), '$target_type'
+                    FROM $target_table
+                    WHERE id = $target_id
+                    ON DUPLICATE KEY UPDATE started_at = NOW(), session_type = '$target_type'
+                ");
+            }
             
             echo json_encode([
                 'status' => 'success', 
-                'message' => 'Consultation started successfully'
+                'message' => 'Consultation started successfully',
+                'consultation_id' => $consultation_id
             ]);
             break;
             
@@ -620,21 +665,29 @@ try {
         // ========================================
         case 'resume_consultation':
             $consultation_id = $_POST['consultation_id'] ?? 0;
+            $appointment_id = $_POST['appointment_id'] ?? 0;
             
-            if (!$consultation_id) {
-                throw new Exception('Consultation ID is required');
+            if (!$consultation_id && !$appointment_id) {
+                throw new Exception('ID is required');
             }
             
-            // Resume consultation: change from 'paused' to 'in_progress'
-            $stmt = $conn->prepare("
-                UPDATE consultations 
-                SET status = 'in_progress' 
-                WHERE id = ? AND doctor_id = ? AND status = 'paused'
-            ");
-            $stmt->bind_param("ii", $consultation_id, $doctor_id);
+            if ($appointment_id) {
+                $stmt = $conn->prepare("
+                    UPDATE appointments 
+                    SET status = 'in_progress' 
+                    WHERE id = ? AND doctor_id = ? AND status = 'paused'
+                ");
+            } else {
+                $stmt = $conn->prepare("
+                    UPDATE consultations 
+                    SET status = 'in_progress' 
+                    WHERE id = ? AND doctor_id = ? AND status = 'paused'
+                ");
+            }
+            $stmt->bind_param("ii", ($appointment_id ?: $consultation_id), $doctor_id);
             
             if (!$stmt->execute() || $stmt->affected_rows === 0) {
-                throw new Exception('Failed to resume consultation or consultation not paused');
+                throw new Exception('Failed to resume consultation or not paused');
             }
             
             echo json_encode([
@@ -648,17 +701,17 @@ try {
         // ========================================
         case 'pause_consultation':
             $consultation_id = $_POST['consultation_id'] ?? 0;
+            $appointment_id = $_POST['appointment_id'] ?? 0;
             
-            if (!$consultation_id) {
-                throw new Exception('Consultation ID is required');
+            if (!$consultation_id && !$appointment_id) {
+                throw new Exception('ID is required');
             }
             
-            // Update consultation status to 'paused'
-            $conn->query("
-                UPDATE consultations 
-                SET status = 'paused' 
-                WHERE id = $consultation_id AND doctor_id = $doctor_id
-            ");
+            if ($appointment_id) {
+                $conn->query("UPDATE appointments SET status = 'paused' WHERE id = $appointment_id AND doctor_id = $doctor_id");
+            } else {
+                $conn->query("UPDATE consultations SET status = 'paused' WHERE id = $consultation_id AND doctor_id = $doctor_id");
+            }
             
             echo json_encode(['status' => 'success', 'message' => 'Consultation paused']);
             break;
@@ -860,6 +913,7 @@ try {
             error_log("Prescription save input: " . json_encode($input));
             
             $consultation_id = $input['consultation_id'] ?? 0;
+            $appointment_id = $input['appointment_id'] ?? 0;
             $patient_id = $input['patient_id'] ?? 0;
             $icd_code = $input['icd_code'] ?? null;
             $diagnosis = $input['diagnosis'] ?? '';
@@ -869,10 +923,33 @@ try {
             $notes_patient = $input['notes_for_patient'] ?? '';
             $notes_pharmacy = $input['notes_for_pharmacy'] ?? '';
             
-            if (!$consultation_id || !$patient_id || !$diagnosis) {
-                $error_msg = 'Missing required fields';
-                error_log("Prescription save error: $error_msg - consultation_id: $consultation_id, patient_id: $patient_id, diagnosis: $diagnosis");
+            // If consultation_id is missing but appointment_id is present, try to find the linked consultation
+            if (!$consultation_id && $appointment_id) {
+                $stmt_c = $conn->prepare("SELECT id FROM consultations WHERE appointment_id = ?");
+                $stmt_c->bind_param("i", $appointment_id);
+                $stmt_c->execute();
+                $res_c = $stmt_c->get_result();
+                if ($row_c = $res_c->fetch_assoc()) {
+                    $consultation_id = $row_c['id'];
+                }
+            }
+
+            if (!$consultation_id || !is_numeric($patient_id) || empty($diagnosis)) {
+                $error_msg = 'Missing or invalid required fields (consultation_id, patient_id, diagnosis)';
+                if (!$consultation_id && $appointment_id) {
+                    $error_msg = "Could not find a started consultation for appointment #$appointment_id. Please start the session first.";
+                }
+                error_log("Prescription save error: $error_msg - Input: " . json_encode($input));
                 throw new Exception($error_msg);
+            }
+            
+            // Validate patient exists
+            $checkPatient = $conn->prepare("SELECT id FROM users WHERE id = ? AND role = 'patient'");
+            $checkPatient->bind_param("i", $patient_id);
+            $checkPatient->execute();
+            if ($checkPatient->get_result()->num_rows === 0) {
+                error_log("Prescription save error: Patient ID $patient_id does not exist or is not a patient.");
+                throw new Exception("Invalid Patient ID. Please contact support.");
             }
             
             // Create prescription
@@ -1082,9 +1159,19 @@ try {
         // ========================================
         case 'complete_consultation':
             $consultation_id = $_POST['consultation_id'] ?? 0;
+            $appointment_id = $_POST['appointment_id'] ?? 0;
             
-            if (!$consultation_id) {
-                throw new Exception('Consultation ID is required');
+            if (!$consultation_id && !$appointment_id) {
+                throw new Exception('ID is required');
+            }
+            
+            if ($appointment_id) {
+                $conn->query("UPDATE appointments SET status = 'completed' WHERE id = $appointment_id AND doctor_id = $doctor_id");
+                
+                // For appointments, we just mark as completed. 
+                // We could also do session cleanup if we tracked it for appointments too.
+                echo json_encode(['status' => 'success', 'message' => 'Appointment completed']);
+                break;
             }
             
             // Get consultation details
@@ -1535,6 +1622,35 @@ try {
             $stmt->execute();
             
             echo json_encode(['status' => 'success']);
+            break;
+
+        case 'update_patient_info':
+            $patient_id = $_POST['patient_id'] ?? 0;
+            $allergies = $_POST['allergies'] ?? null;
+            $history = $_POST['history'] ?? null;
+            
+            if (!$patient_id) throw new Exception('Patient ID required');
+
+            $conn->begin_transaction();
+            try {
+                if ($allergies !== null) {
+                    $stmt = $conn->prepare("UPDATE consultations SET existing_conditions = ? WHERE patient_id = ? AND doctor_id = ?");
+                    $stmt->bind_param("sii", $allergies, $patient_id, $doctor_id);
+                    $stmt->execute();
+                }
+                
+                if ($history !== null) {
+                    $stmt = $conn->prepare("UPDATE patient_profiles SET medical_history_summary = ? WHERE user_id = ?");
+                    $stmt->bind_param("si", $history, $patient_id);
+                    $stmt->execute();
+                }
+                
+                $conn->commit();
+                echo json_encode(['status' => 'success']);
+            } catch (Exception $e) {
+                $conn->rollback();
+                echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            }
             break;
 
         // ========================================
