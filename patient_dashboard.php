@@ -57,6 +57,8 @@ $activePrescriptionsCount = $activePrescriptionsQuery ? $activePrescriptionsQuer
                 <li><a href="symptom_checker.php"><i class="ph ph-clipboard-text"></i> Symptom Checker</a></li>
                 <li><a href="appointment_booking.php"><i class="ph ph-calendar-check"></i> Book Appointment</a></li>
                 <li><a href="patient_prescriptions.php"><i class="ph ph-prescription"></i> My Prescriptions</a></li>
+                <li><a href="medical_records.php"><i class="ph ph-file-medical"></i> Medical Records</a></li>
+                <li><a href="medical_records.php?tab=reminders"><i class="ph ph-bell"></i> My Reminders</a></li>
                 <li><a href="payment_gateway.php"><i class="ph ph-credit-card"></i> Payments</a></li>
                 <li><a href="#" onclick="showHistory()"><i class="ph ph-clock-counter-clockwise"></i> History</a></li>
                 <li><a href="logout.php" style="color: #fee2e2;"><i class="ph ph-sign-out"></i> Logout</a></li>

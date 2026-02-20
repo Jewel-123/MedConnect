@@ -54,3 +54,27 @@
     [review_text] => good experience
 )
 
+[2026-02-20 12:44:04] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10022
+    [doctor_id] => 10068
+    [rating] => 5
+    [review_text] => 
+)
+
+[2026-02-20 17:40:02] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10023
+    [doctor_id] => 10070
+    [rating] => 5
+    [review_text] => 
+)
+
+[2026-02-20 17:45:45] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10024
+    [doctor_id] => 10070
+    [rating] => 5
+    [review_text] => 
+)
+

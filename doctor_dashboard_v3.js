@@ -980,6 +980,7 @@ function renderPatients(patients) {
                                 <td>${patient.total_consultations}</td>
                                 <td>
                                     <button class="btn btn-outline btn-sm" onclick="viewPatientHistory(${patient.id})">View History</button>
+                                    <button class="btn btn-outline btn-sm" onclick="window.location.href='medical_records.php?patient_id=${patient.id}'">Medical Records</button>
                                 </td>
                             </tr>
                         `).join('')}

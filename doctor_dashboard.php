@@ -222,6 +222,10 @@ $current_view = $_GET['view'] ?? 'dashboard';
                 <i class="ph ph-users"></i>
                 <span>My Patients</span>
             </a>
+            <a href="medical_records.php" class="nav-item">
+                <i class="ph ph-file-medical"></i>
+                <span>Medical Records</span>
+            </a>
             <a href="?view=prescriptions" class="nav-item <?php echo $current_view == 'prescriptions' ? 'active' : ''; ?>">
                 <i class="ph ph-prescription"></i>
                 <span>Prescriptions</span>

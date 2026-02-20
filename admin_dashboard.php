@@ -260,6 +260,10 @@ if (empty($chartLabels)) {
                 <i class="ph ph-users"></i>
                 <span>Patients</span>
             </a>
+            <a href="medical_records.php" class="nav-item">
+                <i class="ph ph-file-medical"></i>
+                <span>Medical Records</span>
+            </a>
             <a href="?view=partners" class="nav-item <?php echo $current_view == 'partners' ? 'active' : ''; ?>">
                 <i class="ph ph-buildings"></i>
                 <span>Clinics & Pharmacies</span>
@@ -532,6 +536,11 @@ if (empty($chartLabels)) {
                                                     title="Edit User">
                                                     <i class="ph ph-pencil-simple"></i>
                                                 </button>
+                                                <?php if($u['role'] == 'patient'): ?>
+                                                <button class="action-btn" onclick="window.location.href='medical_records.php?patient_id=<?php echo $u['id']; ?>'" title="Medical Records">
+                                                    <i class="ph ph-file-medical"></i>
+                                                </button>
+                                                <?php endif; ?>
                                                 <button class="action-btn" style="color: var(--danger);" 
                                                     onclick="confirmDeleteUser(<?php echo $u['id']; ?>, '<?php echo $u['full_name']; ?>')"
                                                     title="Delete/Deactivate">
