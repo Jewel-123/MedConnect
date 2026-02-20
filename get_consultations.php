@@ -37,9 +37,11 @@ try {
         SELECT 
             c.*,
             u.full_name as doctor_name,
-            'consultation' as type
+            'consultation' as type,
+            dr.id as review_id
         FROM consultations c
         LEFT JOIN users u ON c.doctor_id = u.id
+        LEFT JOIN doctor_reviews dr ON c.id = dr.consultation_id
         WHERE c.patient_id = ?
         ORDER BY c.created_at DESC
     ");
@@ -59,7 +61,9 @@ try {
             'status' => $row['status'],
             'created_at' => $row['created_at'],
             'created_at_formatted' => date('M d, Y g:i A', strtotime($row['created_at'])),
-            'doctor_name' => ($row['status'] === 'pending' || $row['status'] === 'assigned' || !$row['doctor_id']) ? 'Seeking Doctor' : $row['doctor_name']
+            'doctor_name' => ($row['status'] === 'pending' || $row['status'] === 'assigned' || !$row['doctor_id']) ? 'Seeking Doctor' : $row['doctor_name'],
+            'doctor_id' => $row['doctor_id'],
+            'review_id' => $row['review_id']
         ];
     }
     
@@ -72,6 +76,7 @@ try {
         FROM appointments a
         LEFT JOIN users u ON a.doctor_id = u.id
         WHERE a.patient_id = ?
+        AND a.id NOT IN (SELECT appointment_id FROM consultations WHERE appointment_id IS NOT NULL)
         ORDER BY a.created_at DESC
     ");
     $apptStmt->bind_param("i", $patientId);

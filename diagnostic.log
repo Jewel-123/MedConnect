@@ -1,0 +1,5 @@
+--- Diagnostic Start ---
+Database connected.
+Using real data: Cons=56, Dr=, Pat=21
+EXCEPTION: Column 'doctor_id' cannot be null
+--- Diagnostic End ---

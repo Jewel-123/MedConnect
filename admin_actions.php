@@ -159,6 +159,38 @@ if ($action === 'update_status') {
     }
     $stmt->close();
 
+} elseif ($action === 'approve_review') {
+    $reviewId = $_POST['review_id'] ?? 0;
+    if (!$reviewId) {
+        echo json_encode(["status" => "error", "message" => "Missing review ID"]);
+        exit;
+    }
+
+    $stmt = $conn->prepare("UPDATE doctor_reviews SET status = 'approved' WHERE id = ?");
+    $stmt->bind_param("i", $reviewId);
+    if ($stmt->execute()) {
+        echo json_encode(["status" => "success", "message" => "Review approved"]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Failed to approve: " . $stmt->error]);
+    }
+    $stmt->close();
+
+} elseif ($action === 'reject_review') {
+    $reviewId = $_POST['review_id'] ?? 0;
+    if (!$reviewId) {
+        echo json_encode(["status" => "error", "message" => "Missing review ID"]);
+        exit;
+    }
+
+    $stmt = $conn->prepare("UPDATE doctor_reviews SET status = 'rejected' WHERE id = ?");
+    $stmt->bind_param("i", $reviewId);
+    if ($stmt->execute()) {
+        echo json_encode(["status" => "success", "message" => "Review rejected"]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Failed to reject: " . $stmt->error]);
+    }
+    $stmt->close();
+
 } else {
     echo json_encode(["status" => "error", "message" => "Invalid action"]);
 }

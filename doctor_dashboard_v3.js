@@ -116,7 +116,7 @@ function renderDashboard() {
                 <div class="stat-header">
                     <div class="stat-icon" style="background: #fff7ed; color: #f59e0b;"><i class="ph ph-currency-dollar"></i></div>
                 </div>
-                <div class="stat-value">$${dashboardStats.monthly_earnings || '0.00'}</div>
+                <div class="stat-value">₹${dashboardStats.monthly_earnings || '0.00'}</div>
                 <div class="stat-label">Monthly Earnings</div>
             </div>
         </div>
@@ -861,6 +861,78 @@ async function pauseConsultation(requestId, type = 'consultation') {
 }
 
 // ========================================
+// REVIEWS & RATINGS VIEW
+// ========================================
+
+async function loadReviews() {
+    try {
+        const response = await fetch('doctor_api.php?action=get_reviews');
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            renderReviews(result.data);
+        }
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+    }
+}
+
+function renderReviews(reviews) {
+    const avgRating = reviews.length > 0
+        ? (reviews.reduce((acc, r) => acc + parseInt(r.rating), 0) / reviews.length).toFixed(1)
+        : '0.0';
+
+    const content = `
+        <div class="page-title">
+            <h1>Reviews & Ratings</h1>
+            <p>What your patients are saying about their experience.</p>
+        </div>
+
+        <div class="stats-grid" style="margin-bottom: 2rem;">
+            <div class="stat-card">
+                <div class="stat-label">Average Rating</div>
+                <div class="stat-value" style="display: flex; align-items: center; gap: 0.5rem; color: #f59e0b;">
+                    ${avgRating} <i class="ph-fill ph-star"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Reviews</div>
+                <div class="stat-value">${reviews.length}</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">Approved Feedback</span>
+            </div>
+            <div class="panel-body">
+                ${reviews.length === 0 ? `
+                    <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+                        <i class="ph ph-star-half" style="font-size: 3rem; opacity: 0.2;"></i>
+                        <p style="margin-top: 1rem;">No approved reviews yet.</p>
+                    </div>
+                ` : reviews.map(rev => `
+                    <div style="padding: 1.5rem; border-bottom: 1px solid var(--border); last-child: border-bottom: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 1rem; margin-bottom: 0.25rem;">${rev.patient_name}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">${new Date(rev.created_at).toLocaleDateString()}</div>
+                            </div>
+                            <div style="display: flex; gap: 2px; color: #f59e0b;">
+                                ${Array(5).fill(0).map((_, i) => `<i class="ph-fill ph-star" style="${i < rev.rating ? '' : 'color: #e2e8f0;'}"></i>`).join('')}
+                            </div>
+                        </div>
+                        <p style="color: #475569; line-height: 1.6; font-size: 0.95rem;">${rev.review_text || '<i>No comment left</i>'}</p>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    document.getElementById('mainContent').innerHTML = content;
+}
+
+// ========================================
 // PATIENTS VIEW
 // ========================================
 
@@ -1220,15 +1292,15 @@ function renderEarnings(summary, details) {
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Total Gross</div>
-                <div class="stat-value">$${parseFloat(summary.total_gross || 0).toFixed(2)}</div>
+                <div class="stat-value">₹${parseFloat(summary.total_gross || 0).toFixed(2)}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Platform Commission (10%)</div>
-                <div class="stat-value">$${parseFloat(summary.total_commission || 0).toFixed(2)}</div>
+                <div class="stat-value">₹${parseFloat(summary.total_commission || 0).toFixed(2)}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Net Earnings</div>
-                <div class="stat-value">$${parseFloat(summary.total_net || 0).toFixed(2)}</div>
+                <div class="stat-value">₹${parseFloat(summary.total_net || 0).toFixed(2)}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Total Consultations</div>
@@ -1257,10 +1329,10 @@ function renderEarnings(summary, details) {
                             <tr>
                                 <td>${new Date(earning.created_at).toLocaleDateString()}</td>
                                 <td>${earning.symptoms.substring(0, 50)}...</td>
-                                <td>$${parseFloat(earning.gross_amount).toFixed(2)}</td>
-                                <td>$${parseFloat(earning.platform_commission_amount).toFixed(2)}</td>
-                                <td>$${parseFloat(earning.net_amount).toFixed(2)}</td>
-                                <td><span class="status-badge bg-yellow">${earning.payment_status}</span></td>
+                                <td>₹${parseFloat(earning.gross_amount).toFixed(2)}</td>
+                                <td>₹${parseFloat(earning.platform_commission_amount).toFixed(2)}</td>
+                                <td>₹${parseFloat(earning.net_amount).toFixed(2)}</td>
+                                <td><span class="status-badge bg-green">Completed</span></td>
                             </tr>
                         `).join('')}
                     </tbody>

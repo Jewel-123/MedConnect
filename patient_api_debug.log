@@ -1,0 +1,56 @@
+[2026-02-20 06:04:57] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10015
+    [doctor_id] => 10063
+    [rating] => 5
+    [review_text] => 
+)
+
+[2026-02-20 06:06:24] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10014
+    [doctor_id] => 10070
+    [rating] => 5
+    [review_text] => good
+)
+
+[2026-02-20 06:35:04] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10016
+    [doctor_id] => 10063
+    [rating] => 5
+    [review_text] => 
+)
+
+[2026-02-20 06:55:39] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10017
+    [doctor_id] => 10063
+    [rating] => 5
+    [review_text] => 
+)
+
+[2026-02-20 07:12:30] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10019
+    [doctor_id] => 10063
+    [rating] => 5
+    [review_text] => 
+)
+
+[2026-02-20 07:35:31] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10020
+    [doctor_id] => 10060
+    [rating] => 5
+    [review_text] => 
+)
+
+[2026-02-20 07:52:35] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10021
+    [doctor_id] => 10067
+    [rating] => 5
+    [review_text] => good experience
+)
+

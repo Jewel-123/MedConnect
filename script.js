@@ -89,6 +89,9 @@ async function loadPatientDashboardData() {
                             ${(consultation.status === 'assigned' || consultation.status === 'in_progress') ? `
                                 <a href="consultation_room.php?id=${consultation.id}&type=${consultation.type || 'consultation'}" class="btn btn-primary btn-sm">Join</a>
                             ` : ''}
+                            ${(consultation.status === 'completed' && !consultation.review_id && consultation.doctor_id) ? `
+                                <button onclick="openReviewModal(${consultation.id}, ${consultation.doctor_id}, '${consultation.doctor_name || 'Doctor'}')" class="btn btn-outline btn-sm">Leave Review</button>
+                            ` : ''}
                         </div>
                     </div>
                 `).join('');
@@ -129,6 +132,9 @@ async function loadConsultationHistory() {
                             <span class="status-badge status-${consult.status}">
                                 ${consult.status.replace('_', ' ')}
                             </span>
+                            ${(consult.status === 'completed' && !consult.review_id && consult.doctor_id) ? `
+                                <button onclick="openReviewModal(${consult.id}, ${consult.doctor_id}, '${consult.doctor_name || 'Doctor'}')" class="btn btn-primary btn-sm">Leave Review</button>
+                            ` : ''}
                         </div>
                     </div>
                 `).join('');
@@ -215,6 +221,146 @@ function closeDoctorModal() {
     if (modal) {
         modal.remove();
         document.body.style.overflow = 'auto';
+    }
+}
+
+// --- Review System ---
+function openReviewModal(consultationId, doctorId, doctorName) {
+    const modal = document.createElement('div');
+    modal.id = 'reviewModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease;
+    `;
+
+    modal.innerHTML = `
+        <div style="background: white; padding: 2rem; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #f1f5f9;">
+            <h3 style="margin-bottom: 0.5rem; color: #1e293b;">Rate your experience</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">How was your consultation with ${doctorName}?</p>
+            
+            <div id="starRating" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; justify-content: center; font-size: 2rem;">
+                <i class="ph ph-star star-btn" data-value="1" style="cursor: pointer; color: #e2e8f0; transition: 0.2s;"></i>
+                <i class="ph ph-star star-btn" data-value="2" style="cursor: pointer; color: #e2e8f0; transition: 0.2s;"></i>
+                <i class="ph ph-star star-btn" data-value="3" style="cursor: pointer; color: #e2e8f0; transition: 0.2s;"></i>
+                <i class="ph ph-star star-btn" data-value="4" style="cursor: pointer; color: #e2e8f0; transition: 0.2s;"></i>
+                <i class="ph ph-star star-btn" data-value="5" style="cursor: pointer; color: #e2e8f0; transition: 0.2s;"></i>
+            </div>
+
+            <textarea id="reviewText" style="width: 100%; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; min-height: 120px; font-family: inherit; font-size: 0.95rem; margin-bottom: 1.5rem; outline: none; transition: border-color 0.2s;" placeholder="Describe your experience (optional)..."></textarea>
+            
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="closeReviewModal()" class="btn btn-outline" style="flex: 1;">Cancel</button>
+                <button onclick="submitReview(${consultationId}, ${doctorId})" class="btn btn-primary" style="flex: 2;">Submit Feedback</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+
+    // Handle star interactions
+    let selectedRating = 0;
+    const stars = modal.querySelectorAll('.star-btn');
+    stars.forEach(star => {
+        star.addEventListener('mouseover', () => {
+            const val = parseInt(star.dataset.value);
+            stars.forEach((s, i) => {
+                if (i < val) {
+                    s.classList.add('ph-fill');
+                    s.style.color = '#fbbf24';
+                }
+            });
+        });
+        star.addEventListener('mouseleave', () => {
+            stars.forEach((s, i) => {
+                if (i >= selectedRating) {
+                    s.classList.remove('ph-fill');
+                    s.style.color = '#e2e8f0';
+                } else {
+                    s.classList.add('ph-fill');
+                    s.style.color = '#fbbf24';
+                }
+            });
+        });
+        star.addEventListener('click', () => {
+            selectedRating = parseInt(star.dataset.value);
+            modal.dataset.rating = selectedRating;
+        });
+    });
+
+    const reviewText = document.getElementById('reviewText');
+    reviewText.addEventListener('focus', () => { reviewText.style.borderColor = 'var(--primary)'; });
+    reviewText.addEventListener('blur', () => { reviewText.style.borderColor = '#e2e8f0'; });
+}
+
+function closeReviewModal() {
+    const modal = document.getElementById('reviewModal');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = 'auto';
+    }
+}
+
+async function submitReview(consultationId, doctorId) {
+    const modal = document.getElementById('reviewModal');
+    const rating = parseInt(modal.dataset.rating || 0);
+    const reviewText = document.getElementById('reviewText').value;
+
+    if (rating === 0) {
+        alert('Please select a star rating.');
+        return;
+    }
+
+    try {
+        const response = await fetch('patient_api.php?action=submit_feedback', {
+            method: 'POST',
+            body: JSON.stringify({
+                consultation_id: consultationId,
+                doctor_id: doctorId,
+                rating: rating,
+                review_text: reviewText
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            let errorJson;
+            try {
+                errorJson = JSON.parse(errorText);
+            } catch (e) { }
+
+            alert('Error: ' + (errorJson ? errorJson.message : 'Server error (' + response.status + ')'));
+            return;
+        }
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            alert('Thank you for your feedback! It has been submitted for review.');
+            closeReviewModal();
+            // Refresh views
+            loadPatientDashboardData();
+            if (document.getElementById('historyActivityList')) {
+                loadConsultationHistory();
+            }
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (e) {
+        console.error('Failed to submit review:', e);
+        alert('Failed to submit feedback. Check console for details.');
     }
 }
 

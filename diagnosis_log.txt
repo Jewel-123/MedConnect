@@ -1,0 +1,4 @@
+Starting valid diagnosis...
+Found Valid Consultation: ID=103, Doctor=10060, Patient=21
+SUCCESS: Insert worked with valid doctor ID!
+Cleaned up test review.

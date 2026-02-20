@@ -1,0 +1,140 @@
+Array
+(
+    [Field] => id
+    [Type] => int(11)
+    [Null] => NO
+    [Key] => PRI
+    [Default] => 
+    [Extra] => auto_increment
+)
+
+Array
+(
+    [Field] => consultation_id
+    [Type] => int(11)
+    [Null] => NO
+    [Key] => MUL
+    [Default] => 
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => session_token
+    [Type] => varchar(255)
+    [Null] => NO
+    [Key] => MUL
+    [Default] => 
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => session_type
+    [Type] => enum('video','audio','chat')
+    [Null] => NO
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => started_at
+    [Type] => timestamp
+    [Null] => NO
+    [Key] => 
+    [Default] => current_timestamp()
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => ended_at
+    [Type] => timestamp
+    [Null] => YES
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => duration_minutes
+    [Type] => int(11)
+    [Null] => YES
+    [Key] => 
+    [Default] => 0
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => transcription
+    [Type] => text
+    [Null] => YES
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => ai_highlights
+    [Type] => longtext
+    [Null] => YES
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => encryption_key_hash
+    [Type] => varchar(255)
+    [Null] => YES
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => is_encrypted
+    [Type] => tinyint(1)
+    [Null] => YES
+    [Key] => 
+    [Default] => 1
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => accumulated_seconds
+    [Type] => int(11)
+    [Null] => YES
+    [Key] => 
+    [Default] => 0
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => last_resume_at
+    [Type] => datetime
+    [Null] => YES
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
+
+Array
+(
+    [Field] => appointment_id
+    [Type] => int(11)
+    [Null] => YES
+    [Key] => UNI
+    [Default] => 
+    [Extra] => 
+)
+

@@ -861,3 +861,287 @@ Stack trace:
 [20-Feb-2026 03:43:35 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
 [20-Feb-2026 03:43:35 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
 [20-Feb-2026 03:43:36 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 03:56:01 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 03:56:12 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 04:00:09 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:687
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 687
+[20-Feb-2026 04:00:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:687
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 687
+[20-Feb-2026 04:00:44 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:687
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 687
+[20-Feb-2026 04:00:52 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:687
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 687
+[20-Feb-2026 04:00:53 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:687
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 687
+[20-Feb-2026 04:02:04 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 04:02:10 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 04:02:10 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 04:02:10 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 04:02:10 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 04:02:10 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 04:02:12 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 04:02:14 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 04:02:20 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 04:02:20 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 04:02:20 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 04:02:20 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 04:02:20 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 04:02:21 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 04:02:23 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 04:41:29 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 04:51:45 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 05:02:14 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 05:45:00 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:05:35 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:05:55 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:06:52 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 06:07:00 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:07:00 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:07:03 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:07:03 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:07:03 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 06:07:03 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 06:07:03 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 06:07:05 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 06:07:36 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:07:36 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:07:38 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:07:38 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:07:38 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 06:07:38 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 06:07:38 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 06:07:40 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 06:07:42 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 06:07:54 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 06:08:04 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:08:04 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:08:06 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:08:06 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:08:06 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 06:08:06 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 06:08:06 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 06:08:15 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 06:08:58 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 06:11:23 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:11:23 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:11:25 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:11:25 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:11:25 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 06:11:25 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 06:11:25 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 06:11:27 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 06:11:34 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[20-Feb-2026 06:14:18 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:14:26 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:14:26 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:14:26 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 06:14:26 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 06:14:26 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 06:14:27 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:14:43 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:17:35 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:17:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:18:17 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:18:17 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:18:17 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 06:18:17 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 06:18:17 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 06:18:19 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:18:30 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:21:19 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:21:19 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:21:19 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 06:21:19 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 06:21:19 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 06:21:20 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:23:33 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:23:50 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:23:50 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:23:50 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 06:23:50 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 06:23:50 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 06:23:58 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:27:09 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:29:24 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:29:24 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:29:24 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 06:29:24 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 06:29:24 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 06:29:30 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:29:52 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:30:00 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:30:08 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:30:14 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:30:15 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:30:15 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1266
+[20-Feb-2026 06:30:15 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1267
+[20-Feb-2026 06:30:15 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1268
+[20-Feb-2026 06:30:16 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:30:18 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:31:59 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\medconnect\doctor_api.php on line 7
+[20-Feb-2026 06:33:56 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:33:56 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:33:56 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:33:56 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:33:56 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:33:58 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:34:08 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:34:08 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:34:08 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:34:08 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:34:08 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:34:13 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:35:26 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:35:38 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:35:38 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:35:38 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:35:38 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:35:38 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:35:43 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:36:10 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:36:10 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:36:10 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:36:10 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:36:10 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:37:39 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:37:39 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:37:39 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:37:39 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:37:39 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:43:07 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:43:15 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:45:00 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:45:00 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:45:00 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:45:00 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:45:00 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:45:01 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:45:06 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:45:06 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:45:06 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:45:06 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:45:06 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:45:08 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:45:17 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:45:27 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:45:27 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:45:27 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:45:27 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:45:27 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:45:29 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:45:34 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:45:34 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:45:34 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:45:34 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:45:34 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:45:36 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:45:38 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:50:38 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:50:48 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:52:32 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:52:32 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:52:32 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:52:32 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:52:32 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:52:34 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:52:44 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:52:59 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:53:06 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 06:53:06 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 06:53:06 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1284
+[20-Feb-2026 06:53:06 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 06:53:06 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 06:53:08 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:55:16 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:58:24 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:58:33 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 06:59:50 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:706
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 706
+[20-Feb-2026 07:01:01 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 07:01:01 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 07:01:01 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1285
+[20-Feb-2026 07:01:01 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1286
+[20-Feb-2026 07:01:01 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1287
+[20-Feb-2026 07:01:02 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 07:09:11 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 07:12:10 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 07:15:54 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 07:21:47 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[20-Feb-2026 07:23:54 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:24:08 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:24:59 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:742
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 742
+[20-Feb-2026 07:25:13 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 07:25:13 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 07:25:13 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[20-Feb-2026 07:25:13 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[20-Feb-2026 07:25:13 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[20-Feb-2026 07:27:29 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:27:37 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 07:27:37 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 07:27:39 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:27:47 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 07:27:47 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 07:27:49 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:27:55 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 07:27:55 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 07:27:57 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:33:54 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:34:13 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:34:20 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 07:34:20 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 07:34:20 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[20-Feb-2026 07:34:20 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[20-Feb-2026 07:34:20 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[20-Feb-2026 07:34:22 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:34:24 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:34:34 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 07:34:34 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 07:34:34 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[20-Feb-2026 07:34:34 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[20-Feb-2026 07:34:34 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[20-Feb-2026 07:34:50 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 07:34:50 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 07:34:52 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 07:34:52 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 07:34:52 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[20-Feb-2026 07:34:52 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[20-Feb-2026 07:34:52 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[20-Feb-2026 07:34:54 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:34:57 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:35:00 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:36:25 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:36:34 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[20-Feb-2026 07:47:23 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrician
+[20-Feb-2026 07:47:33 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrician
+[20-Feb-2026 07:49:12 Europe/Berlin] Prescription save input: {"consultation_id":10021,"patient_id":10075,"diagnosis":"test","medicines":[{"name":"paracetamol","dosage":"150","frequency":"Three Times Daily","duration":"5","instructions":"morining after food,evening after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"morining after food,evening after food","notes_for_pharmacy":""}
+[20-Feb-2026 07:49:12 Europe/Berlin] Prescription created with ID: 31
+[20-Feb-2026 07:49:12 Europe/Berlin] Prescription saved successfully: ID 31
+[20-Feb-2026 07:49:48 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10021","appointment_id":null,"patient_id":"10075","icd_code":"","diagnosis":"tset","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"8","duration":"7","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-02-21","notes_for_patient":"snd","notes_for_pharmacy":""}
+[20-Feb-2026 07:49:48 Europe/Berlin] Prescription created with ID: 32
+[20-Feb-2026 07:49:48 Europe/Berlin] Prescription saved successfully: ID 32
+[20-Feb-2026 07:51:05 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrician
+[20-Feb-2026 07:51:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:742
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 742
+[20-Feb-2026 07:51:39 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[20-Feb-2026 07:51:39 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[20-Feb-2026 07:51:39 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[20-Feb-2026 07:51:39 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[20-Feb-2026 07:51:39 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[20-Feb-2026 07:51:43 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrician

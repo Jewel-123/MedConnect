@@ -115,7 +115,7 @@ function renderDashboard() {
                 <div class="stat-header">
                     <div class="stat-icon" style="background: #fff7ed; color: #f59e0b;"><i class="ph ph-currency-dollar"></i></div>
                 </div>
-                <div class="stat-value">$${dashboardStats.monthly_earnings || '0.00'}</div>
+                <div class="stat-value">₹${dashboardStats.monthly_earnings || '0.00'}</div>
                 <div class="stat-label">Monthly Earnings</div>
             </div>
         </div>
@@ -844,15 +844,15 @@ function renderEarnings(summary, details) {
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Total Gross</div>
-                <div class="stat-value">$${parseFloat(summary.total_gross || 0).toFixed(2)}</div>
+                <div class="stat-value">₹${parseFloat(summary.total_gross || 0).toFixed(2)}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Platform Commission (10%)</div>
-                <div class="stat-value">$${parseFloat(summary.total_commission || 0).toFixed(2)}</div>
+                <div class="stat-value">₹${parseFloat(summary.total_commission || 0).toFixed(2)}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Net Earnings</div>
-                <div class="stat-value">$${parseFloat(summary.total_net || 0).toFixed(2)}</div>
+                <div class="stat-value">₹${parseFloat(summary.total_net || 0).toFixed(2)}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Total Consultations</div>
@@ -881,10 +881,10 @@ function renderEarnings(summary, details) {
                             <tr>
                                 <td>${new Date(earning.created_at).toLocaleDateString()}</td>
                                 <td>${earning.symptoms.substring(0, 50)}...</td>
-                                <td>$${parseFloat(earning.gross_amount).toFixed(2)}</td>
-                                <td>$${parseFloat(earning.platform_commission_amount).toFixed(2)}</td>
-                                <td>$${parseFloat(earning.net_amount).toFixed(2)}</td>
-                                <td><span class="status-badge bg-yellow">${earning.payment_status}</span></td>
+                                <td>₹${parseFloat(earning.gross_amount).toFixed(2)}</td>
+                                <td>₹${parseFloat(earning.platform_commission_amount).toFixed(2)}</td>
+                                <td>₹${parseFloat(earning.net_amount).toFixed(2)}</td>
+                                <td><span class="status-badge bg-green">Completed</span></td>
                             </tr>
                         `).join('')}
                     </tbody>

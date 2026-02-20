@@ -1,23 +1,36 @@
-&lt;?php
+<?php
 /**
  * Patient API - Post-Consultation Workflow
  * Handles patient-facing actions after consultation completion
  */
+
+// Disable display errors to prevent JSON corruption
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', 'patient_api_errors.log');
 
 session_start();
 require_once 'db.php';
 
 header('Content-Type: application/json');
 
+// Custom logger for debugging
+function api_log($message) {
+    file_put_contents('patient_api_debug.log', date('[Y-m-d H:i:s] ') . $message . "\n", FILE_APPEND);
+}
+
 // Check authentication
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'patient') {
     http_response_code(401);
-    echo json_encode(['status' =&gt; 'error', 'message' =&gt; 'Unauthorized']);
+    echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
     exit;
 }
 
 $patient_id = $_SESSION['user_id'];
-$action = $_GET['action'] ?? $_POST['action'] ?? '';
+
+// Robust action handling
+$input = json_decode(file_get_contents('php://input'), true);
+$action = $_GET['action'] ?? $_POST['action'] ?? $input['action'] ?? '';
 
 try {
     switch ($action) {
@@ -33,7 +46,7 @@ try {
             }
             
             // Get consultation details with doctor info
-            $stmt = $conn-&gt;prepare("
+            $stmt = $conn->prepare("
                 SELECT 
                     c.*,
                     u.full_name as doctor_name,
@@ -46,43 +59,43 @@ try {
                 LEFT JOIN doctor_profiles dp ON u.id = dp.user_id
                 WHERE c.id = ? AND c.patient_id = ?
             ");
-            $stmt-&gt;bind_param("ii", $consultation_id, $patient_id);
-            $stmt-&gt;execute();
-            $consultation = $stmt-&gt;get_result()-&gt;fetch_assoc();
+            $stmt->bind_param("ii", $consultation_id, $patient_id);
+            $stmt->execute();
+            $consultation = $stmt->get_result()->fetch_assoc();
             
             if (!$consultation) {
                 throw new Exception('Consultation not found');
             }
             
             // Get prescription if exists
-            $stmt = $conn-&gt;prepare("
+            $stmt = $conn->prepare("
                 SELECT * FROM prescriptions_v2 
                 WHERE consultation_id = ? AND patient_id = ?
             ");
-            $stmt-&gt;bind_param("ii", $consultation_id, $patient_id);
-            $stmt-&gt;execute();
-            $prescription = $stmt-&gt;get_result()-&gt;fetch_assoc();
+            $stmt->bind_param("ii", $consultation_id, $patient_id);
+            $stmt->execute();
+            $prescription = $stmt->get_result()->fetch_assoc();
             
             // Get prescription items if prescription exists
             $prescription_items = [];
             if ($prescription) {
-                $stmt = $conn-&gt;prepare("
+                $stmt = $conn->prepare("
                     SELECT * FROM prescription_items_v2 
                     WHERE prescription_id = ?
                 ");
-                $stmt-&gt;bind_param("i", $prescription['id']);
-                $stmt-&gt;execute();
-                $result = $stmt-&gt;get_result();
-                while ($row = $result-&gt;fetch_assoc()) {
+                $stmt->bind_param("i", $prescription['id']);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                while ($row = $result->fetch_assoc()) {
                     $prescription_items[] = $row;
                 }
             }
             
             echo json_encode([
-                'status' =&gt; 'success',
-                'consultation' =&gt; $consultation,
-                'prescription' =&gt; $prescription,
-                'prescription_items' =&gt; $prescription_items
+                'status' => 'success',
+                'consultation' => $consultation,
+                'prescription' => $prescription,
+                'prescription_items' => $prescription_items
             ]);
             break;
             
@@ -90,7 +103,7 @@ try {
         // GET ACTIVE PRESCRIPTIONS
         // ========================================
         case 'get_active_prescriptions':
-            $stmt = $conn-&gt;prepare("
+            $stmt = $conn->prepare("
                 SELECT 
                     p.*,
                     u.full_name as doctor_name,
@@ -103,19 +116,19 @@ try {
                 ORDER BY p.created_at DESC
                 LIMIT 10
             ");
-            $stmt-&gt;bind_param("i", $patient_id);
-            $stmt-&gt;execute();
-            $result = $stmt-&gt;get_result();
+            $stmt->bind_param("i", $patient_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
             
             $prescriptions = [];
-            while ($row = $result-&gt;fetch_assoc()) {
+            while ($row = $result->fetch_assoc()) {
                 $prescriptions[] = $row;
             }
             
             echo json_encode([
-                'status' =&gt; 'success',
-                'prescriptions' =&gt; $prescriptions,
-                'count' =&gt; count($prescriptions)
+                'status' => 'success',
+                'prescriptions' => $prescriptions,
+                'count' => count($prescriptions)
             ]);
             break;
             
@@ -130,7 +143,7 @@ try {
             }
             
             // Get prescription
-            $stmt = $conn-&gt;prepare("
+            $stmt = $conn->prepare("
                 SELECT 
                     p.*,
                     u.full_name as doctor_name,
@@ -141,32 +154,32 @@ try {
                 LEFT JOIN doctor_profiles dp ON u.id = dp.user_id
                 WHERE p.id = ? AND p.patient_id = ?
             ");
-            $stmt-&gt;bind_param("ii", $prescription_id, $patient_id);
-            $stmt-&gt;execute();
-            $prescription = $stmt-&gt;get_result()-&gt;fetch_assoc();
+            $stmt->bind_param("ii", $prescription_id, $patient_id);
+            $stmt->execute();
+            $prescription = $stmt->get_result()->fetch_assoc();
             
             if (!$prescription) {
                 throw new Exception('Prescription not found');
             }
             
             // Get prescription items
-            $stmt = $conn-&gt;prepare("
+            $stmt = $conn->prepare("
                 SELECT * FROM prescription_items_v2 
                 WHERE prescription_id = ?
             ");
-            $stmt-&gt;bind_param("i", $prescription_id);
-            $stmt-&gt;execute();
-            $result = $stmt-&gt;get_result();
+            $stmt->bind_param("i", $prescription_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
             
             $items = [];
-            while ($row = $result-&gt;fetch_assoc()) {
+            while ($row = $result->fetch_assoc()) {
                 $items[] = $row;
             }
             
             echo json_encode([
-                'status' =&gt; 'success',
-                'prescription' =&gt; $prescription,
-                'items' =&gt; $items
+                'status' => 'success',
+                'prescription' => $prescription,
+                'items' => $items
             ]);
             break;
             
@@ -174,7 +187,9 @@ try {
         // CREATE MEDICINE ORDER
         // ========================================
         case 'create_medicine_order':
-            $input = json_decode(file_get_contents('php://input'), true);
+            if (!$input) {
+                throw new Exception('Invalid JSON input');
+            }
             
             $prescription_id = $input['prescription_id'] ?? 0;
             $fulfillment_type = $input['fulfillment_type'] ?? 'pickup'; // pickup or delivery
@@ -186,13 +201,13 @@ try {
             }
             
             // Verify prescription belongs to patient
-            $stmt = $conn-&gt;prepare("
+            $stmt = $conn->prepare("
                 SELECT * FROM prescriptions_v2 
                 WHERE id = ? AND patient_id = ?
             ");
-            $stmt-&gt;bind_param("ii", $prescription_id, $patient_id);
-            $stmt-&gt;execute();
-            $prescription = $stmt-&gt;get_result()-&gt;fetch_assoc();
+            $stmt->bind_param("ii", $prescription_id, $patient_id);
+            $stmt->execute();
+            $prescription = $stmt->get_result()->fetch_assoc();
             
             if (!$prescription) {
                 throw new Exception('Prescription not found');
@@ -203,12 +218,12 @@ try {
             
             if (!$pharmacy_id) {
                 // Find first available pharmacy
-                $result = $conn-&gt;query("
+                $result = $conn->query("
                     SELECT id FROM users 
                     WHERE role = 'pharmacy' AND status = 'approved' 
                     LIMIT 1
                 ");
-                $pharmacy = $result-&gt;fetch_assoc();
+                $pharmacy = $result->fetch_assoc();
                 $pharmacy_id = $pharmacy['id'] ?? null;
                 
                 if (!$pharmacy_id) {
@@ -223,13 +238,13 @@ try {
             $order_number = 'ORD-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
             
             // Create order
-            $stmt = $conn-&gt;prepare("
+            $stmt = $conn->prepare("
                 INSERT INTO prescription_orders 
                 (order_number, prescription_id, pharmacy_id, patient_id, order_status, 
                  fulfillment_type, delivery_address, delivery_contact, total_amount, payment_status)
                 VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, 'pending')
             ");
-            $stmt-&gt;bind_param("siiisssd", 
+            $stmt->bind_param("siiisssd", 
                 $order_number, 
                 $prescription_id, 
                 $pharmacy_id, 
@@ -240,28 +255,28 @@ try {
                 $total_amount
             );
             
-            if (!$stmt-&gt;execute()) {
-                throw new Exception('Failed to create order: ' . $stmt-&gt;error);
+            if (!$stmt->execute()) {
+                throw new Exception('Failed to create order: ' . $stmt->error);
             }
             
-            $order_id = $stmt-&gt;insert_id;
+            $order_id = $stmt->insert_id;
             
             // Send notification to pharmacy
             require_once 'notification_service.php';
             $notificationService = new NotificationService($conn);
-            $notificationService-&gt;send(
+            $notificationService->send(
                 $pharmacy_id,
                 'all',
                 'New Prescription Order',
                 "New order #$order_number received from patient.",
-                ['notification_type' =&gt; 'new_order', 'related_id' =&gt; $order_id]
+                ['notification_type' => 'new_order', 'related_id' => $order_id]
             );
             
             echo json_encode([
-                'status' =&gt; 'success',
-                'order_id' =&gt; $order_id,
-                'order_number' =&gt; $order_number,
-                'message' =&gt; 'Order created successfully'
+                'status' => 'success',
+                'order_id' => $order_id,
+                'order_number' => $order_number,
+                'message' => 'Order created successfully'
             ]);
             break;
             
@@ -269,7 +284,11 @@ try {
         // SUBMIT FEEDBACK
         // ========================================
         case 'submit_feedback':
-            $input = json_decode(file_get_contents('php://input'), true);
+            api_log("Submit feedback called. Input: " . print_r($input, true));
+            if (!$input) {
+                api_log("Invalid JSON input");
+                throw new Exception('Invalid JSON input');
+            }
             
             $consultation_id = $input['consultation_id'] ?? 0;
             $doctor_id = $input['doctor_id'] ?? 0;
@@ -277,41 +296,43 @@ try {
             $review_text = $input['review_text'] ?? '';
             
             if (!$consultation_id || !$doctor_id || !$rating) {
+                api_log("Missing required fields: Consult=$consultation_id, Doc=$doctor_id, Rating=$rating");
                 throw new Exception('Consultation ID, Doctor ID, and rating are required');
             }
             
-            if ($rating &lt; 1 || $rating &gt; 5) {
+            if ($rating < 1 || $rating > 5) {
                 throw new Exception('Rating must be between 1 and 5');
             }
             
             // Check if feedback already exists
-            $stmt = $conn-&gt;prepare("
+            $stmt = $conn->prepare("
                 SELECT id FROM doctor_reviews 
                 WHERE consultation_id = ? AND patient_id = ?
             ");
-            $stmt-&gt;bind_param("ii", $consultation_id, $patient_id);
-            $stmt-&gt;execute();
-            $existing = $stmt-&gt;get_result()-&gt;fetch_assoc();
+            $stmt->bind_param("ii", $consultation_id, $patient_id);
+            $stmt->execute();
+            $existing = $stmt->get_result()->fetch_assoc();
             
             if ($existing) {
                 throw new Exception('Feedback already submitted for this consultation');
             }
             
             // Insert review
-            $stmt = $conn-&gt;prepare("
+            $stmt = $conn->prepare("
                 INSERT INTO doctor_reviews 
                 (doctor_id, patient_id, consultation_id, rating, review_text)
                 VALUES (?, ?, ?, ?, ?)
             ");
-            $stmt-&gt;bind_param("iiiis", $doctor_id, $patient_id, $consultation_id, $rating, $review_text);
+            $stmt->bind_param("iiiis", $doctor_id, $patient_id, $consultation_id, $rating, $review_text);
             
-            if (!$stmt-&gt;execute()) {
-                throw new Exception('Failed to submit feedback: ' . $stmt-&gt;error);
+            if (!$stmt->execute()) {
+                api_log("DB Error during insert: " . $stmt->error);
+                throw new Exception('Failed to submit feedback: ' . $stmt->error);
             }
             
             echo json_encode([
-                'status' =&gt; 'success',
-                'message' =&gt; 'Feedback submitted successfully'
+                'status' => 'success',
+                'message' => 'Feedback submitted successfully'
             ]);
             break;
             
@@ -320,12 +341,12 @@ try {
     }
     
 } catch (Exception $e) {
+    api_log("API Error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
-        'status' =&gt; 'error',
-        'message' =&gt; $e-&gt;getMessage()
+        'status' => 'error',
+        'message' => $e->getMessage()
     ]);
 }
 
-$conn-&gt;close();
-?&gt;
+$conn->close();

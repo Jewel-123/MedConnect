@@ -95,11 +95,11 @@ try {
                 WHERE doctor_id = $doctor_id AND follow_up_date = '$today'
             ")->fetch_assoc()['count'] ?? 0;
             
-            // Average rating
+            // Average rating (Approved reviews only)
             $ratingData = $conn->query("
                 SELECT AVG(rating) as avg_rating, COUNT(*) as total_reviews 
                 FROM doctor_reviews 
-                WHERE doctor_id = $doctor_id
+                WHERE doctor_id = $doctor_id AND status = 'approved'
             ")->fetch_assoc();
             
             $avgRating = $ratingData['avg_rating'] ? round($ratingData['avg_rating'], 1) : 0;
@@ -519,7 +519,8 @@ try {
                 LEFT JOIN consultations c_link ON a.id = c_link.appointment_id
                 WHERE a.doctor_id = $doctor_id 
                   AND a.status IN ('confirmed', 'in_progress', 'paused')
-                  AND a.payment_status = 'paid')
+                  AND a.payment_status = 'paid'
+                  AND a.id NOT IN (SELECT appointment_id FROM consultations WHERE appointment_id IS NOT NULL))
                   
                 ORDER BY 
                     (CASE 
@@ -557,6 +558,24 @@ try {
                 throw new Exception('Consultation ID is required');
             }
             
+            // Check if session already exists
+            $checkStmt = $conn->prepare("SELECT session_token, session_type FROM consultation_sessions WHERE consultation_id = ? LIMIT 1");
+            $checkStmt->bind_param("i", $consultation_id);
+            $checkStmt->execute();
+            $result = $checkStmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                // Return existing session details if already started
+                $existing = $result->fetch_assoc();
+                echo json_encode([
+                    'status' => 'success',
+                    'session_token' => $existing['session_token'],
+                    'consultation_mode' => $existing['session_type'],
+                    'message' => 'Resuming existing session'
+                ]);
+                break;
+            }
+
             // Update consultation status to 'in_progress'
             $conn->query("
                 UPDATE consultations 
@@ -624,6 +643,42 @@ try {
                 // Update appointment status to in_progress (or you could use 'completed' if the consultation replaces it)
                 $conn->query("UPDATE appointments SET status = 'in_progress' WHERE id = $appointment_id");
                 
+                // --- CUSTOM FIX: Create earnings record for appointment-based consultations ---
+                // Appointments confirmed via 'confirm_appointment' don't create earnings records.
+                // We create it here so 'complete_consultation' can update it later.
+                
+                // Check if earnings already exist for this consultation
+                $checkEarnings = $conn->query("SELECT id FROM doctor_earnings WHERE consultation_id = $consultation_id AND doctor_id = $doctor_id");
+                if ($checkEarnings->num_rows === 0) {
+                    // Get fee from appointment or doctor profile
+                    $apptData = $conn->query("SELECT consultation_fee FROM appointments WHERE id = $appointment_id")->fetch_assoc();
+                    $gross_amount = floatval($apptData['consultation_fee'] ?? 0);
+                    
+                    if ($gross_amount <= 0) {
+                        $profileData = $conn->query("SELECT consultation_fee FROM doctor_profiles WHERE user_id = $doctor_id")->fetch_assoc();
+                        $gross_amount = floatval($profileData['consultation_fee'] ?? 0);
+                    }
+                    
+                    $commission_percent = 10.00;
+                    $commission_amount = $gross_amount * ($commission_percent / 100);
+                    $net_amount = $gross_amount - $commission_amount;
+                    
+                    $earnStmt = $conn->prepare("
+                        INSERT INTO doctor_earnings 
+                        (doctor_id, consultation_id, gross_amount, platform_commission_percent, platform_commission_amount, net_amount, payment_status)
+                        VALUES (?, ?, ?, ?, ?, ?, 'pending')
+                    ");
+                    $earnStmt->bind_param("iidddd", 
+                        $doctor_id, 
+                        $consultation_id, 
+                        $gross_amount, 
+                        $commission_percent, 
+                        $commission_amount, 
+                        $net_amount
+                    );
+                    $earnStmt->execute();
+                }
+                // --- END CUSTOM FIX ---                
             } else {
                 $stmt = $conn->prepare("
                     UPDATE consultations 
@@ -1781,6 +1836,26 @@ try {
             $items = $itemsStmt->get_result()->fetch_all(MYSQLI_ASSOC);
             
             echo json_encode(['status' => 'success', 'prescription' => $p, 'items' => $items]);
+            break;
+
+        case 'get_reviews':
+            $stmt = $conn->prepare("
+                SELECT dr.*, u.full_name as patient_name, u.email as patient_email
+                FROM doctor_reviews dr
+                JOIN users u ON dr.patient_id = u.id
+                WHERE dr.doctor_id = ? AND dr.status = 'approved'
+                ORDER BY dr.created_at DESC
+            ");
+            $stmt->bind_param("i", $doctor_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            $reviews = [];
+            while ($row = $result->fetch_assoc()) {
+                $reviews[] = $row;
+            }
+            
+            echo json_encode(['status' => 'success', 'data' => $reviews]);
             break;
 
         default:

@@ -270,6 +270,16 @@ if (empty($chartLabels)) {
                 <i class="ph ph-clipboard-text"></i>
                 <span>Consultations</span>
             </a>
+            <a href="?view=reviews" class="nav-item <?php echo $current_view == 'reviews' ? 'active' : ''; ?>">
+                <i class="ph ph-star"></i>
+                <span>Reviews & Ratings</span>
+                <?php 
+                    $pendingReviewsCount = getCount($conn, "doctor_reviews", "status = 'pending'");
+                    if ($pendingReviewsCount > 0): 
+                ?>
+                    <span class="badge"><?php echo $pendingReviewsCount; ?></span>
+                <?php endif; ?>
+            </a>
             <a href="?view=finance" class="nav-item <?php echo $current_view == 'finance' ? 'active' : ''; ?>">
                 <i class="ph ph-currency-dollar"></i>
                 <span>Finance & Revenue</span>
@@ -620,35 +630,87 @@ if (empty($chartLabels)) {
                         </div>
                     </div>
 
-                <?php elseif ($current_view == 'finance'): ?>
-                    <!-- FINANCE VIEW (MOCK) -->
+                <?php elseif ($current_view == 'reviews'): ?>
+                    <!-- REVIEWS MODERATION VIEW -->
                     <div class="page-title">
-                        <h1>Financial Performance</h1>
+                        <h1>Review Moderation</h1>
+                        <p>Approve or reject patient feedback before it goes public.</p>
                     </div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-label">Total Revenue</div>
-                            <div class="stat-value">$<?php echo number_format($estRevenue); ?></div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Platform Commission (10%)</div>
-                            <div class="stat-value">$<?php echo number_format($estRevenue * 0.1); ?></div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Pending Payouts</div>
-                            <div class="stat-value">$0.00</div>
-                        </div>
-                    </div>
-                    <div class="panel">
-                        <div class="panel-body">
-                            <h3 style="margin-bottom: 1rem;">Revenue Stream</h3>
-                            <div style="height: 300px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 8px; color: var(--text-muted);">
-                                Chart data requires active transaction history.
+                    <?php 
+                    $reviews = $conn->query("
+                        SELECT dr.*, 
+                               u_p.full_name as patient_name, 
+                               u_d.full_name as doctor_name
+                        FROM doctor_reviews dr
+                        JOIN users u_p ON dr.patient_id = u_p.id
+                        JOIN users u_d ON dr.doctor_id = u_d.id
+                        ORDER BY dr.created_at DESC
+                    ");
+                    ?>
+                    <div class="panel panel-table">
+                        <div class="panel-header">
+                            <span class="panel-title">All Reviews (<?php echo $reviews->num_rows; ?>)</span>
+                            <div class="filters">
+                                <select id="revStatusFilter" class="filter-select" onchange="filterReviewsTable()">
+                                    <option value="">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
                             </div>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table id="reviewsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Rating</th>
+                                        <th>Review</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php while($r = $reviews->fetch_assoc()): ?>
+                                    <tr data-status="<?php echo $r['status']; ?>">
+                                        <td style="white-space: nowrap; font-size: 0.8rem;"><?php echo date('M d, Y', strtotime($r['created_at'])); ?></td>
+                                        <td><strong><?php echo htmlspecialchars($r['patient_name']); ?></strong></td>
+                                        <td><?php echo htmlspecialchars($r['doctor_name']); ?></td>
+                                        <td>
+                                            <div style="color: #f59e0b; display: flex; gap: 2px;">
+                                                <?php for($i=1; $i<=5; $i++): ?>
+                                                    <i class="ph-fill ph-star" style="<?php echo $i <= $r['rating'] ? '' : 'color: #e2e8f0;'; ?>"></i>
+                                                <?php endfor; ?>
+                                            </div>
+                                        </td>
+                                        <td style="max-width: 300px;">
+                                            <div style="font-size: 0.85rem; color: #475569; overflow: hidden; text-overflow: ellipsis;">
+                                                <?php echo htmlspecialchars($r['review_text'] ?: 'No comment'); ?>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                            $st = $r['status'];
+                                            $cls = ($st == 'approved') ? 'bg-green' : (($st == 'pending') ? 'bg-yellow' : 'bg-red');
+                                            ?>
+                                            <span class="status-badge <?php echo $cls; ?>"><?php echo ucfirst($st); ?></span>
+                                        </td>
+                                        <td class="actions-cell">
+                                            <?php if($st == 'pending'): ?>
+                                                <button class="action-btn btn-green" onclick="handleReviewAction(<?php echo $r['id']; ?>, 'approve')" title="Approve"><i class="ph-bold ph-check"></i></button>
+                                                <button class="action-btn btn-red" onclick="handleReviewAction(<?php echo $r['id']; ?>, 'reject')" title="Reject"><i class="ph-bold ph-x"></i></button>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <?php endwhile; ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                <?php else: ?>
+                <?php elseif ($current_view == 'finance'): ?>
                     <!-- SETTINGS / DEFAULT -->
                     <div class="page-title"><h1>System Settings</h1></div>
                     <div class="panel">
@@ -1016,6 +1078,39 @@ if (empty($chartLabels)) {
             });
         }
         <?php endif; ?>
+        // Review Moderation
+        function handleReviewAction(reviewId, action) {
+            const formData = new FormData();
+            formData.append('action', action === 'approve' ? 'approve_review' : 'reject_review');
+            formData.append('review_id', reviewId);
+
+            fetch('admin_actions.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(err => console.error('Error:', err));
+        }
+
+        function filterReviewsTable() {
+            const status = document.getElementById('revStatusFilter').value;
+            const rows = document.querySelectorAll('#reviewsTable tbody tr');
+            rows.forEach(row => {
+                if (!status || row.dataset.status === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
     </script>
 </body>
 </html>
