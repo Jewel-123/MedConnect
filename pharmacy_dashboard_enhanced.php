@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -29,6 +30,9 @@
             --text-dark: #111827;
             --text-muted: #4b5563;
         }
+        
+        /* Custom Modal Style Overrides if any */
+        .modal-overlay { z-index: 9999 !important; }
         
         body {
             font-family: 'Outfit', sans-serif;
@@ -670,5 +674,6 @@
     </div>
 
     <script src="pharmacy_dashboard_enhanced.js"></script>
+    <script src="assets/js/custom_modal.js"></script>
 </body>
 </html>

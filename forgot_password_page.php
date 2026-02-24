@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <style>
         .step-indicator {
             display: flex;
@@ -319,7 +321,7 @@
         }
 
         // Handle Email Submit (Step 1)
-        function handleEmailSubmit(event) {
+        async function handleEmailSubmit(event) {
             event.preventDefault();
             
             const submitBtn = event.target.querySelector('button[type="submit"]');
@@ -334,15 +336,15 @@
             const formData = new FormData();
             formData.append('action', 'request_reset');
             formData.append('email', userEmail);
-
+ 
             console.log('Requesting OTP for:', userEmail);
-
+ 
             fetch('forgot_password.php', {
                 method: 'POST',
                 body: formData
             })
             .then(res => res.json())
-            .then(data => {
+            .then(async data => {
                 // Re-enable button
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalBtnText;
@@ -370,29 +372,29 @@
                         document.getElementById('debugBox').style.display = 'none';
                     }
                     
-                    alert(message);
+                    await alert(message);
                     
                     // Move to step 2
                     goToStep(2);
                     startCountdown();
                 } else {
-                    alert(data.message || 'Failed to send OTP');
+                    await alert(data.message || 'Failed to send OTP');
                 }
             })
-            .catch(err => {
+            .catch(async err => {
                 console.error('Error:', err);
-                alert('Failed to send OTP. Please try again.');
+                await alert('Failed to send OTP. Please try again.');
             });
         }
 
         // Handle OTP Submit (Step 2)
-        function handleOtpSubmit(event) {
+        async function handleOtpSubmit(event) {
             event.preventDefault();
             
             const otp = document.getElementById('otpInput').value.trim();
             
             if (otp.length !== 6) {
-                alert('Please enter a 6-digit OTP');
+                await alert('Please enter a 6-digit OTP');
                 return;
             }
             
@@ -408,37 +410,37 @@
                 body: formData
             })
             .then(res => res.json())
-            .then(data => {
+            .then(async data => {
                 console.log('Response:', data);
                 
                 if (data.status === 'success') {
-                    alert(data.message);
+                    await alert(data.message);
                     clearInterval(countdownTimer);
                     goToStep(3);
                 } else {
-                    alert(data.message || 'Invalid OTP');
+                    await alert(data.message || 'Invalid OTP');
                 }
             })
-            .catch(err => {
+            .catch(async err => {
                 console.error('Error:', err);
-                alert('Failed to verify OTP. Please try again.');
+                await alert('Failed to verify OTP. Please try again.');
             });
         }
 
         // Handle Password Reset (Step 3)
-        function handlePasswordReset(event) {
+        async function handlePasswordReset(event) {
             event.preventDefault();
             
             const password = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
             if (password !== confirmPassword) {
-                alert('Passwords do not match!');
+                await alert('Passwords do not match!');
                 return;
             }
 
             if (password.length < 6) {
-                alert('Password must be at least 6 characters long');
+                await alert('Password must be at least 6 characters long');
                 return;
             }
 
@@ -454,26 +456,26 @@
                 body: formData
             })
             .then(res => res.json())
-            .then(data => {
+            .then(async data => {
                 console.log('Response:', data);
                 
                 if (data.status === 'success') {
-                    alert(data.message);
+                    await alert(data.message);
                     
                     // Auto-login after successful password reset
                     autoLogin();
                 } else {
-                    alert(data.message || 'Failed to reset password');
+                    await alert(data.message || 'Failed to reset password');
                 }
             })
-            .catch(err => {
+            .catch(async err => {
                 console.error('Error:', err);
-                alert('Failed to reset password. Please try again.');
+                await alert('Failed to reset password. Please try again.');
             });
         }
 
         // Auto-login after password reset
-        function autoLogin() {
+        async function autoLogin() {
             const formData = new FormData();
             formData.append('action', 'auto_login');
             formData.append('email', userEmail);
@@ -485,7 +487,7 @@
                 body: formData
             })
             .then(res => res.json())
-            .then(data => {
+            .then(async data => {
                 console.log('Auto-login response:', data);
                 
                 if (data.status === 'success') {
@@ -493,16 +495,16 @@
                     sessionStorage.setItem('currentUser', JSON.stringify(data.user));
                     
                     // Redirect to home page
-                    alert('Login successful! Redirecting to home page...');
+                    await alert('Login successful! Redirecting to home page...');
                     window.location.href = 'index.php';
                 } else {
-                    alert('Password reset successful, but auto-login failed. Please login manually.');
+                    await alert('Password reset successful, but auto-login failed. Please login manually.');
                     window.location.href = 'login.php';
                 }
             })
-            .catch(err => {
+            .catch(async err => {
                 console.error('Auto-login error:', err);
-                alert('Password reset successful, but auto-login failed. Please login manually.');
+                await alert('Password reset successful, but auto-login failed. Please login manually.');
                 window.location.href = 'login.php';
             });
         }
@@ -529,7 +531,7 @@
         }
 
         // Resend OTP
-        document.getElementById('resendLink').addEventListener('click', function() {
+        document.getElementById('resendLink').addEventListener('click', async function() {
             if (this.classList.contains('disabled')) {
                 return;
             }
@@ -545,15 +547,15 @@
             const formData = new FormData();
             formData.append('action', 'request_reset');
             formData.append('email', userEmail);
-
+ 
             console.log('Resending OTP for:', userEmail);
-
+ 
             fetch('forgot_password.php', {
                 method: 'POST',
                 body: formData
             })
             .then(res => res.json())
-            .then(data => {
+            .then(async data => {
                 console.log('Response:', data);
                 
                 if (data.status === 'success') {
@@ -576,7 +578,7 @@
                         document.getElementById('debugBox').style.display = 'none';
                     }
                     
-                    alert(message);
+                    await alert(message);
                     
                     // Clear OTP input and restart timer
                     document.getElementById('otpInput').value = '';
@@ -585,14 +587,14 @@
                 } else {
                     resendBtn.classList.remove('disabled');
                     resendBtn.textContent = originalText;
-                    alert(data.message || 'Failed to resend OTP');
+                    await alert(data.message || 'Failed to resend OTP');
                 }
             })
-            .catch(err => {
+            .catch(async err => {
                 resendBtn.classList.remove('disabled');
                 resendBtn.textContent = originalText;
                 console.error('Error:', err);
-                alert('Failed to resend OTP. Please try again.');
+                await alert('Failed to resend OTP. Please try again.');
             });
         });
 

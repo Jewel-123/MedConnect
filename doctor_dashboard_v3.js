@@ -470,8 +470,9 @@ function renderConsultations(requests, active) {
 }
 
 async function acceptConsultation(consultationId) {
-    const element = document.getElementById(`cons-${consultationId}`);
+    if (!await confirm('Accept this consultation request?')) return;
 
+    const element = document.getElementById(`cons-${consultationId}`);
     try {
         if (element) {
             element.style.opacity = '0.5';
@@ -490,25 +491,24 @@ async function acceptConsultation(consultationId) {
         const result = await response.json();
 
         if (result.status === 'success') {
+            await alert('Consultation accepted successfully!');
             if (element) {
                 element.style.transition = 'all 0.3s ease';
                 element.style.transform = 'translateX(20px)';
                 element.style.opacity = '0';
                 setTimeout(() => {
                     element.remove();
-                    loadConsultations();
-                    loadDashboard();
+                    refreshDashboardContext();
                 }, 300);
             } else {
-                loadConsultations();
-                loadDashboard();
+                refreshDashboardContext();
             }
         } else {
             if (element) {
                 element.style.opacity = '1';
                 element.style.pointerEvents = 'auto';
             }
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (error) {
         if (element) {
@@ -516,19 +516,19 @@ async function acceptConsultation(consultationId) {
             element.style.pointerEvents = 'auto';
         }
         console.error('Error accepting consultation:', error);
-        alert('Failed to accept consultation');
+        await alert('Failed to accept consultation');
     }
 }
 
 async function declineConsultation(consultationId) {
-    const reason = prompt('Reason for declining (optional):');
+    const reason = await prompt('Please provide a reason for declining (optional):');
     if (reason === null) return; // User cancelled
 
     try {
         const formData = new FormData();
         formData.append('action', 'decline_consultation');
         formData.append('consultation_id', consultationId);
-        formData.append('reason', reason);
+        formData.append('reason', reason || '');
 
         const response = await fetch('doctor_api.php', {
             method: 'POST',
@@ -538,13 +538,23 @@ async function declineConsultation(consultationId) {
         const result = await response.json();
 
         if (result.status === 'success') {
-            alert('Consultation declined');
-            loadConsultations();
+            await alert('Consultation declined successfully');
+            refreshDashboardContext();
         } else {
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (error) {
         console.error('Error declining consultation:', error);
+        await alert('Failed to decline consultation');
+    }
+}
+
+// Helper to refresh all relevant dashboard components
+function refreshDashboardContext() {
+    loadDashboard();
+    loadDashboardRequests();
+    if (currentView === 'consultations') {
+        loadConsultations();
     }
 }
 
@@ -606,6 +616,87 @@ function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
 
+async function confirmAppointment(appointmentId) {
+    if (!await confirm('Confirm this appointment?')) return;
+
+    const element = document.querySelector(`[onclick="confirmAppointment(${appointmentId})"]`)?.closest('div[style*="border-bottom"]');
+
+    try {
+        if (element) {
+            element.style.opacity = '0.5';
+            element.style.pointerEvents = 'none';
+        }
+
+        const formData = new FormData();
+        formData.append('action', 'confirm_appointment');
+        formData.append('appointment_id', appointmentId);
+
+        const response = await fetch('doctor_api.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            await alert('Appointment confirmed successfully!');
+            if (element) {
+                element.style.transition = 'all 0.3s ease';
+                element.style.transform = 'translateX(20px)';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.remove();
+                    refreshDashboardContext();
+                }, 300);
+            } else {
+                refreshDashboardContext();
+            }
+        } else {
+            if (element) {
+                element.style.opacity = '1';
+                element.style.pointerEvents = 'auto';
+            }
+            await alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        if (element) {
+            element.style.opacity = '1';
+            element.style.pointerEvents = 'auto';
+        }
+        console.error('Error confirming appointment:', error);
+        await alert('Failed to confirm appointment');
+    }
+}
+
+async function declineAppointment(appointmentId) {
+    const reason = await prompt('Please provide a reason for declining (optional):');
+    if (reason === null) return; // User cancelled
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'decline_appointment');
+        formData.append('appointment_id', appointmentId);
+        formData.append('reason', reason || '');
+
+        const response = await fetch('doctor_api.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            await alert('Appointment declined successfully');
+            refreshDashboardContext();
+        } else {
+            await alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error declining appointment:', error);
+        await alert('Failed to decline appointment');
+    }
+}
+
 function addMedicine() {
     const index = medicines.length;
     medicines.push({});
@@ -645,7 +736,7 @@ async function savePrescription() {
     const notesPharmacy = document.getElementById('notesPharmacy').value;
 
     if (!diagnosis) {
-        alert('Diagnosis is required');
+        await alert('Diagnosis is required');
         return;
     }
 
@@ -690,7 +781,7 @@ async function savePrescription() {
     }
 
     if (warnings.length > 0) {
-        const proceed = confirm(`SAFETY WARNINGS DETECTED:\n\n${warnings.join('\n')}\n\nDo you want to override and proceed?`);
+        const proceed = await confirm(`SAFETY WARNINGS DETECTED:\n\n${warnings.join('\n')}\n\nDo you want to override and proceed?`);
         if (!proceed) return;
     }
 
@@ -719,19 +810,19 @@ async function savePrescription() {
         console.log('Prescription save response:', result); // Debug logging
 
         if (result.status === 'success') {
-            alert('Prescription saved successfully!');
+            await alert('Prescription saved successfully!');
             closeModal('prescriptionModal');
 
             // Ask if they want to complete the consultation/appointment
-            if (confirm(`Mark this ${consultationId ? 'consultation' : 'appointment'} as completed?`)) {
+            if (await confirm(`Mark this ${consultationId ? 'consultation' : 'appointment'} as completed?`)) {
                 completeConsultation(consultationId || appointmentId, consultationId ? 'consultation' : 'appointment');
             }
         } else {
-            alert('Error: ' + (result.message || 'Unknown error'));
+            await alert('Error: ' + (result.message || 'Unknown error'));
         }
     } catch (error) {
         console.error('Error saving prescription:', error);
-        alert('Failed to save prescription: ' + error.message);
+        await alert('Failed to save prescription: ' + error.message);
     }
 }
 
@@ -753,11 +844,11 @@ async function completeConsultation(requestId, type = 'consultation') {
         const result = await response.json();
 
         if (result.status === 'success') {
-            alert('Consultation completed successfully!');
+            await alert('Consultation completed successfully!');
             loadConsultations();
             loadDashboard();
         } else {
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (error) {
         console.error('Error completing consultation:', error);
@@ -767,7 +858,7 @@ async function completeConsultation(requestId, type = 'consultation') {
 
 // Start consultation - change from 'accepted' to 'in_progress' and go to consultation room
 async function startConsultation(requestId, type = 'consultation') {
-    if (!confirm('Start this consultation?')) return;
+    if (!await confirm('Start this consultation?')) return;
 
     try {
         const formData = new FormData();
@@ -1164,7 +1255,7 @@ function renderReviews(reviews) {
 }
 
 async function respondToReview(reviewId) {
-    const response = prompt('Enter your response:');
+    const response = await prompt('Enter your response:');
     if (!response) return;
 
     try {
@@ -1181,13 +1272,14 @@ async function respondToReview(reviewId) {
         const result = await res.json();
 
         if (result.status === 'success') {
-            alert('Response posted successfully!');
+            await alert('Response posted successfully!');
             loadReviews();
         } else {
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (error) {
         console.error('Error responding to review:', error);
+        await alert('Failed to post response');
     }
 }
 
@@ -1576,8 +1668,8 @@ function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
 }
 
-function logout() {
-    if (confirm('Are you sure you want to logout?')) {
+async function logout() {
+    if (await confirm('Are you sure you want to logout?')) {
         sessionStorage.removeItem('currentUser');
         window.location.href = 'logout.php';
     }
@@ -1588,161 +1680,4 @@ function searchPatients(query) {
     console.log('Searching for:', query);
 }
 
-// ========================================
-// CONSULTATION HANDLERS
-// ========================================
-
-async function acceptConsultation(consultationId) {
-    if (!confirm('Accept this consultation request?')) return;
-
-    try {
-        const formData = new FormData();
-        formData.append('action', 'accept_consultation');
-        formData.append('consultation_id', consultationId);
-
-        const response = await fetch('doctor_api.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            alert('Consultation accepted successfully!');
-            // Reload both dashboard and consultations view
-            loadDashboard();
-            loadDashboardRequests();
-            if (currentView === 'consultations') {
-                loadConsultations();
-            }
-        } else {
-            alert('Error: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error accepting consultation:', error);
-        alert('Failed to accept consultation');
-    }
-}
-
-async function declineConsultation(consultationId) {
-    const reason = prompt('Please provide a reason for declining (optional):');
-    if (reason === null) return; // User cancelled
-
-    try {
-        const formData = new FormData();
-        formData.append('action', 'decline_consultation');
-        formData.append('consultation_id', consultationId);
-        formData.append('reason', reason || '');
-
-        const response = await fetch('doctor_api.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            alert('Consultation declined successfully');
-            loadDashboard();
-            loadDashboardRequests();
-            if (currentView === 'consultations') {
-                loadConsultations();
-            }
-        } else {
-            alert('Error: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error declining consultation:', error);
-        alert('Failed to decline consultation');
-    }
-}
-
-// ========================================
-// APPOINTMENT HANDLERS
-// ========================================
-
-async function confirmAppointment(appointmentId) {
-    const element = document.querySelector(`[onclick="confirmAppointment(${appointmentId})"]`)?.closest('div[style*="border-bottom"]');
-
-    try {
-        if (element) {
-            element.style.opacity = '0.5';
-            element.style.pointerEvents = 'none';
-        }
-
-        const formData = new FormData();
-        formData.append('action', 'confirm_appointment');
-        formData.append('appointment_id', appointmentId);
-
-        const response = await fetch('doctor_api.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            if (element) {
-                element.style.transition = 'all 0.3s ease';
-                element.style.transform = 'translateX(20px)';
-                element.style.opacity = '0';
-                setTimeout(() => {
-                    element.remove();
-                    if (currentView === 'consultations') {
-                        loadConsultations();
-                    } else {
-                        loadDashboard();
-                        loadDashboardRequests();
-                    }
-                }, 300);
-            } else {
-                loadDashboard();
-                loadDashboardRequests();
-                if (currentView === 'consultations') loadConsultations();
-            }
-        } else {
-            if (element) {
-                element.style.opacity = '1';
-                element.style.pointerEvents = 'auto';
-            }
-            alert('Error: ' + result.message);
-        }
-    } catch (error) {
-        if (element) {
-            element.style.opacity = '1';
-            element.style.pointerEvents = 'auto';
-        }
-        console.error('Error confirming appointment:', error);
-        alert('Failed to confirm appointment');
-    }
-}
-
-async function declineAppointment(appointmentId) {
-    const reason = prompt('Please provide a reason for declining (optional):');
-    if (reason === null) return; // User cancelled
-
-    try {
-        const formData = new FormData();
-        formData.append('action', 'decline_appointment');
-        formData.append('appointment_id', appointmentId);
-        formData.append('reason', reason || '');
-
-        const response = await fetch('doctor_api.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            alert('Appointment declined successfully');
-            loadDashboard();
-            loadDashboardRequests();
-        } else {
-            alert('Error: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error declining appointment:', error);
-        alert('Failed to decline appointment');
-    }
-}
+// End of file cleanup - removing duplicates

@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -76,49 +78,49 @@
         };
 
         // Handle Google Login
-        function handleGoogleLogin(response) {
+        async function handleGoogleLogin(response) {
             // Check if auth_google.php exists first
             fetch('auth_google.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ credential: response.credential, role: 'patient' })
             })
-            .then(res => {
+            .then(async res => {
                 if (!res.ok) {
                     throw new Error('Server returned ' + res.status);
                 }
                 return res.json();
             })
-            .then(data => {
+            .then(async data => {
                 if (data.status === 'success') {
                     if (data.is_new_user) {
-                        alert("Welcome to MedConnect! Your account has been created.");
+                        await alert("Welcome to MedConnect! Your account has been created.");
                     }
                     // Store user session
                     sessionStorage.setItem('currentUser', JSON.stringify(data.user));
                     // Redirect to patient dashboard
                     window.location.href = 'patient_dashboard.php';
                 } else {
-                    alert("Google Login Failed: " + data.message);
+                    await alert("Google Login Failed: " + data.message);
                 }
             })
-            .catch(err => {
+            .catch(async err => {
                 console.error("Google Login Error:", err);
-                alert("Google Login is currently unavailable. Please use email/password login instead.");
+                await alert("Google Login is currently unavailable. Please use email/password login instead.");
                 // Hide Google login button
                 document.getElementById("google-btn-container").style.display = 'none';
             });
         }
 
         // Handle Email/Password Login
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
             if (!email || !password) {
-                alert("Please enter both email and password");
+                await alert("Please enter both email and password");
                 return;
             }
 
@@ -134,7 +136,7 @@
                 body: formData
             })
             .then(res => res.json())
-            .then(data => {
+            .then(async data => {
                 console.log("Response data:", data);
                 if (data.status === 'success') {
                     sessionStorage.setItem('currentUser', JSON.stringify(data.user));
@@ -151,22 +153,22 @@
                         window.location.href = 'patient_dashboard.php';
                     }
                 } else if (data.status === 'verification_required') {
-                    alert(data.message);
+                    await alert(data.message);
                     window.location.href = 'signup.php?step=2&email=' + encodeURIComponent(data.email);
                 } else if (data.status === 'onboarding_required') {
-                    alert(data.message);
+                    await alert(data.message);
                     // Use a temporary session storage to pass user info to signup.php for onboarding
                     sessionStorage.setItem('tempUser', JSON.stringify(data.user));
                     window.location.href = 'signup.php?step=3';
                 } else if (data.status === 'pending') {
-                    alert(data.message);
+                    await alert(data.message);
                 } else {
-                    alert("Login Failed: " + (data.message || "Unknown error"));
+                    await alert("Login Failed: " + (data.message || "Unknown error"));
                 }
             })
-            .catch(err => {
+            .catch(async err => {
                 console.error("Login error:", err);
-                alert('Login failed. Please check the console for details.');
+                await alert('Login failed. Please check the console for details.');
             });
         }
     </script>

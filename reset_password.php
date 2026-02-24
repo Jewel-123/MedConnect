@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
 </head>
 <body>
     <?php
@@ -53,7 +55,7 @@
     </div>
 
     <script>
-        function handleResetPassword(event) {
+        async function handleResetPassword(event) {
             event.preventDefault();
             
             const token = document.getElementById('resetToken').value;
@@ -61,17 +63,17 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
 
             if (!password || !confirmPassword) {
-                alert("Please fill in all fields");
+                await alert("Please fill in all fields");
                 return;
             }
 
             if (password !== confirmPassword) {
-                alert("Passwords do not match!");
+                await alert("Passwords do not match!");
                 return;
             }
 
             if (password.length < 6) {
-                alert("Password must be at least 6 characters long");
+                await alert("Password must be at least 6 characters long");
                 return;
             }
 
@@ -87,18 +89,18 @@
                 body: formData
             })
             .then(res => res.json())
-            .then(data => {
+            .then(async data => {
                 console.log("Response:", data);
-                alert(data.message);
+                await alert(data.message);
                 
                 if (data.status === 'success') {
                     // Redirect to login page
                     window.location.href = 'login.php';
                 }
             })
-            .catch(err => {
+            .catch(async err => {
                 console.error("Error:", err);
-                alert('Failed to reset password. Please try again.');
+                await alert('Failed to reset password. Please try again.');
             });
         }
     </script>

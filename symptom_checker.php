@@ -74,6 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Symptom Checker - MedConnect</title>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <style>
         :root {
             --primary: #0d9488;
@@ -234,9 +236,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             };
         }
 
-        function toggleVoice() {
+        async function toggleVoice() {
             if (!recognition) {
-                alert('Voice recognition not supported in this browser');
+                await alert('Voice recognition not supported in this browser');
                 return;
             }
             
@@ -258,11 +260,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             event.currentTarget.classList.add('selected');
         }
 
-        function nextStep() {
+        async function nextStep() {
             if (currentStep === 1) {
                 const symptoms = document.getElementById('symptomsText').value;
                 if (!symptoms.trim()) {
-                    alert('Please describe your symptoms');
+                    await alert('Please describe your symptoms');
                     return;
                 }
             }

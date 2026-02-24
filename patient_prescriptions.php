@@ -16,7 +16,10 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Prescriptions - MedConnect</title>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Outfit', 'Segoe UI', sans-serif; background: #f0fdfa; color: #111827; }
@@ -360,7 +363,7 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
         
         // Proceed with prescription - send to pharmacy
         async function proceedWithPrescription(prescriptionId) {
-            if (!confirm('Send this prescription to the pharmacy for processing?')) {
+            if (!await confirm('Send this prescription to the pharmacy for processing?')) {
                 return;
             }
             
@@ -377,19 +380,19 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert('✅ Prescription sent to pharmacy successfully!\n\nThe pharmacy will review and prepare your order.');
+                    await alert('✅ Prescription sent to pharmacy successfully!\n\nThe pharmacy will review and prepare your order.');
                     loadPrescriptions(); // Reload to show updated status
                 } else {
-                    alert('❌ Error: ' + data.error);
+                    await alert('❌ Error: ' + data.error);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Network error. Please try again.');
+                await alert('Network error. Please try again.');
             }
         }
         
         // View order details
-        function viewOrderDetails(prescriptionId, orderNumber, orderStatus) {
+        async function viewOrderDetails(prescriptionId, orderNumber, orderStatus) {
             const statusText = {
                 'Pending': 'Pending - Waiting for pharmacy verification',
                 'Verified': 'Verified - Pharmacy has priced your order',
@@ -400,7 +403,7 @@ $userName = $_SESSION['user_name'] ?? 'Patient';
                 'Cancelled': 'Cancelled - Order was cancelled'
             }[orderStatus] || orderStatus;
             
-            alert(`Order #${orderNumber}\n\nStatus: ${statusText}`);
+            await alert(`Order #${orderNumber}\n\nStatus: ${statusText}`);
         }
         
         // Load prescriptions on page load

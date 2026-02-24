@@ -278,7 +278,7 @@ function renderConsultations(requests, active) {
 }
 
 async function acceptConsultation(consultationId) {
-    if (!confirm('Accept this consultation request?')) return;
+    if (!await confirm('Accept this consultation request?')) return;
 
     try {
         const formData = new FormData();
@@ -293,20 +293,20 @@ async function acceptConsultation(consultationId) {
         const result = await response.json();
 
         if (result.status === 'success') {
-            alert('Consultation accepted successfully!');
+            await alert('Consultation accepted successfully!');
             loadConsultations();
             loadDashboard(); // Refresh stats
         } else {
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (error) {
         console.error('Error accepting consultation:', error);
-        alert('Failed to accept consultation');
+        await alert('Failed to accept consultation');
     }
 }
 
 async function declineConsultation(consultationId) {
-    const reason = prompt('Reason for declining (optional):');
+    const reason = await prompt('Reason for declining (optional):');
     if (reason === null) return; // User cancelled
 
     try {
@@ -323,10 +323,10 @@ async function declineConsultation(consultationId) {
         const result = await response.json();
 
         if (result.status === 'success') {
-            alert('Consultation declined');
+            await alert('Consultation declined');
             loadConsultations();
         } else {
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (error) {
         console.error('Error declining consultation:', error);
@@ -347,10 +347,10 @@ async function startSession(consultationId, patientId) {
         const result = await response.json();
 
         if (result.status === 'success') {
-            alert(`Session started! Mode: ${result.consultation_mode}\nSession Token: ${result.session_token}`);
+            await alert(`Session started! Mode: ${result.consultation_mode}\nSession Token: ${result.session_token}`);
             // In production, this would open the video/audio/chat interface
         } else {
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (error) {
         console.error('Error starting session:', error);
@@ -413,7 +413,7 @@ async function savePrescription() {
     const notesPharmacy = document.getElementById('notesPharmacy').value;
 
     if (!diagnosis) {
-        alert('Diagnosis is required');
+        await alert('Diagnosis is required');
         return;
     }
 
@@ -459,19 +459,19 @@ async function savePrescription() {
         const result = await response.json();
 
         if (result.status === 'success') {
-            alert('Prescription saved successfully!');
+            await alert('Prescription saved successfully!');
             closeModal('prescriptionModal');
 
             // Ask if they want to complete the consultation
-            if (confirm('Mark this consultation as completed?')) {
+            if (await confirm('Mark this consultation as completed?')) {
                 completeConsultation(consultationId);
             }
         } else {
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (error) {
         console.error('Error saving prescription:', error);
-        alert('Failed to save prescription');
+        await alert('Failed to save prescription');
     }
 }
 
@@ -489,11 +489,11 @@ async function completeConsultation(consultationId) {
         const result = await response.json();
 
         if (result.status === 'success') {
-            alert('Consultation completed successfully!');
+            await alert('Consultation completed successfully!');
             loadConsultations();
             loadDashboard();
         } else {
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (error) {
         console.error('Error completing consultation:', error);
@@ -731,7 +731,7 @@ function renderReviews(reviews) {
 }
 
 async function respondToReview(reviewId) {
-    const response = prompt('Enter your response:');
+    const response = await prompt('Enter your response:');
     if (!response) return;
 
     try {
@@ -748,10 +748,10 @@ async function respondToReview(reviewId) {
         const result = await res.json();
 
         if (result.status === 'success') {
-            alert('Response posted successfully!');
+            await alert('Response posted successfully!');
             loadReviews();
         } else {
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (error) {
         console.error('Error responding to review:', error);

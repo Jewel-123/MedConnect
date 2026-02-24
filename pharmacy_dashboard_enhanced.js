@@ -242,7 +242,7 @@ function viewDetails(id, type) {
 }
 
 async function verifyPrescription(id) {
-    if (!confirm('Verify this prescription and lock for processing?')) return;
+    if (!await confirm('Verify this prescription and lock for processing?')) return;
     try {
         const res = await fetch('pharmacy_api_enhanced.php?action=verify_prescription', {
             method: 'POST',
@@ -251,18 +251,18 @@ async function verifyPrescription(id) {
         });
         const data = await res.json();
         if (data.success) {
-            alert('✅ Prescription Verified. Now click "Generate Bill".');
+            await alert('✅ Prescription Verified. Now click "Generate Bill".');
             fetchStats();
             fetchQueue();
-        } else alert(data.error || 'Failed to verify');
+        } else await alert(data.error || 'Failed to verify');
     } catch (e) {
         console.error(e);
-        alert('Connection error');
+        await alert('Connection error');
     }
 }
 
 async function generateBill(id) {
-    if (!confirm('Calculate total and send bill to patient?')) return;
+    if (!await confirm('Calculate total and send bill to patient?')) return;
     try {
         const res = await fetch('pharmacy_api_enhanced.php?action=generate_bill', {
             method: 'POST',
@@ -271,18 +271,18 @@ async function generateBill(id) {
         });
         const data = await res.json();
         if (data.success) {
-            alert('💵 Bill Generated! Status: Awaiting Payment.');
+            await alert('💵 Bill Generated! Status: Awaiting Payment.');
             fetchStats();
             fetchQueue();
-        } else alert(data.error || 'Failed to generate bill');
+        } else await alert(data.error || 'Failed to generate bill');
     } catch (e) {
         console.error(e);
-        alert('Connection error');
+        await alert('Connection error');
     }
 }
 
 async function dispensePrescription(id) {
-    if (!confirm('Release medications and deduct stock from inventory?')) return;
+    if (!await confirm('Release medications and deduct stock from inventory?')) return;
     try {
         const res = await fetch('pharmacy_api_enhanced.php?action=dispense_prescription', {
             method: 'POST',
@@ -291,18 +291,18 @@ async function dispensePrescription(id) {
         });
         const data = await res.json();
         if (data.success) {
-            alert('📦 Items dispensed. Stock updated.');
+            await alert('📦 Items dispensed. Stock updated.');
             fetchStats();
             fetchQueue();
-        } else alert(data.error || 'Failed to dispense');
+        } else await alert(data.error || 'Failed to dispense');
     } catch (e) {
         console.error(e);
-        alert('Connection error');
+        await alert('Connection error');
     }
 }
 
 async function completePrescription(id) {
-    if (!confirm('Finalize order and move to history?')) return;
+    if (!await confirm('Finalize order and move to history?')) return;
     try {
         const res = await fetch('pharmacy_api_enhanced.php?action=complete_prescription', {
             method: 'POST',
@@ -311,13 +311,13 @@ async function completePrescription(id) {
         });
         const data = await res.json();
         if (data.success) {
-            alert('✅ Order completed successfully.');
+            await alert('✅ Order completed successfully.');
             fetchStats();
             fetchQueue();
-        } else alert(data.error || 'Failed to complete');
+        } else await alert(data.error || 'Failed to complete');
     } catch (e) {
         console.error(e);
-        alert('Connection error');
+        await alert('Connection error');
     }
 }
 
@@ -417,11 +417,11 @@ async function updateMedicineStock(medicineId) {
     const newStock = parseInt(stockInput.value);
 
     if (newStock < 0) {
-        alert('Stock cannot be negative');
+        await alert('Stock cannot be negative');
         return;
     }
 
-    if (!confirm(`Update stock for this medicine to ${newStock} units?`)) {
+    if (!await confirm(`Update stock for this medicine to ${newStock} units?`)) {
         return;
     }
 
@@ -438,19 +438,19 @@ async function updateMedicineStock(medicineId) {
         const data = await response.json();
 
         if (data.success) {
-            alert('✅ Stock updated successfully!');
+            await alert('✅ Stock updated successfully!');
             // Refresh inventory and stats
             await fetchMedicinesInventory();
             await fetchStats();
         } else {
-            alert('Error: ' + (data.error || 'Failed to update stock'));
+            await alert('Error: ' + (data.error || 'Failed to update stock'));
             // Reset input to original value
             const originalMed = allMedicines.find(m => m.id === medicineId);
             if (originalMed) stockInput.value = originalMed.stock;
         }
     } catch (e) {
         console.error(e);
-        alert('Connection error. Please try again.');
+        await alert('Connection error. Please try again.');
     }
 }
 
@@ -499,17 +499,17 @@ async function submitNewMedicine() {
 
     // Validate required fields
     if (!name) {
-        alert('Medicine name is required');
+        await alert('Medicine name is required');
         return;
     }
 
     if (isNaN(price) || price < 0) {
-        alert('Please enter a valid price (must be 0 or greater)');
+        await alert('Please enter a valid price (must be 0 or greater)');
         return;
     }
 
     if (isNaN(stock) || stock < 0) {
-        alert('Please enter a valid stock quantity (must be 0 or greater)');
+        await alert('Please enter a valid stock quantity (must be 0 or greater)');
         return;
     }
 
@@ -533,17 +533,17 @@ async function submitNewMedicine() {
         const data = await response.json();
 
         if (data.success) {
-            alert('✅ Medicine added successfully!');
+            await alert('✅ Medicine added successfully!');
             closeAddMedicineModal();
             // Refresh the medicine inventory and stats
             await fetchMedicinesInventory();
             await fetchStats();
         } else {
-            alert('Error: ' + (data.error || 'Failed to add medicine'));
+            await alert('Error: ' + (data.error || 'Failed to add medicine'));
         }
     } catch (e) {
         console.error(e);
-        alert('Connection error. Please try again.');
+        await alert('Connection error. Please try again.');
     }
 }
 

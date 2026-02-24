@@ -7,7 +7,7 @@
  * Confirm an appointment request
  */
 async function confirmAppointment(appointmentId) {
-    if (!confirm('Confirm this appointment?')) return;
+    if (!await confirm('Confirm this appointment?')) return;
 
     try {
         const response = await fetch('appointment_api.php?action=confirm_appointment', {
@@ -23,14 +23,14 @@ async function confirmAppointment(appointmentId) {
         const result = await response.json();
 
         if (result.success) {
-            alert('Appointment confirmed successfully!');
+            await alert('Appointment confirmed successfully!');
             location.reload();
         } else {
-            alert('Error: ' + (result.error || 'Failed to confirm appointment'));
+            await alert('Error: ' + (result.error || 'Failed to confirm appointment'));
         }
     } catch (error) {
         console.error('Error confirming appointment:', error);
-        alert('Failed to confirm appointment. Please try again.');
+        await alert('Failed to confirm appointment. Please try again.');
     }
 }
 
@@ -38,7 +38,7 @@ async function confirmAppointment(appointmentId) {
  * Cancel an appointment
  */
 async function cancelAppointment(appointmentId) {
-    const reason = prompt('Reason for cancellation (optional):');
+    const reason = await prompt('Reason for cancellation (optional):');
     if (reason === null) return; // User cancelled
 
     try {
@@ -56,14 +56,14 @@ async function cancelAppointment(appointmentId) {
         const result = await response.json();
 
         if (result.success) {
-            alert('Appointment cancelled successfully!');
+            await alert('Appointment cancelled successfully!');
             location.reload();
         } else {
-            alert('Error: ' + (result.error || 'Failed to cancel appointment'));
+            await alert('Error: ' + (result.error || 'Failed to cancel appointment'));
         }
     } catch (error) {
         console.error('Error cancelling appointment:', error);
-        alert('Failed to cancel appointment. Please try again.');
+        await alert('Failed to cancel appointment. Please try again.');
     }
 }
 

@@ -26,6 +26,8 @@ if (isset($_SESSION['role'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedConnect - Expert Medical Consultation</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -192,6 +194,7 @@ if (isset($_SESSION['role'])) {
     </footer>
 
     <script src="script.js?v=<?php echo time(); ?>"></script>
+    <script src="js/custom_modals.js"></script>
 </body>
 
 </html>

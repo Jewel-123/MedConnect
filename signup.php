@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <style>
         :root {
             --primary: #0284c7;
@@ -236,7 +238,7 @@
             });
         });
 
-        function handleSignup(event) {
+        async function handleSignup(event) {
             event.preventDefault();
             const btn = event.submitter;
             
@@ -275,19 +277,19 @@
 
             fetch('auth.php', { method: 'POST', body: formData })
                 .then(res => res.json())
-                .then(data => {
+                .then(async data => {
                     if (data.status === 'success') {
                         userData.id = data.id;
                         userData.email = data.email;
                         showStep(2);
                     } else {
-                        alert(data.message);
+                        await alert(data.message);
                         btn.disabled = false;
                         btn.innerText = 'Continue';
                     }
                 })
-                .catch(err => {
-                    alert("Error: " + err.message);
+                .catch(async err => {
+                    await alert("Error: " + err.message);
                     btn.disabled = false;
                     btn.innerText = 'Continue';
                 });
@@ -405,7 +407,7 @@
             showStep(3);
         }
 
-        function handleOnboarding(event) {
+        async function handleOnboarding(event) {
             event.preventDefault();
             const btn = event.target.querySelector('button[type="submit"]');
             
@@ -430,7 +432,7 @@
                 if (new Date(dob) > new Date()) {
                     const dobInput = event.target.querySelector('[name="dob"]');
                     dobInput.parentElement.classList.add('error');
-                    alert("Date of birth cannot be in the future.");
+                    await alert("Date of birth cannot be in the future.");
                     isValid = false;
                 }
             } else if (role === 'doctor') {
@@ -438,13 +440,13 @@
                 if (!/^MED-[\d]{6}$/.test(license)) {
                     const licInput = event.target.querySelector('[name="license"]');
                     licInput.parentElement.classList.add('error');
-                    alert("License number must be in format MED-123456.");
+                    await alert("License number must be in format MED-123456.");
                     isValid = false;
                 }
                 const exp = parseInt(formData.get('experience'));
                 const fees = parseInt(formData.get('fees'));
                 if (exp < 0 || fees < 0) {
-                    alert("Experience and fees cannot be negative.");
+                    await alert("Experience and fees cannot be negative.");
                     isValid = false;
                 }
             } else if (role === 'pharmacy') {
@@ -453,7 +455,7 @@
                 if (!/.+\s+-\s+.+/.test(hours)) {
                     const hoursInput = event.target.querySelector('[name="hours"]');
                     hoursInput.parentElement.classList.add('error');
-                    alert("Operating hours must be in format '9 AM - 9 PM'.");
+                    await alert("Operating hours must be in format '9 AM - 9 PM'.");
                     isValid = false;
                 }
             }
@@ -469,22 +471,22 @@
 
             fetch('auth.php', { method: 'POST', body: formData })
                 .then(res => res.json())
-                .then(data => {
+                .then(async data => {
                     if (data.status === 'success') {
                         if (userData.role === 'patient') {
-                            alert("Welcome to MedConnect! Your account is active.");
+                            await alert("Welcome to MedConnect! Your account is active.");
                         } else {
-                            alert("Thank you! Your profile has been submitted for admin verification. You'll be notified once approved.");
+                            await alert("Thank you! Your profile has been submitted for admin verification. You'll be notified once approved.");
                         }
                         window.location.href = 'login.php';
                     } else {
-                        alert(data.message);
+                        await alert(data.message);
                         btn.disabled = false;
                         btn.innerText = 'Complete Registration';
                     }
                 })
-                .catch(err => {
-                    alert("Error saving profile: " + err.message);
+                .catch(async err => {
+                    await alert("Error saving profile: " + err.message);
                     btn.disabled = false;
                     btn.innerText = 'Complete Registration';
                 });

@@ -426,7 +426,7 @@ const ConsultationChat = {
     /**
      * Insert SOAP template
      */
-    insertSOAPTemplate() {
+    async insertSOAPTemplate() {
         const textarea = document.getElementById('clinicalNotesText');
         if (!textarea) return;
 
@@ -447,7 +447,7 @@ Plan:
 - Tests: 
 - Follow-up: `;
 
-        if (textarea.value.trim() !== '' && !confirm('This will append the SOAP template. Continue?')) {
+        if (textarea.value.trim() !== '' && !await confirm('This will append the SOAP template. Continue?')) {
             return;
         }
 

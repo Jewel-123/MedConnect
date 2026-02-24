@@ -65,6 +65,8 @@ if (empty($chartLabels)) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -256,6 +258,10 @@ if (empty($chartLabels)) {
                     <span class="badge"><?php echo $pendingDoctors; ?></span>
                 <?php endif; ?>
             </a>
+            <a href="?view=partners" class="nav-item <?php echo $current_view == 'partners' ? 'active' : ''; ?>">
+                <i class="ph ph-buildings"></i>
+                <span>Clinics & Pharmacies</span>
+            </a>
             <a href="?view=patients" class="nav-item <?php echo $current_view == 'patients' ? 'active' : ''; ?>">
                 <i class="ph ph-users"></i>
                 <span>Patients</span>
@@ -263,10 +269,6 @@ if (empty($chartLabels)) {
             <a href="medical_records.php" class="nav-item">
                 <i class="ph ph-file-medical"></i>
                 <span>Medical Records</span>
-            </a>
-            <a href="?view=partners" class="nav-item <?php echo $current_view == 'partners' ? 'active' : ''; ?>">
-                <i class="ph ph-buildings"></i>
-                <span>Clinics & Pharmacies</span>
             </a>
 
             <div class="nav-label">Clinical & Finance</div>
@@ -283,10 +285,6 @@ if (empty($chartLabels)) {
                 ?>
                     <span class="badge"><?php echo $pendingReviewsCount; ?></span>
                 <?php endif; ?>
-            </a>
-            <a href="?view=finance" class="nav-item <?php echo $current_view == 'finance' ? 'active' : ''; ?>">
-                <i class="ph ph-currency-dollar"></i>
-                <span>Finance & Revenue</span>
             </a>
             <a href="admin_revenue.php" class="nav-item">
                 <i class="ph ph-chart-line"></i>
@@ -639,6 +637,15 @@ if (empty($chartLabels)) {
                         </div>
                     </div>
 
+                <?php elseif ($current_view == 'settings'): ?>
+                    <!-- SETTINGS / DEFAULT -->
+                    <div class="page-title"><h1>System Settings</h1></div>
+                    <div class="panel">
+                        <div class="panel-body">
+                            <p>Global platform configurations, notification settings, and audit logs will appear here.</p>
+                        </div>
+                    </div>
+
                 <?php elseif ($current_view == 'reviews'): ?>
                     <!-- REVIEWS MODERATION VIEW -->
                     <div class="page-title">
@@ -719,7 +726,7 @@ if (empty($chartLabels)) {
                         </div>
                     </div>
 
-                <?php elseif ($current_view == 'finance'): ?>
+                <?php elseif ($current_view == 'settings'): ?>
                     <!-- SETTINGS / DEFAULT -->
                     <div class="page-title"><h1>System Settings</h1></div>
                     <div class="panel">
@@ -964,12 +971,12 @@ if (empty($chartLabels)) {
         }
 
         // Action Handler
-        function handleAction(userId, status) {
-            if(!confirm(`Are you sure you want to set status to ${status}?`)) return;
+        async function handleAction(userId, status) {
+            if(!await confirm(`Are you sure you want to set status to ${status}?`)) return;
             postAction('update_status', { user_id: userId, status: status });
         }
 
-        function postAction(action, data) {
+        async function postAction(action, data) {
             const formData = new FormData();
             formData.append('action', action);
             for (const key in data) {
@@ -978,15 +985,15 @@ if (empty($chartLabels)) {
 
             fetch('admin_actions.php', { method: 'POST', body: formData })
             .then(res => res.json())
-            .then(response => {
+            .then(async response => {
                 if(response.status === 'success') {
-                    alert(response.message || 'Success');
+                    await alert(response.message || 'Success');
                     location.reload();
                 } else {
-                    alert('Error: ' + response.message);
+                    await alert('Error: ' + response.message);
                 }
             })
-            .catch(err => alert('System error occurred.'));
+            .catch(async err => await alert('System error occurred.'));
         }
 
         // Export Data
@@ -1045,8 +1052,8 @@ if (empty($chartLabels)) {
             });
         }
 
-        function confirmDeleteUser(id, name) {
-            if(confirm(`WARNING: You are about to deactivate user: ${name}.\n\nThis will prevent them from accessing the system but will NOT delete historical data to preserve audit trails.\n\nContinue?`)) {
+        async function confirmDeleteUser(id, name) {
+            if(await confirm(`WARNING: You are about to deactivate user: ${name}.\n\nThis will prevent them from accessing the system but will NOT delete historical data to preserve audit trails.\n\nContinue?`)) {
                 postAction('delete_user', { user_id: id });
             }
         }
@@ -1088,7 +1095,7 @@ if (empty($chartLabels)) {
         }
         <?php endif; ?>
         // Review Moderation
-        function handleReviewAction(reviewId, action) {
+        async function handleReviewAction(reviewId, action) {
             const formData = new FormData();
             formData.append('action', action === 'approve' ? 'approve_review' : 'reject_review');
             formData.append('review_id', reviewId);
@@ -1098,12 +1105,12 @@ if (empty($chartLabels)) {
                 body: formData
             })
             .then(res => res.json())
-            .then(data => {
+            .then(async data => {
                 if (data.status === 'success') {
-                    alert(data.message);
+                    await alert(data.message);
                     location.reload();
                 } else {
-                    alert('Error: ' + data.message);
+                    await alert('Error: ' + data.message);
                 }
             })
             .catch(err => console.error('Error:', err));

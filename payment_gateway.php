@@ -71,6 +71,8 @@ if ($transactionId) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Gateway - MedConnect</title>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -335,7 +337,7 @@ if ($transactionId) {
                         }
                     } catch (error) {
                         console.error('Payment verification failed:', error);
-                        alert('Payment verification failed: ' + error.message);
+                        await alert('Payment verification failed: ' + error.message);
                         document.getElementById('processingState').style.display = 'none';
                         document.getElementById('paymentForm').style.display = 'block';
                     }
@@ -380,7 +382,7 @@ if ($transactionId) {
                             
                         } catch (error) {
                             console.error('Payment verification failed:', error);
-                            alert('Payment verification failed: ' + error.message);
+                            await alert('Payment verification failed: ' + error.message);
                             document.getElementById('processingState').style.display = 'none';
                             document.getElementById('paymentForm').style.display = 'block';
                         }
@@ -405,8 +407,8 @@ if ($transactionId) {
                 
                 const rzp = new Razorpay(options);
                 
-                rzp.on('payment.failed', function (response) {
-                    alert('Payment failed: ' + response.error.description);
+                rzp.on('payment.failed', async function (response) {
+                    await alert('Payment failed: ' + response.error.description);
                     console.error('Payment error:', response.error);
                     document.getElementById('processingState').style.display = 'none';
                     document.getElementById('paymentForm').style.display = 'block';
@@ -418,13 +420,13 @@ if ($transactionId) {
                 
             } catch (error) {
                 console.error('Order creation failed:', error);
-                alert('Failed to initiate payment: ' + error.message);
+                await alert('Failed to initiate payment: ' + error.message);
                 document.getElementById('processingState').style.display = 'none';
                 document.getElementById('paymentForm').style.display = 'block';
             }
             
             <?php else: ?>
-            alert('No transaction found. Please try again.');
+            await alert('No transaction found. Please try again.');
             return;
             <?php endif; ?>
         }

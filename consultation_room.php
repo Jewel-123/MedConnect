@@ -228,6 +228,8 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telemedicine Hub | MedConnect</title>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+<script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -1126,14 +1128,6 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                     <i class="fas fa-file-medical"></i>
                     Generate E-Prescription
                 </button>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <button class="action-button" onclick="transferCase()" style="background: #334155; color: white; font-size: 13px;">
-                        <i class="fas fa-exchange-alt"></i> Transfer
-                    </button>
-                    <button class="action-button" onclick="escalateToEmergency()" style="background: #991b1b; color: white; font-size: 13px;">
-                        <i class="fas fa-exclamation-triangle"></i> Emergency
-                    </button>
-                </div>
                 <?php endif; ?>
                 <div style="margin-top: 16px; font-size: 11px; color: #64748b; text-align: center;">
                     <i class="fas fa-shield-halved"></i> End-to-End Encrypted Session
@@ -1542,7 +1536,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             if (!file) return;
 
             if (file.size > 5 * 1024 * 1024) {
-                alert("File is too large. Max size is 5MB.");
+                await alert("File is too large. Max size is 5MB.");
                 removeFile();
                 return;
             }
@@ -1584,11 +1578,11 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                         removeFile();
                     }
                 } else {
-                    alert("Upload failed: " + data.error);
+                    await alert("Upload failed: " + data.error);
                 }
             } catch (err) {
                 console.error(err);
-                alert("An error occurred during upload.");
+                await alert("An error occurred during upload.");
             }
         }
 
@@ -1616,14 +1610,14 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
 
             if (isNaN(patientId) || !patientId) {
                 console.error("[Prescription] ERROR: Invalid Patient ID:", patientId);
-                alert("Critical Error: Patient ID is missing. Please refresh the page.");
+                await alert("Critical Error: Patient ID is missing. Please refresh the page.");
                 return;
             }
             
             // Extract diagnosis
             const diagnosis = formData.get('diagnosis');
             if (!diagnosis || diagnosis.trim() === '') {
-                alert("Please enter a diagnosis before submitting the prescription.");
+                await alert("Please enter a diagnosis before submitting the prescription.");
                 return;
             }
             
@@ -1648,7 +1642,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             }
             
             if (medicines.length === 0) {
-                alert("Please add at least one medication.");
+                await alert("Please add at least one medication.");
                 return;
             }
             
@@ -1674,13 +1668,13 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 });
                 const data = await response.json();
                 if (data.status === 'success') {
-                    alert("Prescription signed and sent to patient & pharmacy!");
+                    await alert("Prescription signed and sent to patient & pharmacy!");
                     hidePrescriptionModal();
                     sendMessage("I have issued your e-prescription. You can view it in your 'Prescriptions' tab now.");
                 } else {
-                    alert("Error: " + (data.message || "Failed to save prescription"));
+                    await alert("Error: " + (data.message || "Failed to save prescription"));
                 }
-            } catch (err) { console.error(err); alert("Failed to connect to server."); }
+            } catch (err) { console.error(err); await alert("Failed to connect to server."); }
         }
 
         async function viewPrescription(id) {
@@ -1747,7 +1741,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                     }
                 } catch (err) { 
                     console.error("Camera access failed:", err);
-                    if (!isAuto) alert("Camera/Microphone access denied. Please check your browser permissions.");
+                    if (!isAuto) await alert("Camera/Microphone access denied. Please check your browser permissions.");
                 }
             } else {
                 const videoTrack = localStream.getVideoTracks()[0];
@@ -1947,7 +1941,7 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
             const confirmMsg = role === 'doctor' 
                 ? "Are you sure you want to end this session? This will mark it as completed and calculate your earnings."
                 : "Are you sure you want to end this session?";
-            if(!confirm(confirmMsg)) return;
+            if(!await confirm(confirmMsg)) return;
 
             try {
                 const formData = new FormData();
@@ -1964,24 +1958,24 @@ if (!empty($consultation['medical_history_summary']) && stripos($consultation['m
                 
                 if (result.status === 'success') {
                     stopTimer();
-                    alert('Consultation completed successfully!');
+                    await alert('Consultation completed successfully!');
                     if (role === 'doctor') {
                         window.location.href = 'doctor_dashboard.php?view=earnings';
                     } else {
                         window.location.href = 'patient_dashboard.php';
                     }
                 } else {
-                    alert('Error ending session: ' + result.message);
+                    await alert('Error ending session: ' + result.message);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Connection error. Please try again.');
+                await alert('Connection error. Please try again.');
             }
         }
 
-        function insertSOAP() {
+        async function insertSOAP() {
             const textarea = document.getElementById('privateNotes');
-            if (textarea.value.trim() !== '' && !confirm("This will append the SOAP template. Continue?")) return;
+            if (textarea.value.trim() !== '' && !await confirm("This will append the SOAP template. Continue?")) return;
             
             const template = `Subjective:
 - Patient presents with: 

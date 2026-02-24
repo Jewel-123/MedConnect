@@ -25,6 +25,8 @@ if ($role === 'pharmacy') $home_link = 'pharmacy_dashboard.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Records | MedConnect</title>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -349,7 +351,7 @@ if ($role === 'pharmacy') $home_link = 'pharmacy_dashboard.php';
 
             records.forEach(r => {
                 html += `<tr>
-                    <td><b>${r.visit_date}</b></td>
+                    <td><b>${r.visit_date.split(' ')[0]}</b></td>
                     <td>${r.diagnosis}</td>
                     <td style="max-width: 200px; font-size:0.8rem;">${r.medications || '-'}</td>
                     <td>${r.doctor_name || 'Staff'}</td>
@@ -438,7 +440,8 @@ if ($role === 'pharmacy') $home_link = 'pharmacy_dashboard.php';
             const data = await res.json();
             if (data.status === 'success') {
                 const r = data.data;
-                alert(`Diagnosis: ${r.diagnosis}\nDate: ${r.visit_date}\n\nNotes: ${r.notes || "No notes available."}`);
+                const formattedDate = r.visit_date.split(' ')[0];
+                await alert(`Diagnosis: ${r.diagnosis}\nDate: ${formattedDate}\n\nNotes: ${r.notes || "No notes available."}`);
             }
         }
 
@@ -452,7 +455,7 @@ if ($role === 'pharmacy') $home_link = 'pharmacy_dashboard.php';
                 // Pre-validation
                 const diagnosis = form.diagnosis.value.trim();
                 if (!diagnosis) {
-                    alert("Diagnosis is required.");
+                    await alert("Diagnosis is required.");
                     return;
                 }
 
@@ -477,7 +480,7 @@ if ($role === 'pharmacy') $home_link = 'pharmacy_dashboard.php';
                     data = JSON.parse(text);
                 } catch (jsonErr) {
                     console.error("Invalid JSON:", text);
-                    alert("Server Error: " + text.substring(0, 200));
+                    await alert("Server Error: " + text.substring(0, 200));
                     throw new Error("Server returned an invalid response.");
                 }
                 
@@ -505,11 +508,11 @@ if ($role === 'pharmacy') $home_link = 'pharmacy_dashboard.php';
                     closeModal('recordModal');
                     loadData();
                 } else {
-                    alert(data.message || "Server Error: Failed to save record.");
+                    await alert(data.message || "Server Error: Failed to save record.");
                 }
             } catch (err) {
                 console.error("Save Error:", err);
-                alert(err.message || "Failed to save record. Please check console for details.");
+                await alert(err.message || "Failed to save record. Please check console for details.");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalBtnText;
@@ -517,7 +520,7 @@ if ($role === 'pharmacy') $home_link = 'pharmacy_dashboard.php';
         }
 
         async function deleteRecord(id) {
-            if (!confirm("Are you sure? This action cannot be undone.")) return;
+            if (!await confirm("Are you sure? This action cannot be undone.")) return;
             const formData = new FormData();
             formData.append('action', 'delete');
             formData.append('id', id);
@@ -526,7 +529,7 @@ if ($role === 'pharmacy') $home_link = 'pharmacy_dashboard.php';
         }
 
         async function cancelReminder(id) {
-            if (!confirm("Cancel this reminder?")) return;
+            if (!await confirm("Cancel this reminder?")) return;
             const formData = new FormData();
             formData.append('action', 'cancel');
             formData.append('id', id);

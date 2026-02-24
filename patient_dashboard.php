@@ -35,6 +35,8 @@ $activePrescriptionsCount = $activePrescriptionsQuery ? $activePrescriptionsQuer
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Dashboard - MedConnect</title>
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+    <script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -121,6 +123,7 @@ $activePrescriptionsCount = $activePrescriptionsQuery ? $activePrescriptionsQuer
             document.querySelector('.sidebar li a i.ph-clock-counter-clockwise').parentElement.classList.add('active');
         }
     </script>
+    <script src="js/custom_modals.js"></script>
 </body>
 
 </html>

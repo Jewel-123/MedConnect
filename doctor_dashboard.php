@@ -35,6 +35,8 @@ $current_view = $_GET['view'] ?? 'dashboard';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
+<script src="assets/js/custom_modal.js?v=<?php echo time(); ?>"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>

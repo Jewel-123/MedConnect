@@ -317,7 +317,7 @@ async function submitReview(consultationId, doctorId) {
     const reviewText = document.getElementById('reviewText').value;
 
     if (rating === 0) {
-        alert('Please select a star rating.');
+        await alert('Please select a star rating.');
         return;
     }
 
@@ -342,13 +342,13 @@ async function submitReview(consultationId, doctorId) {
                 errorJson = JSON.parse(errorText);
             } catch (e) { }
 
-            alert('Error: ' + (errorJson ? errorJson.message : 'Server error (' + response.status + ')'));
+            await alert('Error: ' + (errorJson ? errorJson.message : 'Server error (' + response.status + ')'));
             return;
         }
 
         const result = await response.json();
         if (result.status === 'success') {
-            alert('Thank you for your feedback! It has been submitted for review.');
+            await alert('Thank you for your feedback! It has been submitted for review.');
             closeReviewModal();
             // Refresh views
             loadPatientDashboardData();
@@ -356,11 +356,11 @@ async function submitReview(consultationId, doctorId) {
                 loadConsultationHistory();
             }
         } else {
-            alert('Error: ' + result.message);
+            await alert('Error: ' + result.message);
         }
     } catch (e) {
         console.error('Failed to submit review:', e);
-        alert('Failed to submit feedback. Check console for details.');
+        await alert('Failed to submit feedback. Check console for details.');
     }
 }
 

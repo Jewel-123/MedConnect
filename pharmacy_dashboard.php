@@ -17,6 +17,7 @@ exit;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($profile['pharmacy_name']); ?> - Pharmacy Dashboard</title>
+    <link rel="stylesheet" href="assets/css/custom_modal.css?v=<?php echo time(); ?>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; }
@@ -349,7 +350,7 @@ exit;
             const delivery = document.getElementById('deliveryAvailable').value === 'true';
             
             if (!amount || amount <= 0) {
-                alert('Please enter a valid amount');
+                await alert('Please enter a valid amount');
                 return;
             }
             
@@ -366,12 +367,12 @@ exit;
             const data = await response.json();
             
             if (data.success) {
-                alert('Prescription accepted successfully!');
+                await alert('Prescription accepted successfully!');
                 closeModal();
                 loadPendingPrescriptions();
                 loadDashboard();
             } else {
-                alert(data.error || 'Failed to accept prescription');
+                await alert(data.error || 'Failed to accept prescription');
             }
         }
 
@@ -402,16 +403,17 @@ exit;
             const data = await response.json();
             
             if (data.success) {
-                alert('Order status updated!');
+                await alert('Order status updated!');
                 closeStatusModal();
                 loadOrders();
             } else {
-                alert(data.error || 'Failed to update status');
+                await alert(data.error || 'Failed to update status');
             }
         }
 
         // Initial load
         loadDashboard();
     </script>
+    <script src="assets/js/custom_modal.js"></script>
 </body>
 </html>
