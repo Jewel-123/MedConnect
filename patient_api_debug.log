@@ -118,3 +118,67 @@
     [review_text] => Good
 )
 
+[2026-02-24 15:18:28] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10034
+    [doctor_id] => 10067
+    [rating] => 5
+    [review_text] => good
+)
+
+[2026-02-24 16:56:03] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10033
+    [doctor_id] => 10070
+    [rating] => 5
+    [review_text] => good
+)
+
+[2026-02-24 17:09:56] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10035
+    [doctor_id] => 10062
+    [rating] => 2
+    [review_text] => 
+)
+
+[2026-02-25 08:07:13] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10036
+    [doctor_id] => 10062
+    [rating] => 5
+    [review_text] => 
+)
+
+[2026-02-25 10:16:51] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10037
+    [doctor_id] => 10063
+    [rating] => 5
+    [review_text] => nyce
+)
+
+[2026-03-06 06:59:39] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10038
+    [doctor_id] => 10060
+    [rating] => 5
+    [review_text] => 
+)
+
+[2026-03-08 12:30:38] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10038
+    [doctor_id] => 10068
+    [rating] => 5
+    [review_text] => 
+)
+
+[2026-03-08 12:38:45] Submit feedback called. Input: Array
+(
+    [consultation_id] => 10031
+    [doctor_id] => 10068
+    [rating] => 5
+    [review_text] => 
+)
+

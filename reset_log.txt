@@ -77,3 +77,14 @@ error:0A000086:SSL routines::certificate verify failed)
 2026-01-11 18:57:58 - OTP for jewelbiju2028@mca.ajce.in: 947205 (Expires: 2026-01-11 19:02:53, Mail Sent: Yes)
 2026-01-11 18:58:17 - Attempting OTP Verify: Email=jewelbiju2028@mca.ajce.in, OTP=947205
 2026-01-11 18:58:17 - OTP Verified Successfully for jewelbiju2028@mca.ajce.in
+2026-02-24 20:09:41 - FATAL EXCEPTION: Unknown column 'otp' in 'field list' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70
+2026-02-24 20:10:06 - FATAL EXCEPTION: Unknown column 'otp' in 'field list' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70
+2026-02-24 20:10:28 - FATAL EXCEPTION: Unknown column 'otp' in 'field list' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70
+2026-02-24 20:11:32 - FATAL EXCEPTION: Unknown column 'otp' in 'field list' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70
+2026-02-24 20:12:46 - FATAL EXCEPTION: Unknown column 'otp' in 'field list' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70
+2026-02-24 20:12:49 - FATAL EXCEPTION: Unknown column 'otp' in 'field list' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70
+2026-02-24 20:13:38 - FATAL EXCEPTION: Unknown column 'otp' in 'field list' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70
+2026-02-24 20:16:32 - FATAL EXCEPTION: Unknown column 'is_verified' in 'where clause' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70
+2026-02-24 20:16:52 - FATAL EXCEPTION: Unknown column 'is_verified' in 'where clause' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70
+2026-02-24 20:19:25 - FATAL EXCEPTION: Unknown column 'is_verified' in 'where clause' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70
+2026-02-24 20:21:01 - FATAL EXCEPTION: Unknown column 'is_verified' in 'where clause' in C:\xampp\htdocs\medconnect\forgot_password.php on line 70

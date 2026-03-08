@@ -30,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Prepare data for Flask API
         $payload = json_encode(['symptoms' => $symptoms]);
         
-        // Initialize cURL
-        $ch = curl_init('http://127.0.0.1:5000/predict');
+        // Initialize cURL (Render API)
+        $ch = curl_init('https://disease-prediction-model-2jnd.onrender.com/predict');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
@@ -54,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Extract ONLY recommended_doctor
             if (isset($response['recommended_doctor'])) {
-                echo json_encode(['success' => true, 'recommended_doctor' => $response['recommended_doctor']]);
+                $doctor = strtolower($response['recommended_doctor']);
+                echo json_encode(['success' => true, 'recommended_doctor' => $doctor]);
             } else {
                 echo json_encode(['error' => 'Invalid response from AI model']);
             }

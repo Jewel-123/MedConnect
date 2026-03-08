@@ -1358,3 +1358,164 @@ Stack trace:
 [24-Feb-2026 09:59:14 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
 [24-Feb-2026 10:00:31 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
 [24-Feb-2026 10:04:48 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[24-Feb-2026 10:15:38 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[24-Feb-2026 10:15:51 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[24-Feb-2026 10:17:32 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:742
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 742
+[24-Feb-2026 10:19:14 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[24-Feb-2026 10:20:27 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10033","appointment_id":null,"patient_id":"10079","icd_code":"","diagnosis":"Blood test Required","medicines":[{"name":"Fluconazole ","dosage":"159","frequency":"Night after food","duration":"5 days","quantity":"2","instructions":""}],"tests":[],"follow_up_date":"2026-03-06","notes_for_patient":"","notes_for_pharmacy":""}
+[24-Feb-2026 10:20:27 Europe/Berlin] Prescription created with ID: 44
+[24-Feb-2026 10:20:27 Europe/Berlin] Prescription saved successfully: ID 44
+[24-Feb-2026 10:20:33 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[24-Feb-2026 10:20:33 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[24-Feb-2026 10:20:33 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[24-Feb-2026 10:20:33 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[24-Feb-2026 10:20:33 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[24-Feb-2026 10:20:35 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Orthopedics
+[24-Feb-2026 15:02:25 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrician
+[24-Feb-2026 15:07:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrician
+[24-Feb-2026 15:09:45 Europe/Berlin] Prescription save input: {"consultation_id":10034,"patient_id":43,"diagnosis":"blood test","medicines":[{"name":"paracetamol","dosage":"500","frequency":"Once Daily","duration":"7","instructions":"morining after food,evening after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"morining after food,evening after food","notes_for_pharmacy":""}
+[24-Feb-2026 15:09:48 Europe/Berlin] Prescription created with ID: 45
+[24-Feb-2026 15:09:49 Europe/Berlin] Prescription saved successfully: ID 45
+[24-Feb-2026 15:10:16 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:742
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 742
+[24-Feb-2026 15:11:47 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10034","appointment_id":null,"patient_id":"43","icd_code":"","diagnosis":"Severe case","medicines":[{"name":"paraccetamol","dosage":"100","frequency":"morning and night after food","duration":"10 days","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-02-26","notes_for_patient":"pls do come","notes_for_pharmacy":"pls follow"}
+[24-Feb-2026 15:11:47 Europe/Berlin] Prescription created with ID: 46
+[24-Feb-2026 15:11:47 Europe/Berlin] Prescription saved successfully: ID 46
+[24-Feb-2026 15:13:35 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrician
+[24-Feb-2026 15:13:58 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[24-Feb-2026 15:13:58 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[24-Feb-2026 15:13:58 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[24-Feb-2026 15:13:58 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[24-Feb-2026 15:13:58 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[24-Feb-2026 15:14:00 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrician
+[24-Feb-2026 15:16:22 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrician
+[24-Feb-2026 15:25:22 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Pediatrician
+[24-Feb-2026 17:01:10 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[24-Feb-2026 17:01:36 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[24-Feb-2026 17:02:52 Europe/Berlin] Prescription save input: {"consultation_id":10035,"patient_id":10079,"diagnosis":"blood test","medicines":[{"name":"Albendazol","dosage":"500","frequency":"Once Daily","duration":"7","instructions":"morining after food,evening after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"morining after food,evening after food","notes_for_pharmacy":""}
+[24-Feb-2026 17:02:52 Europe/Berlin] Prescription created with ID: 47
+[24-Feb-2026 17:02:52 Europe/Berlin] Prescription saved successfully: ID 47
+[24-Feb-2026 17:03:20 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:742
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 742
+[24-Feb-2026 17:03:57 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10035","appointment_id":null,"patient_id":"10079","icd_code":"","diagnosis":"need","medicines":[{"name":"Acetominophine","dosage":"100","frequency":"Night after food","duration":"5 days","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-02-11","notes_for_patient":"pls follow","notes_for_pharmacy":""}
+[24-Feb-2026 17:03:57 Europe/Berlin] Prescription created with ID: 48
+[24-Feb-2026 17:03:57 Europe/Berlin] Prescription saved successfully: ID 48
+[24-Feb-2026 17:05:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[24-Feb-2026 17:06:11 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[24-Feb-2026 17:06:11 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[24-Feb-2026 17:06:11 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[24-Feb-2026 17:06:11 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[24-Feb-2026 17:06:11 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[24-Feb-2026 17:06:14 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[24-Feb-2026 17:08:01 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[24-Feb-2026 17:08:26 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[24-Feb-2026 17:13:37 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[24-Feb-2026 17:15:36 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[25-Feb-2026 05:33:17 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[25-Feb-2026 05:33:25 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[25-Feb-2026 05:34:28 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":null,"appointment_id":"116","patient_id":"21","icd_code":"","diagnosis":"Severe stomach pain","medicines":[{"name":"Albendazol","dosage":"100","frequency":"Night after food","duration":"5 days","quantity":1,"instructions":""}],"tests":[],"follow_up_date":"2026-02-26","notes_for_patient":"Pls take care","notes_for_pharmacy":""}
+[25-Feb-2026 05:34:28 Europe/Berlin] Prescription save error: Could not find a started consultation for appointment #116. Please start the session first. - Input: {"action":"save_prescription","consultation_id":null,"appointment_id":"116","patient_id":"21","icd_code":"","diagnosis":"Severe stomach pain","medicines":[{"name":"Albendazol","dosage":"100","frequency":"Night after food","duration":"5 days","quantity":1,"instructions":""}],"tests":[],"follow_up_date":"2026-02-26","notes_for_patient":"Pls take care","notes_for_pharmacy":""}
+[25-Feb-2026 05:35:25 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10036","appointment_id":null,"patient_id":"21","icd_code":"","diagnosis":"Severe stomach pain","medicines":[{"name":"Albendazol","dosage":"100","frequency":"Night after food","duration":"5 days","quantity":1,"instructions":""}],"tests":[],"follow_up_date":"2026-03-06","notes_for_patient":"Pls  take care","notes_for_pharmacy":""}
+[25-Feb-2026 05:35:25 Europe/Berlin] Prescription created with ID: 49
+[25-Feb-2026 05:35:25 Europe/Berlin] Prescription saved successfully: ID 49
+[25-Feb-2026 05:35:30 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[25-Feb-2026 05:35:30 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[25-Feb-2026 05:35:30 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[25-Feb-2026 05:35:30 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[25-Feb-2026 05:35:30 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[25-Feb-2026 05:35:32 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[25-Feb-2026 08:13:23 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[25-Feb-2026 08:13:44 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[25-Feb-2026 09:52:14 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[25-Feb-2026 09:52:29 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[25-Feb-2026 09:52:42 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[25-Feb-2026 09:54:24 Europe/Berlin] Prescription save input: {"consultation_id":10037,"patient_id":43,"diagnosis":"blood test","medicines":[{"name":"Albendazol","dosage":"150","frequency":"Once Daily","duration":"7","instructions":"after food duriing night","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food duriing night","notes_for_pharmacy":""}
+[25-Feb-2026 09:54:24 Europe/Berlin] Prescription created with ID: 50
+[25-Feb-2026 09:54:24 Europe/Berlin] Prescription saved successfully: ID 50
+[25-Feb-2026 09:56:24 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[25-Feb-2026 09:58:57 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[25-Feb-2026 09:59:24 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt::bind_param(): Argument #2 cannot be passed by reference in C:\xampp\htdocs\medconnect\doctor_api.php:742
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\medconnect\doctor_api.php on line 742
+[25-Feb-2026 10:00:25 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10037","appointment_id":null,"patient_id":"43","icd_code":"","diagnosis":"High skin rashes","medicines":[{"name":"Allopurinol ","dosage":"100","frequency":"Night after food","duration":"5 days","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-02-27","notes_for_patient":"Pls follow","notes_for_pharmacy":""}
+[25-Feb-2026 10:00:25 Europe/Berlin] Prescription created with ID: 51
+[25-Feb-2026 10:00:25 Europe/Berlin] Prescription saved successfully: ID 51
+[25-Feb-2026 10:00:36 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[25-Feb-2026 10:00:36 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[25-Feb-2026 10:00:36 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[25-Feb-2026 10:00:36 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[25-Feb-2026 10:00:36 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[25-Feb-2026 10:00:44 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[25-Feb-2026 10:07:14 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[25-Feb-2026 10:07:48 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[25-Feb-2026 10:22:39 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[25-Feb-2026 10:23:33 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: dermatology
+[05-Mar-2026 14:56:27 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[05-Mar-2026 14:56:35 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[05-Mar-2026 14:57:58 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[05-Mar-2026 14:58:50 Europe/Berlin] Prescription save input: {"consultation_id":10038,"patient_id":21,"diagnosis":"blood test","medicines":[{"name":"Albendazol","dosage":"500","frequency":"Once Daily","duration":"5","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[05-Mar-2026 14:58:50 Europe/Berlin] Prescription created with ID: 52
+[05-Mar-2026 14:58:50 Europe/Berlin] Prescription saved successfully: ID 52
+[06-Mar-2026 06:54:44 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[06-Mar-2026 06:55:16 Europe/Berlin] Prescription save input: {"consultation_id":10038,"patient_id":21,"diagnosis":"test","medicines":[{"name":"Albendazol","dosage":"100","frequency":"Once Daily","duration":"7","instructions":"after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"after food","notes_for_pharmacy":""}
+[06-Mar-2026 06:55:16 Europe/Berlin] Prescription created with ID: 53
+[06-Mar-2026 06:55:16 Europe/Berlin] Prescription saved successfully: ID 53
+[06-Mar-2026 06:56:42 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10038","appointment_id":null,"patient_id":"21","icd_code":"","diagnosis":"test","medicines":[],"tests":[],"follow_up_date":"2026-03-12","notes_for_patient":"","notes_for_pharmacy":""}
+[06-Mar-2026 06:56:42 Europe/Berlin] Prescription created with ID: 54
+[06-Mar-2026 06:56:42 Europe/Berlin] Prescription saved successfully: ID 54
+[06-Mar-2026 06:56:49 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[06-Mar-2026 06:56:49 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[06-Mar-2026 06:56:49 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[06-Mar-2026 06:56:49 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[06-Mar-2026 06:56:49 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[06-Mar-2026 06:56:50 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[06-Mar-2026 06:58:47 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[06-Mar-2026 07:04:17 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[07-Mar-2026 06:21:12 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[07-Mar-2026 06:22:38 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[07-Mar-2026 06:22:44 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[07-Mar-2026 06:22:44 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[07-Mar-2026 06:22:44 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[07-Mar-2026 06:22:44 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[07-Mar-2026 06:22:44 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[07-Mar-2026 06:22:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[07-Mar-2026 07:46:12 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gastroenterologist
+[08-Mar-2026 06:49:25 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
+[08-Mar-2026 06:49:44 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Cardiologist
+[08-Mar-2026 12:25:37 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[08-Mar-2026 12:25:46 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[08-Mar-2026 12:26:35 Europe/Berlin] Prescription save input: {"consultation_id":10038,"patient_id":10078,"diagnosis":"test","medicines":[{"name":"Fluconazole 150mg","dosage":"500","frequency":"Once Daily","duration":"","instructions":"food ,drink","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"food ,drink","notes_for_pharmacy":""}
+[08-Mar-2026 12:26:35 Europe/Berlin] Prescription created with ID: 52
+[08-Mar-2026 12:26:35 Europe/Berlin] Prescription saved successfully: ID 52
+[08-Mar-2026 12:27:52 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[08-Mar-2026 12:28:23 Europe/Berlin] Prescription save input: {"action":"save_prescription","consultation_id":"10038","appointment_id":null,"patient_id":"10078","icd_code":"","diagnosis":"need care","medicines":[{"name":"Albendazol","dosage":"159","frequency":"morning and night after food","duration":"9","quantity":"1","instructions":""}],"tests":[],"follow_up_date":"2026-03-20","notes_for_patient":"follow","notes_for_pharmacy":"follow"}
+[08-Mar-2026 12:28:23 Europe/Berlin] Prescription created with ID: 53
+[08-Mar-2026 12:28:23 Europe/Berlin] Prescription saved successfully: ID 53
+[08-Mar-2026 12:28:28 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[08-Mar-2026 12:28:28 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[08-Mar-2026 12:28:30 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[08-Mar-2026 12:28:30 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[08-Mar-2026 12:28:30 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[08-Mar-2026 12:28:30 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[08-Mar-2026 12:28:30 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[08-Mar-2026 12:28:31 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[08-Mar-2026 12:28:35 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[08-Mar-2026 12:36:55 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[08-Mar-2026 12:37:44 Europe/Berlin] Prescription save input: {"consultation_id":10031,"patient_id":10078,"diagnosis":"tets","medicines":[{"name":"Acetaminophen","dosage":"150","frequency":"Once Daily","duration":"7","instructions":"morining after food,evening after food","quantity":1}],"tests":[],"follow_up_date":null,"notes_for_patient":"morining after food,evening after food","notes_for_pharmacy":""}
+[08-Mar-2026 12:37:44 Europe/Berlin] Prescription created with ID: 54
+[08-Mar-2026 12:37:44 Europe/Berlin] Prescription saved successfully: ID 54
+[08-Mar-2026 12:37:53 Europe/Berlin] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\medconnect\notification_service.php on line 75
+[08-Mar-2026 12:37:53 Europe/Berlin] Failed to log notification: Cannot add or update a child row: a foreign key constraint fails (`medconnect`.`notification_log`, CONSTRAINT `notification_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[08-Mar-2026 12:37:53 Europe/Berlin] PHP Warning:  Undefined variable $grossAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1321
+[08-Mar-2026 12:37:53 Europe/Berlin] PHP Warning:  Undefined variable $commissionAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1322
+[08-Mar-2026 12:37:53 Europe/Berlin] PHP Warning:  Undefined variable $netAmount in C:\xampp\htdocs\medconnect\doctor_api.php on line 1323
+[08-Mar-2026 12:38:06 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: Gynecology
+[08-Mar-2026 15:41:18 Europe/Berlin] DOCTOR_API: Filtering requests for specialty: General Physician
